@@ -9,6 +9,8 @@ public class OfficerStatusVo {
 	private String admisionTime;
 	
 	private String affedefitDate;
+	
+	private String officerName;
 	private String usertype;
 	private Long   objId;
 	private String remark;
@@ -71,25 +73,39 @@ public class OfficerStatusVo {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
+	
+	
+	public String getOfficerName() {
+		return officerName;
+	}
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
 	@Override
 	public String toString() {
 		return "OfficerStatusVo [admissionDate=" + admissionDate + ", admisionTime=" + admisionTime + ", affedefitDate="
-				+ affedefitDate + ", usertype=" + usertype + ", objId=" + objId + ", remark=" + remark + ", status="
-				+ status + ", officerStatusVo=" + officerStatusVo + "]";
+				+ affedefitDate + ", officerName=" + officerName + ", usertype=" + usertype + ", objId=" + objId
+				+ ", remark=" + remark + ", status=" + status + ", officerStatusVo=" + officerStatusVo + "]";
 	}
-	public OfficerStatusVo(String admissionDate, String admisionTime, String affedefitDate, String usertype, Long objId,
-			String remark, String status) {
+	public OfficerStatusVo(String admissionDate, String admisionTime, String affedefitDate, String officerName,
+			String usertype, Long objId, String remark, String status, OfficerStatusVo officerStatusVo) {
 		super();
 		this.admissionDate = admissionDate;
 		this.admisionTime = admisionTime;
 		this.affedefitDate = affedefitDate;
+		this.officerName = officerName;
 		this.usertype = usertype;
 		this.objId = objId;
 		this.remark = remark;
 		this.status = status;
+		this.officerStatusVo = officerStatusVo;
 	}
 	
-
+	
+	
+	
+	
 	
 	
 }

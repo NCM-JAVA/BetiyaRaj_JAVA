@@ -20,8 +20,10 @@ public interface NewObjectionRepo extends JpaRepository<NewObjection, Long> {
 	 @Query("SELECT n FROM NewObjection n WHERE n.districtName = :districtName And n.status = 'pending'")
 	    List<NewObjection> findAllPending(@Param("districtName") String districtName);
 
-	 @Query(value = "SELECT * FROM public.new_objectioner WHERE user_id = ?1", nativeQuery = true)
-	    List<NewObjection> findByUserId(Long userId);	    
+
+	 @Query(value = "SELECT * FROM new_objectioner o WHERE o.user_id = :userId", nativeQuery = true)
+	    List<NewObjection> findByUserId(@Param("userId") Long userId);    
+	 
 	 @Query("SELECT n FROM NewObjection n WHERE n.status <> 'Reject' AND n.status <> 'pending' AND n.status <> 'Dismiss'")
 	 List<NewObjection> findAllApproved();
 

@@ -66,12 +66,13 @@ public class AdminServiceImpl implements AdminService {
 		            return newObjection2;
 		        }
 		        if(formType.equals("FormA")) {
-		            String notice = noticedgenerateA(newObjection.getUserId().getUserName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
+		            String notice = noticedgenerateA(newObjection.getUserId().getFullName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
 		        }
 
 		        // Check for Form B
 		        if(formType.equals("FormB")) {
-		            String notice = noticedgenerateB(newObjection.getUserId().getUserName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
+		        	System.out.println("formB====");
+		            String notice = noticedgenerateB(newObjection.getUserId().getFullName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
 		        }
 		        
 		        // Check for Form A (corrected comparison and removed extra semicolon)

@@ -55,8 +55,12 @@ public class UserService {
 	private CustomUserDetailsService customUserDetailsService;
 
 	public UserEntity registerUser(UserEntity user, String roleName) {
+		
+		if(user.getUserName()!=null)
+		{
 		if (userRepository.existsByUserName(user.getUserName())) {
 			throw new RuntimeException("Username already exists. Please choose a different username.");
+		}
 		}
 
 		// Assign default role if none provided
@@ -348,7 +352,9 @@ public class UserService {
 	 //   return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
 	}
 	
-	public String loginObjectioner(String mobileNumber, String otp) {
+	public LoginResponse loginObjectioner(String mobileNumber, String otp) {
+		System.out.println();
+		LoginResponse loginResponse=new LoginResponse();
 	    UserEntity user = userRepository.findByPhoneNumber(mobileNumber);
 
 	    if (user == null || user.getOtp() == null || !user.getOtp().equals(otp)) {
@@ -358,8 +364,13 @@ public class UserService {
 	    // Optional: clear OTP after use
 	    user.setOtp(null);
 	    userRepository.save(user);
-
-	    return jwtUtil.generateToken(user.getPhoneNumber());
+	    loginResponse.setRole(user.getRole());
+	    loginResponse.setFullName(user.getFullName());
+	    loginResponse.setUserId(user.getUserId());
+	    loginResponse.setDistrict(user.getDistrict());
+	    loginResponse.setUserName(user.getUserName());
+	    loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+	    return loginResponse;
 	}
 
 

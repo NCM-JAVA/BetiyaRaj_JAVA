@@ -119,7 +119,7 @@ public class ObjectionServiceImpl implements ObjectionService {
 						e.printStackTrace();
 					}
 					
-					String notice=noticedgenerate(savedObjection.getUserId().getUserName(),statusvo.getAdmissionDate(),statusvo.getAdmisionTime(),statusvo.getAffedefitDate(),savedObjection);
+					String notice=noticedgenerate(savedObjection.getUserId().getFullName(),statusvo.getAdmissionDate(),statusvo.getAdmisionTime(),statusvo.getAffedefitDate(),savedObjection);
 
 					if (savedObjection != null) {
 						return "save";
@@ -438,8 +438,10 @@ public class ObjectionServiceImpl implements ObjectionService {
 
     public String submitObjection(NewObjection objection, MultipartFile[] files, String username, String documentTypes) {
         // Fetch User
-        UserEntity user = userRepository.findByUserName(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    	
+        UserEntity user = userRepository.findById(Long.valueOf(username)).orElseThrow(() -> new RuntimeException("User not found"));
+//        		userRepository.findByUserName(username)
+//            .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Generate Unique Objection ID
         String objectionId = generateNextToken(objection);

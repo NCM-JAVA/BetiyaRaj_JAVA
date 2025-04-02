@@ -95,8 +95,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
-
-@CrossOrigin(origins = "http://localhost:4200") 
+//@CrossOrigin(origins = "http://localhost:4200") 
 
 
 @Transactional
@@ -149,19 +148,7 @@ public class UserController {
 	}
 	
 	
-	  @GetMapping({"/generateCaptcha"})
-	   @ResponseBody
-	   public CaptchaResponsed generateCaptcha(HttpSession session) {
-	      CaptchaResponsed rescap = new CaptchaResponsed();
-
-	      try {
-	         rescap = this.userService.generateCaptcha(session);
-	      } catch (Exception var4) {
-	         var4.printStackTrace();
-	      }
-
-	      return rescap;
-	   }
+	
 
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
@@ -264,54 +251,43 @@ public class UserController {
 		}
 	}
 	
-	@PostMapping("/findMobileNumber")
-	public ResponseEntity<?> findMobileNumber(@RequestBody Map<String, String> request) {
-	    try {
-	        String phoneNumber = request.get("phoneNumber");  // Extract phone number from the request body
-	        UserEntity entity = repository.findByPhoneNumber(phoneNumber);
-
-	        if (entity != null) {
-	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Try another mobile"));
-	        } else {
-	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.badRequest().body(e.getMessage());
-	    }
-	}
-
-
-	
-	@PostMapping("/findAadharNumber")
-	public ResponseEntity<?> findAadharNumber(@RequestBody Map<String, String> request) {
-		try {
-	        String aadharNumber = request.get("aadharNumber");  // Extract phone number from the request body
-
-			UserEntity entity=repository.findByAdhar(aadharNumber);
-			
-			if(entity!=null)
-			{
-	            return ResponseEntity.ok(Map.of("message", "Try another aadhar"));
-
-			}
-			else {
-	            return ResponseEntity.ok(Map.of("message", "aadhar number is available"));
-			}
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
-
-		}
-
-	
-	}
-	
+	/*
+	 * @PostMapping("/findMobileNumber") public ResponseEntity<?>
+	 * findMobileNumber(@RequestBody Map<String, String> request) { try { String
+	 * phoneNumber = request.get("phoneNumber"); // Extract phone number from the
+	 * request body UserEntity entity = repository.findByPhoneNumber(phoneNumber);
+	 * 
+	 * if (entity != null) { // Return a JSON response return
+	 * ResponseEntity.ok(Map.of("message", "Try another mobile")); } else { //
+	 * Return a JSON response return ResponseEntity.ok(Map.of("message",
+	 * "Phone number is available")); }
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.badRequest().body(e.getMessage()); } }
+	 * 
+	 * 
+	 * 
+	 * @PostMapping("/findAadharNumber") public ResponseEntity<?>
+	 * findAadharNumber(@RequestBody Map<String, String> request) { try { String
+	 * aadharNumber = request.get("aadharNumber"); // Extract phone number from the
+	 * request body
+	 * 
+	 * UserEntity entity=repository.findByAdhar(aadharNumber);
+	 * 
+	 * if(entity!=null) { return ResponseEntity.ok(Map.of("message",
+	 * "Try another aadhar"));
+	 * 
+	 * } else { return ResponseEntity.ok(Map.of("message",
+	 * "aadhar number is available")); }
+	 * 
+	 * } catch (Exception e) { // TODO: handle exception e.printStackTrace(); return
+	 * ResponseEntity.badRequest().body(e.getMessage());
+	 * 
+	 * }
+	 * 
+	 * 
+	 * }
+	 */
 	
 	
 
@@ -447,11 +423,14 @@ public class UserController {
 	
 
 	@GetMapping("/getobjectionsAll")
-	public ResponseEntity<?> getAllObjections() {
+	public ResponseEntity<?> getAllObjections(@RequestParam String userId) {
 		try {
 			
 		//	List<Admission> admissions =admissionRepo.findAll();
-			List<NewObjection> newObjection = objectionService.findAll();
+		//	List<NewObjection> newObjection = objectionService.findAll();
+			
+			List<NewObjection> newObjection = newObjectionRepo.findByUserId(Long.valueOf(userId));
+
 			return ResponseEntity.ok(newObjection);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -512,7 +491,7 @@ public class UserController {
 		return null;
 	}
 
-	@GetMapping("findistrict")
+	@PostMapping("findistrict")
 	public ResponseEntity<?> findDistrict(@RequestParam String state) {
 		try {
 			List<String> districts = loctionrepo.findDistinctDistrict(state);
@@ -782,7 +761,7 @@ public class UserController {
 			UserEntity user = new UserEntity();
 			user = userService.getUserById(Long.valueOf(objectionVo.getUserId()));
 			entity.setUserId(user);
-			username = user.getUserName();
+			username = String.valueOf(user.getUserId());
 			// NewObjection objection = objectionService.savedata(entity);
 
 			// Call the service to handle the objection and files
