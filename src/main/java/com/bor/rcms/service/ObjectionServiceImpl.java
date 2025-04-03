@@ -85,6 +85,7 @@ public class ObjectionServiceImpl implements ObjectionService {
 				admission.setAdmissionDate(statusvo.getAdmissionDate());
 				admission.setAdmissionTime(statusvo.getAdmisionTime());
 				admission.setAffidavitDate(statusvo.getAffedefitDate());
+				admission.setOfficerName(statusvo.getOfficerName());
 				
 				String caseID=generateAdmisionNextToken(objection);
 				admission.setAdmisionCase(caseID);

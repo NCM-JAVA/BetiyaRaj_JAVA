@@ -65,12 +65,12 @@ public class AdminServiceImpl implements AdminService {
 		            newObjection2.setStatus("date will be mandatory");
 		            return newObjection2;
 		        }
-		        if(formType.equals("FormA")) {
+		        if(formType.equals("Form A")) {
 		            String notice = noticedgenerateA(newObjection.getUserId().getFullName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
 		        }
 
 		        // Check for Form B
-		        if(formType.equals("FormB")) {
+		        if(formType.equals("Form B")) {
 		        	System.out.println("formB====");
 		            String notice = noticedgenerateB(newObjection.getUserId().getFullName(), casenotes.getNextHearingDate(), casenotes.getTime(), newObjection);
 		        }
@@ -182,7 +182,18 @@ public class AdminServiceImpl implements AdminService {
 	////
 //	private static final String FILE_STORAGE_PATH = "D:\\FormANoticeB_";
 	
-    private final String FILE_STORAGE_PATH = "C:/Users/Admin/file";
+    private final String FILE_STORAGE_PATHA = "C:/Users/Admin/file/NoticeA";
+
+    private final String FILE_STORAGE_PATHB = "C:/Users/Admin/file/NoticeB";
+    
+    
+    private final String FILE_STORAGE_PATHC= "C:/Users/Admin/file/NoticeC";
+
+    private final String FILE_STORAGE_PATHD= "C:/Users/Admin/file/NoticeD";
+    
+    private final String FILE_STORAGE_PATHE= "C:/Users/Admin/file/NoticeE";
+
+
 
 
 	
@@ -267,7 +278,7 @@ public class AdminServiceImpl implements AdminService {
 	             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 	             // Define the file name for the PDF, adding current time as part of the name
-	             String pdfFilePath = FILE_STORAGE_PATH + "FormANoticeB_" + userName + "_" + currentMinute + ".pdf";
+	             String pdfFilePath = FILE_STORAGE_PATHB+ "FormANoticeB_" + userName + "_" + currentMinute + ".pdf";
 
 //	            // Specify the output file path
 //	        	String pdfFilePath = "D:\\FormANoticeB_" + userName + ".pdf";
@@ -371,7 +382,7 @@ public class AdminServiceImpl implements AdminService {
 	             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 	             // Define the file name for the PDF, adding current time as part of the name
-	             String pdfFilePath = FILE_STORAGE_PATH + "FormANoticeB_" + userName + "_" + currentMinute + ".pdf";
+	             String pdfFilePath = FILE_STORAGE_PATHA + "FormANoticeA_" + userName + "_" + currentMinute + ".pdf";
 	            DocumentEntity enNoticeRelease=new DocumentEntity();
 	            enNoticeRelease.setDocumentType("NoticeA");
 
@@ -545,7 +556,7 @@ public class AdminServiceImpl implements AdminService {
 	             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 	             // Define the file name for the PDF, adding current time as part of the name
-	             String pdfFilePath = FILE_STORAGE_PATH + "FormANoticeC_" + userName + "_" + currentMinute + ".pdf";
+	             String pdfFilePath = FILE_STORAGE_PATHC + "FormANoticeC_" + userName + "_" + currentMinute + ".pdf";
 	            DocumentEntity enNoticeRelease=new DocumentEntity();
 	            enNoticeRelease.setDocumentType("NoticeC");
 
@@ -641,7 +652,7 @@ public class AdminServiceImpl implements AdminService {
 	             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 	             // Define the file name for the PDF, adding current time as part of the name
-	             String pdfFilePath = FILE_STORAGE_PATH + "FormANoticeD_" + userName + "_" + currentMinute + ".pdf";
+	             String pdfFilePath = FILE_STORAGE_PATHD + "FormANoticeD_" + userName + "_" + currentMinute + ".pdf";
 	            DocumentEntity enNoticeRelease=new DocumentEntity();
 	            enNoticeRelease.setDocumentType("NoticeD");
 	            enNoticeRelease.setDocumentName("NoticeD");
@@ -735,7 +746,7 @@ public class AdminServiceImpl implements AdminService {
 	             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 	             // Define the file name for the PDF, adding current time as part of the name
-	             String pdfFilePath = FILE_STORAGE_PATH + "FormANoticeE_" + userName + "_" + currentMinute + ".pdf";
+	             String pdfFilePath = FILE_STORAGE_PATHE + "FormANoticeE_" + userName + "_" + currentMinute + ".pdf";
 	            DocumentEntity enNoticeRelease=new DocumentEntity();
 	            enNoticeRelease.setDocumentType("NoticeE");
 

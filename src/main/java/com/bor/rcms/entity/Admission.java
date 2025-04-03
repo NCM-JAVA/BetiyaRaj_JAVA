@@ -41,7 +41,7 @@ public class Admission {
 	private String status;
 	private String admisionCase;
 	private String objectioId;
-	
+	private String officerName;
 	private String statusCollector;
 	private String statusCommissioner;
 	
@@ -276,16 +276,29 @@ public class Admission {
 		this.freehold = freehold;
 	}
 
+	
+	
+	
+	public String getOfficerName() {
+		return officerName;
+	}
+
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
+	
+	
+
 	@Override
 	public String toString() {
 		return "Admission [admissionId=" + admissionId + ", hearingDate=" + hearingDate + ", hearingTime=" + hearingTime
 				+ ", district=" + district + ", admissionDate=" + admissionDate + ", admissionTime=" + admissionTime
 				+ ", affidavitDate=" + affidavitDate + ", hearingTate=" + hearingTate + ", createdDate=" + createdDate
 				+ ", modifiedDate=" + modifiedDate + ", status=" + status + ", admisionCase=" + admisionCase
-				+ ", objectioId=" + objectioId + ", statusCollector=" + statusCollector + ", statusCommissioner="
-				+ statusCommissioner + ", currentdate=" + currentdate + ", action=" + action + ", caseClass="
-				+ caseClass + ", caseNotes=" + caseNotes + ", newObjection=" + newObjection + ", userId=" + userId
-				+ ", collectorFreehold=" + collectorFreehold + ", freehold=" + freehold + "]";
+				+ ", objectioId=" + objectioId + ", officerName=" + officerName + ", statusCollector=" + statusCollector
+				+ ", statusCommissioner=" + statusCommissioner + ", currentdate=" + currentdate + ", action=" + action
+				+ ", caseClass=" + caseClass + ", caseNotes=" + caseNotes + ", newObjection=" + newObjection
+				+ ", userId=" + userId + ", collectorFreehold=" + collectorFreehold + ", freehold=" + freehold + "]";
 	}
 
 	public Admission() {
