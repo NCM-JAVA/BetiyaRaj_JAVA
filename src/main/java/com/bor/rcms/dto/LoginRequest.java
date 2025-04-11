@@ -3,6 +3,9 @@ package com.bor.rcms.dto;
 public class LoginRequest {
 	
 	private String userName;
+	private String email;
+	private String act;
+
     private String password;
     private String userType;
     private int firstValue;
@@ -62,12 +65,31 @@ public class LoginRequest {
 	public void setCaptchaValue(int captchaValue) {
 		this.captchaValue = captchaValue;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAct() {
+		return act;
+	}
+	public void setAct(String act) {
+		this.act = act;
+	}
 	@Override
 	public String toString() {
-		return "LoginRequest [userName=" + userName + ", password=" + password + ", userType=" + userType
-				+ ", firstValue=" + firstValue + ", secondValue=" + secondValue + ", captchaValue=" + captchaValue
-				+ "]";
+		return "LoginRequest [userName=" + userName + ", email=" + email + ", act=" + act + ", password=" + password
+				+ ", userType=" + userType + ", firstValue=" + firstValue + ", secondValue=" + secondValue
+				+ ", captchaValue=" + captchaValue + "]";
 	}
+	public LoginRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+	
 	
 	
 	

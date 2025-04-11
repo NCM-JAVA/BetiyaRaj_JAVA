@@ -48,14 +48,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200","https://bor-staging.netlify.app","http://125.20.102.86:4200")); // Angular origin
+        config.setAllowedOrigins(List.of("http://localhost:4200", "https://bor-staging.netlify.app", "http://125.20.102.86:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Optional: if you use cookies or auth headers
+        config.setAllowCredentials(true); // Allow credentials (e.g., cookies)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/**", config); // Apply CORS configuration to all endpoints
         return source;
+
     }
 
     @Bean
@@ -65,8 +66,15 @@ public class SecurityConfig {
             .and()
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/auth/*").permitAll()
-            .anyRequest().authenticated()
+            .antMatchers(
+                    "/api/auth/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/v3/api-docs.yaml",
+                    "/webjars/**",
+                    "/configuration/**"
+                ).permitAll()            .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

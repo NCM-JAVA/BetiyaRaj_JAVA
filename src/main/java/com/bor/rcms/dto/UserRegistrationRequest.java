@@ -16,6 +16,11 @@ public class UserRegistrationRequest {
     private String state;
     private String relation;
     //
+    
+    private String bankName;
+    private String branchCode;
+    
+    
     private String alternatenumber;
     private String password;
     private String fullName;
@@ -140,18 +145,22 @@ public class UserRegistrationRequest {
 	public void setDistrict(String district) {
 		this.district = district;
 	}
-	@Override
-	public String toString() {
-		return "UserRegistrationRequest [userName=" + userName + ", aadhar=" + aadhar + ", category=" + category
-				+ ", city=" + city + ", gender=" + gender + ", pincode=" + pincode + ", state=" + state + ", relation="
-				+ relation + ", alternatenumber=" + alternatenumber + ", password=" + password + ", fullName="
-				+ fullName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", address=" + address
-				+ ", district=" + district + ", dob=" + dob + ", roleName=" + roleName + ", status=" + status + "]";
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+	public String getBranchCode() {
+		return branchCode;
+	}
+	public void setBranchCode(String branchCode) {
+		this.branchCode = branchCode;
 	}
 	public UserRegistrationRequest(String userName, String aadhar, String category, String city, String gender,
-			String pincode, String state, String relation, String alternatenumber, String password, String fullName,
-			String email, String phoneNumber, String address, String district, Date dob, String roleName,
-			String status) {
+			String pincode, String state, String relation, String bankName, String branchCode, String alternatenumber,
+			String password, String fullName, String email, String phoneNumber, String address, String district,
+			Date dob, String roleName, String status) {
 		super();
 		this.userName = userName;
 		this.aadhar = aadhar;
@@ -161,6 +170,8 @@ public class UserRegistrationRequest {
 		this.pincode = pincode;
 		this.state = state;
 		this.relation = relation;
+		this.bankName = bankName;
+		this.branchCode = branchCode;
 		this.alternatenumber = alternatenumber;
 		this.password = password;
 		this.fullName = fullName;
@@ -172,7 +183,16 @@ public class UserRegistrationRequest {
 		this.roleName = roleName;
 		this.status = status;
 	}
-
+	@Override
+	public String toString() {
+		return "UserRegistrationRequest [userName=" + userName + ", aadhar=" + aadhar + ", category=" + category
+				+ ", city=" + city + ", gender=" + gender + ", pincode=" + pincode + ", state=" + state + ", relation="
+				+ relation + ", bankName=" + bankName + ", branchCode=" + branchCode + ", alternatenumber="
+				+ alternatenumber + ", password=" + password + ", fullName=" + fullName + ", email=" + email
+				+ ", phoneNumber=" + phoneNumber + ", address=" + address + ", district=" + district + ", dob=" + dob
+				+ ", roleName=" + roleName + ", status=" + status + "]";
+	}
+	
 
     
 }

@@ -7,6 +7,7 @@ import okhttp3.RequestBody;
 import okhttp3.MediaType;
 import okhttp3.Response;
 
+import com.bor.rcms.dto.EmailRequest;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
@@ -15,6 +16,7 @@ import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.LoginResponse;
 import com.bor.rcms.response.CaptchaResponsed;
 import com.bor.rcms.security.CustomUserDetailsService;
+import com.bor.rcms.security.EmailService;
 import com.bor.rcms.security.JwtUtil;
 
 import org.apache.catalina.User;
@@ -47,20 +49,21 @@ public class UserService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private JwtUtil jwtUtil;
+	@Autowired
+	private EmailService emailService;
 
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
 
 	public UserEntity registerUser(UserEntity user, String roleName) {
-		
-		if(user.getUserName()!=null)
-		{
-		if (userRepository.existsByUserName(user.getUserName())) {
-			throw new RuntimeException("Username already exists. Please choose a different username.");
-		}
+
+		if (user.getUserName() != null) {
+			if (userRepository.existsByUserName(user.getUserName())) {
+				throw new RuntimeException("Username already exists. Please choose a different username.");
+			}
 		}
 
 		// Assign default role if none provided
@@ -256,85 +259,84 @@ public class UserService {
 			if (user != null) {
 				return "save";
 			}
-		}
-			else if (status.equals("Active")) {
-				userEntity.setStatus("Active");
-				UserEntity user1 = userRepository.save(userEntity);
-				if (user1 != null) {
-					return "save";
-				}
-		
+		} else if (status.equals("Active")) {
+			userEntity.setStatus("Active");
+			UserEntity user1 = userRepository.save(userEntity);
+			if (user1 != null) {
+				return "save";
+			}
 
 		}
 		return userId;
 	}
-	   private int expectedSolution;
+
+	private int expectedSolution;
 
 	public CaptchaResponsed generateCaptcha(HttpSession session) {
-	      CaptchaResponsed capres = new CaptchaResponsed();
+		CaptchaResponsed capres = new CaptchaResponsed();
 
-	      try {
-	         Random random = new Random();
-	         int num1 = random.nextInt(10);
-	         int num2 = random.nextInt(10);
-	         int var10000 = num1 + num2;
-	         capres.setFirstValue(num1);
-	         capres.setSecondValue(num2);
-	         capres.setCaptchStore(num1 + " + " + num2 + " = ?");
-	         session.setAttribute("captcha", capres);
-	         return capres;
-	      } catch (Exception var7) {
-	         var7.printStackTrace();
-	         return null;
-	      }
+		try {
+			Random random = new Random();
+			int num1 = random.nextInt(10);
+			int num2 = random.nextInt(10);
+			int var10000 = num1 + num2;
+			capres.setFirstValue(num1);
+			capres.setSecondValue(num2);
+			capres.setCaptchStore(num1 + " + " + num2 + " = ?");
+			session.setAttribute("captcha", capres);
+			return capres;
+		} catch (Exception var7) {
+			var7.printStackTrace();
+			return null;
+		}
 	}
 
 	public String upadateStatusFreehold(String status, String userId, String freeHolreq) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	public String loginAndGenerateToken(String userName, String password) {
-	    Optional<UserEntity> userOpt = userRepository.findByUserName(userName);
+		Optional<UserEntity> userOpt = userRepository.findByUserName(userName);
 
-	    if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
-	        throw new RuntimeException("Invalid username or password");
-	    }
+		if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
+			throw new RuntimeException("Invalid username or password");
+		}
 
-	    // Generate token
-	    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
-	    return jwtUtil.generateToken(userDetails.getUsername());
+		// Generate token
+		UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
+		return jwtUtil.generateToken(userDetails.getUsername());
 	}
-	
-	public LoginResponse loginOfficer(String userName, String password, String usertype) {
-	    UserEntity user = userRepository.findByUserName(userName)
-	        .orElseThrow(() -> new RuntimeException("Invalid username"));
 
-	    if (!passwordEncoder.matches(password, user.getPassword())) {
-	        throw new RuntimeException("Invalid password");
-	    }
-	    RoleEntity role=user.getRole();
-	    
-	    if (usertype.equals(role.getRoleName())) {
+	public LoginResponse loginOfficer(String userName, String password, String usertype) {
+		UserEntity user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new RuntimeException("Invalid username"));
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new RuntimeException("Invalid password");
+		}
+		RoleEntity role = user.getRole();
+
+		if (usertype.equals(role.getRoleName())) {
 			try {
-				
-				String token= jwtUtil.generateToken(user.getPhoneNumber()); 
-				//List<NewObjection> newObjection = objectionService.findAll();
-			//	System.out.println("df==" + newObjection);
-				LoginResponse loginResponse=new LoginResponse();
+
+				String token = jwtUtil.generateToken(user.getPhoneNumber());
+				// List<NewObjection> newObjection = objectionService.findAll();
+				// System.out.println("df==" + newObjection);
+				LoginResponse loginResponse = new LoginResponse();
 				loginResponse.setDistrict(user.getDistrict());
 				loginResponse.setFullName(user.getFullName());
 				loginResponse.setUserId(user.getUserId());
 				loginResponse.setToken(token);
 				loginResponse.setRole(role);
-			    return loginResponse;
+				return loginResponse;
 
-				//return ResponseEntity.ok(user);
+				// return ResponseEntity.ok(user);
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-	    }
+		}
 
 //		} else if (usertype.equals("BOR")) {
 //		    return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
@@ -347,31 +349,147 @@ public class UserService {
 //
 //		}
 
-	    return null;
-	    
-	 //   return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
+		return null;
+
+		// return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if
+		// preferred
 	}
-	
+
 	public LoginResponse loginObjectioner(String mobileNumber, String otp) {
 		System.out.println();
-		LoginResponse loginResponse=new LoginResponse();
-	    UserEntity user = userRepository.findByPhoneNumber(mobileNumber);
+		LoginResponse loginResponse = new LoginResponse();
+		UserEntity user = userRepository.findByPhoneNumber(mobileNumber);
 
-	    if (user == null || user.getOtp() == null || !user.getOtp().equals(otp)) {
-	        throw new RuntimeException("Invalid mobile number or OTP");
-	    }
+		if (user == null || user.getOtp() == null || !user.getOtp().equals(otp)) {
+			throw new RuntimeException("Invalid mobile number or OTP");
+		}
 
-	    // Optional: clear OTP after use
-	    user.setOtp(null);
-	    userRepository.save(user);
-	    loginResponse.setRole(user.getRole());
-	    loginResponse.setFullName(user.getFullName());
-	    loginResponse.setUserId(user.getUserId());
-	    loginResponse.setDistrict(user.getDistrict());
-	    loginResponse.setUserName(user.getUserName());
-	    loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
-	    return loginResponse;
+		// Optional: clear OTP after use
+		user.setOtp(null);
+		userRepository.save(user);
+		loginResponse.setRole(user.getRole());
+		loginResponse.setFullName(user.getFullName());
+		loginResponse.setUserId(user.getUserId());
+		loginResponse.setDistrict(user.getDistrict());
+		loginResponse.setUserName(user.getUserName());
+		loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+		return loginResponse;
+	}
+	// PDR
+
+	public UserEntity registerUserPDR(UserEntity user, String roleName) {
+
+		if (user.getUserName() != null) {
+			if (userRepository.existsByUserName(user.getUserName())) {
+				throw new RuntimeException("Username already exists. Please choose a different username.");
+			}
+		}
+
+		// Assign default role if none provided
+		RoleEntity role = roleRepository.findByRoleName(roleName);
+		if (role == null) {
+			role = new RoleEntity(roleName, roleName);
+			role = roleRepository.save(role);
+		}
+
+		user.setRole(role);
+
+		// user.setPassword(user.getPassword());
+		user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password
+
+		user.setCreatedDate(new Date());
+		UserEntity user1 = userRepository.findByPhoneNumber(user.getPhoneNumber());
+		String otp = generateOTPs();
+		EmailRequest request = new EmailRequest();
+
+
+		String text = otp + "Dear " + user.getFullName() + " " + " Please enter below OTP to login your PDR Portal."; // SMS
+						
+		request.setMessage(text);
+// conten
+		request.setSubject("Regd PDR PORTAL");
+		request.setTo(user.getEmail());
+		System.out.println("SMS sent successfully!");
+		emailService.sendEmail(request.getTo(), request.getSubject(), request.getMessage());
+
+		user.setOtp(otp);
+		UserEntity userres = userRepository.save(user);
+
+		//UserEntity userres = userRepository.save(user);
+
+
+		return userres;
+
+		// return "OTP sent successfully to " + userName + ". " +
+		// response.body().string();
+
+		
 	}
 
+	public LoginResponse loginwithEmail(String email, String otp) {
+		System.out.println();
+		LoginResponse loginResponse = new LoginResponse();
+		UserEntity user = userRepository.findByEmail(email);
+
+		if (user == null || user.getOtp() == null || !user.getOtp().equals(otp)) {
+			throw new RuntimeException("Invalid mobile number or OTP");
+		}
+
+		// Optional: clear OTP after use
+		user.setOtp(null);
+		userRepository.save(user);
+		loginResponse.setRole(user.getRole());
+		loginResponse.setFullName(user.getFullName());
+		loginResponse.setUserId(user.getUserId());
+		loginResponse.setDistrict(user.getDistrict());
+		loginResponse.setUserName(user.getUserName());
+		loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+		return loginResponse;
+	}
+
+	public LoginResponse loginOfficerEmail(String email, String password, String userType) {
+		UserEntity user = userRepository.findByEmail(email);;
+				//.orElseThrow(() -> new RuntimeException("Invalid username"));
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new RuntimeException("Invalid password");
+		}
+		RoleEntity role = user.getRole();
+
+		if (userType.equals(role.getRoleName())) {
+			try {
+
+				String token = jwtUtil.generateToken(user.getPhoneNumber());
+				// List<NewObjection> newObjection = objectionService.findAll();
+				// System.out.println("df==" + newObjection);
+				LoginResponse loginResponse = new LoginResponse();
+				loginResponse.setDistrict(user.getDistrict());
+				loginResponse.setFullName(user.getFullName());
+				loginResponse.setUserId(user.getUserId());
+				loginResponse.setToken(token);
+				loginResponse.setRole(role);
+				return loginResponse;
+
+				// return ResponseEntity.ok(user);
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+
+//		} else if (usertype.equals("BOR")) {
+//		    return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
+//
+//		} else if (usertype.equals("DivCommissioner")) {
+//		    return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
+//
+//		} else if (usertype.equals("Collector") && user.getStatus().equals("Active")) {
+//		    return jwtUtil.generateToken(user.getPhoneNumber()); // or userName if preferred
+//
+//		}
+
+		return null;
+
+	}
 
 }

@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bor.rcms.dto.AuthRequest;
 import com.bor.rcms.dto.AuthResponse;
+import com.bor.rcms.dto.EmailRequest;
 import com.bor.rcms.dto.LoginRequest;
 import com.bor.rcms.dto.OTPRequest;
 import com.bor.rcms.dto.OtpLoginRequest;
@@ -27,14 +29,17 @@ import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
+import com.bor.rcms.resonse.Casesinform;
 import com.bor.rcms.resonse.LoginResponse;
 import com.bor.rcms.response.CaptchaResponsed;
 import com.bor.rcms.response.StatusRes;
+import com.bor.rcms.security.EmailService;
+import com.bor.rcms.service.NoticeService;
 import com.bor.rcms.service.ObjectionService;
 import com.bor.rcms.service.UserService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 @CrossOrigin(origins = "http://localhost:4200") 
 
 public class AuthController {
@@ -59,8 +64,17 @@ public class AuthController {
     
     @PostMapping("/login-officer")
     public ResponseEntity<?> loginOfficer(@RequestBody LoginRequest request) {
+    	
+    	if(request.getEmail()!=null&& request.getAct().equals("PDR"))
+    	{
+        	LoginResponse   Stringeres  = userService.loginOfficerEmail(request.getEmail(), request.getPassword(),request.getUserType());
+            return ResponseEntity.ok(Stringeres);
+
+    	}else {
     	LoginResponse   Stringeres  = userService.loginOfficer(request.getUserName(), request.getPassword(),request.getUserType());
         return ResponseEntity.ok(Stringeres);
+    	}
+      //  return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.BAD_GATEWAY);
     }
     
     //otpGenerate
@@ -85,6 +99,19 @@ public class AuthController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<?> loginObjectioner(@RequestBody OTPRequest request) {
+    	if(request.getAct().equals("PDR"))
+    	{
+    	if(request.getEmail()!=null&& !request.getEmail().equals(""))
+    	{
+    		
+        	LoginResponse Stringeres = userService.loginwithEmail(request.getEmail(), request.getOtp());
+            return ResponseEntity.ok(Stringeres);
+
+        	
+    	}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different email" );
+
+    	}
     	LoginResponse Stringeres = userService.loginObjectioner(request.getUserName(), request.getOtp());
         return ResponseEntity.ok(Stringeres);
     }
@@ -147,7 +174,14 @@ public class AuthController {
 
 			
 
-			String roleName = request.getRoleName() != null ? request.getRoleName() : "OBJECTIONER";
+			String roleName =null;
+					if(request.getRoleName().equals("CERTIFICATE_HOLDER"))
+			{
+				roleName=request.getRoleName();		
+				}
+					else {
+					roleName=request.getRoleName() != null ? request.getRoleName() : "OBJECTIONER";
+					}
 			UserEntity registeredUser = userService.registerUser(user, roleName);
 			
 		    if(registeredUser==null)
@@ -169,6 +203,100 @@ public class AuthController {
 		}
 	}
 
+	
+	
+	@PostMapping("/registerPDR")
+	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
+		try {
+			UserEntity user = new UserEntity();
+			// user.setUserName(request.getUserName());
+			user.setFullName(request.getFullName());
+			user.setEmail(request.getEmail());
+			user.setPhoneNumber(request.getPhoneNumber());
+			user.setPassword(request.getPassword());
+			user.setRelationName(request.getRelation());
+			user.setAlternateNumber(request.getAlternatenumber());
+			user.setCategory(request.getCategory());
+			user.setCity(request.getCity());
+			user.setState(request.getState());
+			user.setPincode(request.getPincode());
+			try {
+			user.setGender(request.getGender());
+			user.setDob(request.getDob());
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+
+			user.setAdhar(request.getAadhar());
+			user.setAddress(request.getAddress());
+			user.setStatus(request.getStatus());
+			user.setDistrict(request.getDistrict());
+			user.setBankName(request.getBankName());
+			user.setBranchCode(request.getBranchCode());
+		//	user.setUserName(request.getUserName());
+			StatusRes res = new StatusRes();
+			try {
+				UserEntity entity = repository.findByEmail(request.getEmail());
+
+				if (entity != null) {
+					res.setMessage("try diiferent email ");
+					res.setStatus("400");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different" + res);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+
+			
+			try {
+				UserEntity entity = repository.findByPhoneNumber(request.getPhoneNumber());
+
+				if (entity != null) {
+					res.setMessage("try diiferent mobile ");
+					res.setStatus("400");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different" + res);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+
+			String roleName =null;
+					if(request.getRoleName().equals("CERTIFICATE_HOLDER"))
+			{
+				roleName=request.getRoleName();		
+				}
+					else {
+					roleName=request.getRoleName() != null ? request.getRoleName() : "OBJECTIONER";
+					}
+			UserEntity registeredUser = userService.registerUserPDR(user, roleName);
+			
+		    if(registeredUser==null)
+		    {
+		    	
+		    	res.setMessage("something wrong");
+				res.setStatus("400");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different credential" + res);
+
+
+		    	
+		    }
+
+			return ResponseEntity.ok(registeredUser);
+
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	
+	
+	
+	
 	@PostMapping("/findMobileNumber")
 	public ResponseEntity<?> findMobileNumber(@RequestBody Map<String, String> request) {
 	    try {
@@ -216,8 +344,16 @@ public class AuthController {
 
 	
 	}
-	
+	  @Autowired
+	    private EmailService emailService;
 
-		
+	  @PostMapping("/send")
+	    public String sendEmail(@RequestBody EmailRequest request) {
+	        emailService.sendEmail(request.getTo(), request.getSubject(), request.getMessage());
+	        return "Email sent successfully to " + request.getTo();
+	    }
+	
+	//
+	
 	
 }

@@ -9,7 +9,7 @@ public interface NoticeService {
 
 	AppealCaseCollector submitApeal(String caseId, String remark);
 
-	Casesinform casesinform();
+	Casesinform casesinform(String district);
 
 	Casesinform casesinformDivv();
 

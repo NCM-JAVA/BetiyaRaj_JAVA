@@ -33,7 +33,7 @@ public interface ObjectionService {
 	List<Admission> getAdmitcaseorupdateCasHearing(String hearingDate, String caseId);
 	Admission modifycause(String caseNo, String dateOfHearing, String time, String reason, String caseClass,
 			String action);
-	List<Admission> getfindDismis();
+	List<Admission> getfindDismis(String district);
 	Admission findcaseForFreehold(String caseId);
 	NewObjection sublitApeal(String caseId, String remark);
 
