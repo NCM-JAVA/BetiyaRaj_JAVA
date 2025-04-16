@@ -25,6 +25,7 @@ public class FileRequeistionVo {
 	    private String guarantorEmail;
 	    private String userId;
 	    
+	    private String resion;
 	    
 	    private String guarantorfatherNames;
 	    private  String guarantorsubDivision;
@@ -216,6 +217,12 @@ public class FileRequeistionVo {
 		public void setGuarantorpolicestation(String guarantorpolicestation) {
 			this.guarantorpolicestation = guarantorpolicestation;
 		}
+		public String getResion() {
+			return resion;
+		}
+		public void setResion(String resion) {
+			this.resion = resion;
+		}
 		@Override
 		public String toString() {
 			return "FileRequeistionVo [debatorVos=" + debatorVos + ", guarantorName=" + guarantorName
@@ -224,7 +231,7 @@ public class FileRequeistionVo {
 					+ ", guarantorCity=" + guarantorCity + ", guarantorDistrict=" + guarantorDistrict
 					+ ", guarantorPincode=" + guarantorPincode + ", guarantorPhoneNumber=" + guarantorPhoneNumber
 					+ ", guarantorStatePhoneNumber=" + guarantorStatePhoneNumber + ", guarantorEmail=" + guarantorEmail
-					+ ", userId=" + userId + ", guarantorfatherNames=" + guarantorfatherNames
+					+ ", userId=" + userId + ", resion=" + resion + ", guarantorfatherNames=" + guarantorfatherNames
 					+ ", guarantorsubDivision=" + guarantorsubDivision + ", guarantorcircle=" + guarantorcircle
 					+ ", guarantorpolicestation=" + guarantorpolicestation + ", createdDate=" + createdDate
 					+ ", modifiedDate=" + modifiedDate + ", status=" + status + ", totalOutstandingAmmount="
@@ -233,7 +240,6 @@ public class FileRequeistionVo {
 					+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear="
 					+ financialYear + "]";
 		}
-		
 		
 	
 		

@@ -26,10 +26,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class FileRequeistion {
 	
 
-	  @Id
-	    @Column(name="requeistion_id")
-	    private String requeistionId;
-
+	@Id
+	@Column(name="requeistion_id")
+	private String requeistionId;
 	 
 	  private String totalOutstandingAmmount;
 	  private String totalInterestRate;
@@ -41,7 +40,7 @@ public class FileRequeistion {
 	  private String financialYear;
       private String districtName;
 
-	  @Column(name = "current_date_str", length = 30)  // updated column name to avoid conflict with reserved keyword
+      @Column(name = "current_date_str")
 	    private String currentDate;
 		 @Column(name = "updateDate", length = 30)
 	    private String updateDate;

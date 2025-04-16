@@ -76,7 +76,25 @@ public class AuthController {
     	}
       //  return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.BAD_GATEWAY);
     }
-    
+    @PostMapping("/findemail")
+	public ResponseEntity<?> findemail(@RequestBody Map<String, String> request) {
+	    try {
+	        String email = request.get("email");  // Extract phone number from the request body
+	        UserEntity entity = repository.findByEmail(email);
+
+	        if (entity != null) {
+	            // Return a JSON response
+	            return ResponseEntity.ok(Map.of("message", "Try another email"));
+	        } else {
+	            // Return a JSON response
+	            return ResponseEntity.ok(Map.of("message", "email  is available"));
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
     //otpGenerate
     
     

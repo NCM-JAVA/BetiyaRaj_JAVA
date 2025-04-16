@@ -51,10 +51,9 @@ public class CertificatOfficer {
 		    @Basic(fetch = FetchType.EAGER)  // Eager fetch for LOB
 		 private String caseNotes;
 		 
-		 @OneToOne
-		 @JoinColumn(name = "requeistion_id", referencedColumnName = "requeistion_id")
-		 @JsonIgnore
-		 private FileRequeistion fileRequeistion;
+		    @OneToOne
+		    @JoinColumn(name = "requeistion_id", referencedColumnName = "requeistion_id")
+		    private FileRequeistion fileRequeistion;
 		private String reequeistionId;
 		
 		

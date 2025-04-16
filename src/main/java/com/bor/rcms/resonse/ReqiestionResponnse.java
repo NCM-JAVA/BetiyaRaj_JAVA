@@ -2,7 +2,10 @@ package com.bor.rcms.resonse;
 
 import java.util.List;
 
+import com.bor.rcms.dto.DocumentDTO;
 import com.bor.rcms.dto.FileRequeistionDTO;
+import com.bor.rcms.dto.FileRequeistionVo;
+import com.bor.rcms.entity.CertificateGuaranter;
 import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.UserEntity;
@@ -11,11 +14,14 @@ public class ReqiestionResponnse {
 	private List<FileRequeistionDTO> listfileRequeistion;
 	private UserEntity entity;
 	private FileRequeistionDTO fileRequeistion;
+	
+	private FileRequeistionVo fileRequeistionVo;
+
 
 	private String status;
 	private String msg;
 	
-    private List<DocumentEntityPdr> documentEntityPdrs ;
+    private List<DocumentDTO> documentEntityPdrs ;
 
 	public List<FileRequeistionDTO> getListfileRequeistion() {
 		return listfileRequeistion;
@@ -59,25 +65,31 @@ public class ReqiestionResponnse {
 		this.msg = msg;
 	}
 
-	public List<DocumentEntityPdr> getDocumentEntityPdrs() {
+	public List<DocumentDTO> getDocumentEntityPdrs() {
 		return documentEntityPdrs;
 	}
 
-	public void setDocumentEntityPdrs(List<DocumentEntityPdr> documentEntityPdrs) {
+	public void setDocumentEntityPdrs(List<DocumentDTO> documentEntityPdrs) {
 		this.documentEntityPdrs = documentEntityPdrs;
 	}
 
 	
 
-	public ReqiestionResponnse(List<FileRequeistionDTO> listfileRequeistion, UserEntity entity,
-			FileRequeistionDTO fileRequeistion, String status, String msg, List<DocumentEntityPdr> documentEntityPdrs) {
-		super();
-		this.listfileRequeistion = listfileRequeistion;
-		this.entity = entity;
-		this.fileRequeistion = fileRequeistion;
-		this.status = status;
-		this.msg = msg;
-		this.documentEntityPdrs = documentEntityPdrs;
+	
+
+	@Override
+	public String toString() {
+		return "ReqiestionResponnse [listfileRequeistion=" + listfileRequeistion + ", entity=" + entity
+				+ ", fileRequeistion=" + fileRequeistion + ", fileRequeistionVo=" + fileRequeistionVo + ", status="
+				+ status + ", msg=" + msg + ", documentEntityPdrs=" + documentEntityPdrs + "]";
+	}
+
+	public FileRequeistionVo getFileRequeistionVo() {
+		return fileRequeistionVo;
+	}
+
+	public void setFileRequeistionVo(FileRequeistionVo fileRequeistionVo) {
+		this.fileRequeistionVo = fileRequeistionVo;
 	}
 
 	public ReqiestionResponnse() {

@@ -11,6 +11,6 @@ import com.bor.rcms.entity.CertificatOfficer;
 @Repository
 public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, String> {
 
-	Optional<Admission> findTopByDistrictOrderByCurrentdateDesc(String districtName); 
+	Optional<CertificatOfficer> findTopByDistrictOrderByCurrentdateDesc(String districtName); 
 
 }

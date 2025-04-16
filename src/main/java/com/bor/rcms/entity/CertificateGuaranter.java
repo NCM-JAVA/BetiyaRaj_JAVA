@@ -19,7 +19,7 @@ public class CertificateGuaranter {
 	    private  String policestation;
 	    private String address;
 	    private String email;
-	    @Column(unique = true, nullable = false)
+	//    @Column(unique = true, nullable = false)
 	    private String phoneNumber;
 	    private String address1;
 	    private String address2;

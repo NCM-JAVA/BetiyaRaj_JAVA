@@ -1,8 +1,13 @@
 package com.bor.rcms.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +22,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.DebatorVo;
+import com.bor.rcms.dto.DocumentDTO;
 import com.bor.rcms.dto.FileRequeistionDTO;
 import com.bor.rcms.dto.FileRequeistionVo;
 import com.bor.rcms.dto.ObjectionVo;
 import com.bor.rcms.dto.OfficerStatusVo;
+import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.CertificateGuaranter;
 import com.bor.rcms.entity.DocumentEntity;
@@ -29,6 +37,8 @@ import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.DocumentPDRRepository;
+import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.ReqiestionResponnse;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
@@ -43,13 +53,42 @@ public class PDRController {
 	private UserService userService;
 	
 	
+	@Autowired
+	private DocumentPDRRepository documentPDRRepository;
+	
+	
 	@Autowired 
 	private PdrService pdrService;
+	
+	@Autowired 
+	private UserRepository repository;
 	
 	@GetMapping("/Hello")
 	public String HelloApi() {
 		return "Hello Api.";
 	}
+	
+	
+	@PostMapping("/findemail")
+	public ResponseEntity<?> findMobileNumber(@RequestBody Map<String, String> request) {
+	    try {
+	        String email = request.get("email");  // Extract phone number from the request body
+	        UserEntity entity = repository.findByEmail(email);
+
+	        if (entity != null) {
+	            // Return a JSON response
+	            return ResponseEntity.ok(Map.of("message", "Try another email"));
+	        } else {
+	            // Return a JSON response
+	            return ResponseEntity.ok(Map.of("message", "email number is available"));
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
+
 	
 
 	@PostMapping("/fileRequiestion")
@@ -94,6 +133,7 @@ public class PDRController {
 		        // Set up Granter
 		        CertificateGuaranter granter = new CertificateGuaranter();
 		        granter.setGranterName(vo.getGuarantorName());
+		        
 		        granter.setPolicestation(vo.getGuarantorpolicestation());
 		        granter.setCircle(vo.getGuarantorcircle());
 		        granter.setFatherName(vo.getGuarantorfatherNames());
@@ -112,6 +152,7 @@ public class PDRController {
 		        requisition.setCertificateDebator(debatorlist);
 		        requisition.setCertificateGuaranter(granter);
 		        requisition.setFinancialYear(vo.getFinancialYear());
+		        requisition.setReason(vo.getResion());
 		       
 		        requisition.setInterestDueForm(vo.getInterestDueForm());
 		        requisition.setMissllenousFee(vo.getMissllenousFee());
@@ -196,62 +237,132 @@ public class PDRController {
 	    }
 	}
 
-	
 	@GetMapping("/viewrequiestion")
-	public ResponseEntity<?> getAllObjections(@RequestParam String obId) {
-		try {
-            FileRequeistionDTO dto = new FileRequeistionDTO();
+	public ResponseEntity<?> getAllObjections(@RequestParam String recuisition) {
+	    try {
+			FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(recuisition);
 
-			FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(obId);
-			 if (newObjection!=null) {
-		                dto.setRequeistionId(newObjection.getRequeistionId());
-		                dto.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
-		                dto.setTotalInterestRate(newObjection.getTotalInterestRate());
-		                dto.setInterestDueForm(newObjection.getInterestDueForm());
-		                dto.setTotalCourtFee(newObjection.getTotalCourtFee());
-		                dto.setMissllenousFee(newObjection.getMissllenousFee());
-		                dto.setPaidCourFee(newObjection.getPaidCourFee());
-		                dto.setTotalDemand(newObjection.getTotalDemand());
-		                dto.setFinancialYear(newObjection.getFinancialYear());
-		                dto.setDistrictName(newObjection.getDistrictName());
-		                dto.setCurrentDate(newObjection.getCurrentDate());
-		                dto.setUpdateDate(newObjection.getUpdateDate());
-		                dto.setStatus(newObjection.getStatus());
-		                dto.setReason(newObjection.getReason());
-		                if (newObjection.getUserId() != null) {
-		                    dto.setUserName(newObjection.getUserId().getFullName()); // or whatever field you want
-		                }
-		             //   return dto;
-		          
-			 }
-		            ReqiestionResponnse response = new ReqiestionResponnse();
-		            response.setEntity(newObjection.getUserId());
-		            response.setFileRequeistion(dto);
-		            
-//		            List<DocumentDTO> documentDTOs = newObjection.getDocuments().stream()
-//		            	    .map(doc -> {
-//		            	        DocumentDTO dto = new DocumentDTO();
-//		            	        dto.setId(doc.getId());
-//		            	        dto.setFileName(doc.getFileName());
-//		            	        // map other fields as needed
-//		            	        return dto;
-//		            	    })
-//		            	    .collect(Collectors.toList());
+	        if (newObjection == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data found for requisition ID: " + recuisition);
+	        }
 
-		            	response.setDocumentEntityPdrs(response.getDocumentEntityPdrs());
-		          //  response.setDocumentEntityPdrs(newObjection.getDocuments());
-		            response.setStatus("200");
-		            response.setMsg("Success");
+	        // FileRequeistionDTO
+	        FileRequeistionDTO dto = new FileRequeistionDTO();
+	        dto.setRequeistionId(newObjection.getRequeistionId());
+	        dto.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
+	        dto.setTotalInterestRate(newObjection.getTotalInterestRate());
+	        dto.setInterestDueForm(newObjection.getInterestDueForm());
+	        dto.setTotalCourtFee(newObjection.getTotalCourtFee());
+	        dto.setMissllenousFee(newObjection.getMissllenousFee());
+	        dto.setPaidCourFee(newObjection.getPaidCourFee());
+	        dto.setTotalDemand(newObjection.getTotalDemand());
+	        dto.setFinancialYear(newObjection.getFinancialYear());
+	        dto.setDistrictName(newObjection.getDistrictName());
+	        dto.setCurrentDate(newObjection.getCurrentDate());
+	        dto.setUpdateDate(newObjection.getUpdateDate());
+	        dto.setStatus(newObjection.getStatus());
+	        dto.setReason(newObjection.getReason());
 
-		            return ResponseEntity.ok(response);
-		//	DocumentEntityPdr documentEntity = objectionService.getObjectionsDocumentdetials(obId);
-			//return ResponseEntity.ok(newObjection);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving objections: " + e.getMessage());
-		}
+	        if (newObjection.getUserId() != null) {
+	            dto.setUserName(newObjection.getUserId().getFullName());
+	        }
 
+	        // FileRequeistionVo mapping (Guarantor + Debtors)
+	        FileRequeistionVo vo = new FileRequeistionVo();
+
+	        // Guarantor
+	        CertificateGuaranter g = newObjection.getCertificateGuaranter();
+	        if (g != null) {
+	            vo.setGuarantorName(g.getGranterName());
+	            vo.setGuarantorAddress(g.getAddress());
+	            vo.setGuarantorAddress1(g.getAddress1());
+	            vo.setGuarantorAddress2(g.getAddress2());
+	            vo.setGuarantorState(g.getState());
+	            vo.setGuarantorCity(g.getCity());
+	            vo.setGuarantorDistrict(g.getDistrict());
+	            vo.setGuarantorPincode(g.getPincode());
+	            vo.setGuarantorPhoneNumber(g.getPhoneNumber());
+	         //   vo.setGuarantorStatePhoneNumber(g.get);
+	            vo.setGuarantorEmail(g.getEmail());
+	            vo.setGuarantorfatherNames(g.getFatherName());
+	            vo.setGuarantorsubDivision(g.getSubDivision());
+	            vo.setGuarantorcircle(g.getCircle());
+	            vo.setGuarantorpolicestation(g.getPolicestation());
+	            vo.setCreatedDate(g.getCreatedDate());
+	            vo.setModifiedDate(g.getModifiedDate());
+	        }
+
+	        // Debtors
+	        List<DebatorVo> debatorVoList = new ArrayList<>();
+	        if (newObjection.getCertificateDebator() != null) {
+	            for (CertificateDebator d : newObjection.getCertificateDebator()) {
+	                DebatorVo dvo = new DebatorVo();
+	                dvo.setDebtorName(d.getDebatorName());
+	                dvo.setDebtorAddress(d.getAddress());
+	                dvo.setDebtorAddress1(d.getAddress1());
+	                dvo.setDebtorAddress2(d.getAddress2());
+	                dvo.setDebtorState(d.getState());
+	                dvo.setDebtorCity(d.getCity());
+	                dvo.setDebtorDistrict(d.getDistrict());
+	                dvo.setDebtorPincode(d.getPincode());
+	                dvo.setDebtorPhoneNumber(d.getPhoneNumber());
+	                dvo.setDebtorStatePhoneNumber(d.getState()); // Check if this is correct
+	                dvo.setDebtorEmail(d.getEmail());
+	                dvo.setDebtorfatherNames(d.getFatherNames());
+	                dvo.setDebtorubDivision(d.getSubDivision());
+	                dvo.setDebtorcircle(d.getCircle());
+	                dvo.setDebtorpolicestation(d.getPolicestation());
+	                debatorVoList.add(dvo);
+	            }
+	        }
+
+	        vo.setDebatorVos(debatorVoList);
+
+	        // Set common financial fields in vo too
+	        vo.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
+	        vo.setTotalInterestRate(newObjection.getTotalInterestRate());
+	        vo.setInterestDueForm(newObjection.getInterestDueForm());
+	        vo.setTotalCourtFee(newObjection.getTotalCourtFee());
+	        vo.setMissllenousFee(newObjection.getMissllenousFee());
+	        vo.setPaidCourFee(newObjection.getPaidCourFee());
+	        vo.setTotalDemand(newObjection.getTotalDemand());
+	        vo.setFinancialYear(newObjection.getFinancialYear());
+
+	        // Response mapping
+	        ReqiestionResponnse response = new ReqiestionResponnse();
+	        
+	        
+	        
+	     // Map DocumentEntityPdr to DocumentDTO
+	        List<DocumentDTO> documentDTOs = newObjection.getDocuments().stream()
+	            .map(doc -> {
+	                DocumentDTO docDto = new DocumentDTO();
+	                docDto.setId(doc.getId());
+	                docDto.setDocumentName(doc.getDocumentName()); // Assuming fileName holds documentName
+	                docDto.setFilePath(doc.getFilePath());     // Assuming this exists in DocumentEntityPdr
+	                docDto.setFileType(doc.getFileType());     // Assuming this exists
+	                docDto.setFileSize(doc.getFileSize());     // Assuming this exists
+	                docDto.setDocumentType(recuisition);       // If this is meant to be a label or ID
+	                return docDto;
+	            })
+	            .collect(Collectors.toList());
+
+	        response.setDocumentEntityPdrs(documentDTOs);
+
+	        response.setFileRequeistion(dto);
+	        response.setEntity(newObjection.getUserId());
+	      //  response.setDocumentEntityPdrs(newObjection.getDocuments());
+	        response.setFileRequeistionVo(vo);
+	        response.setStatus("200");
+	        response.setMsg("Success");
+
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error retrieving requisition: " + e.getMessage());
+	    }
 	}
+
 	
 	//CertificateOfficer
 	
@@ -279,6 +390,109 @@ public class PDRController {
 		return null;
 	}
 	
+	
+	@PostMapping("caseProcessdetails")
+	public ResponseEntity<?> caseprocedetailssace(@RequestBody CaseNotes casenotes) {
+
+		try {
+			System.out.println(casenotes.getSelectForm());
+			if (casenotes.getAction() == null) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+
+			}
+			FileRequeistion admission = pdrService.savecaseDetails(casenotes);
+			if (admission == null) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+			}
+
+			return ResponseEntity.ok("save success");
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("issue casenotes: " + e.getMessage());
+		}
+
+	}
+	
+	
+	
+	@GetMapping("/getrequiestionAdmit")
+	public ResponseEntity<?> getObjectionsAdmit(@RequestParam String district) {
+	    try {
+	        List<FileRequeistion> fileRequeistions = pdrService.findAdmit(district);
+
+	        if (!fileRequeistions.isEmpty()) {
+	            List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
+	                FileRequeistionDTO dto = new FileRequeistionDTO();
+	                dto.setRequeistionId(req.getRequeistionId());
+	                dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
+	                dto.setTotalInterestRate(req.getTotalInterestRate());
+	                dto.setInterestDueForm(req.getInterestDueForm());
+	                dto.setTotalCourtFee(req.getTotalCourtFee());
+	                dto.setMissllenousFee(req.getMissllenousFee());
+	                dto.setPaidCourFee(req.getPaidCourFee());
+	                dto.setTotalDemand(req.getTotalDemand());
+	                dto.setFinancialYear(req.getFinancialYear());
+	                dto.setDistrictName(req.getDistrictName());
+	                dto.setCurrentDate(req.getCurrentDate());
+	                dto.setUpdateDate(req.getUpdateDate());
+	                dto.setStatus(req.getStatus());
+	                dto.setReason(req.getReason());
+	                if (req.getUserId() != null) {
+	                    dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
+	                }
+	                return dto;
+	            }).collect(Collectors.toList());
+
+	            ReqiestionResponnse response = new ReqiestionResponnse();
+	            
+	            response.setListfileRequeistion(dtoList);
+	            
+	            response.setStatus("200");
+	            response.setMsg("Success");
+
+	            return ResponseEntity.ok(response);
+	        }
+
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body("No requisitions found for district: " + district);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error retrieving objections: " + e.getMessage());
+	    }
+	}
+	
+	@PostMapping("/fileShow")
+	public ResponseEntity<?> qrShow(@RequestParam String id) {
+		String res = "";
+		try {
+
+			DocumentEntityPdr documentEntity = documentPDRRepository.findById(Long.valueOf(id)).get();
+			// Hardcoded for testing
+
+			String filePath = documentEntity.getFilePath();
+			// Ensure that the file exists
+			Path imagePath = Paths.get(filePath);
+			if (!Files.exists(imagePath)) {
+				return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+			}
+
+			// Load the file into a byte array
+			byte[] fileBytes = Files.readAllBytes(imagePath);
+
+			String base64String = Base64.getEncoder().encodeToString(fileBytes);
+
+			if (base64String != null && !base64String.isEmpty()) {
+				return new ResponseEntity<>(base64String, HttpStatus.ACCEPTED);
+			}
+
+			return new ResponseEntity<>("File encoding failed", HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 	
 }

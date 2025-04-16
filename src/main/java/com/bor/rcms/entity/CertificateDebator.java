@@ -25,7 +25,6 @@ public class CertificateDebator {
 	    private  String subDivision;
 	    private  String circle;
 	    private  String policestation;
-	    @Column(unique = true, nullable = false)
 	    private String phoneNumber;
 	    private String address1;
 	    private String address2;
