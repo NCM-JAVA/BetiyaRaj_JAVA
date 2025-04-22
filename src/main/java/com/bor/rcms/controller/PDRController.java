@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bor.rcms.dto.CaseNotes;
+import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.DebatorVo;
 import com.bor.rcms.dto.DocumentDTO;
 import com.bor.rcms.dto.FileRequeistionDTO;
@@ -32,14 +33,17 @@ import com.bor.rcms.dto.OfficerStatusVo;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.CertificateGuaranter;
+import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.ReqiestionResponnse;
+import com.bor.rcms.response.StatusRes;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -229,7 +233,7 @@ public class PDRController {
 	            return ResponseEntity.ok(response);
 	        }
 
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	        return ResponseEntity.status(HttpStatus.ACCEPTED)
 	                .body("No requisitions found for district: " + district);
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -493,6 +497,181 @@ public class PDRController {
 			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	
+	@PostMapping("addcourt")
+	public ResponseEntity<?> addcourt(@RequestBody CourtReq courtReq) {
+		
+		StatusRes  response=new StatusRes();
+		try {
+			
+			String res=pdrService.addCourt(courtReq);
+			if(res.equals("save"))
+				
+			{
+				response.setMessage(res);
+				response.setStatus("200");
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+				
+			}
+			response.setMessage(res);
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	
+
+	@PostMapping("addcourtList")
+	public ResponseEntity<?> addcourtlist(@RequestParam Long userId) {
+		StatusRes  response=new StatusRes();
+
+		try {
+			
+			List<CourtReq> reslist=pdrService.addCourtlistShow(userId);
+			if(!reslist.isEmpty())
+			{
+				
+				return new ResponseEntity<>(reslist, HttpStatus.ACCEPTED);
+
+				
+			}
+			response.setMessage("not Found");
+			response.setStatus("400");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PostMapping("noticeForm")
+	public ResponseEntity<?> addcourtlist(@RequestParam String selectForm ,@RequestParam String reqId) {
+		
+		try {
+			
+		
+			if(selectForm!=null && reqId!=null)
+			{
+				
+				StatusRes res=pdrService.noticeGenerate(selectForm,reqId);
+				
+				   
+	            if(res==null)
+	            {
+	            	res.setMessage("form  will  not be sumbitted");
+	            	res.setStatus("400");
+					return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+
+	            }
+				return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+
+				
+			}
+			return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	
+	
+	
+	///Case Transfer
+	
+	@PostMapping("caseTransfer")
+	public ResponseEntity<?> caseTransfer(@RequestParam List<String> reqId, @RequestParam List<String> nouserId) {
+	    StatusRes response = new StatusRes();
+
+	    try {
+	        String res = pdrService.caseTransfer(reqId, nouserId);
+	        if ("save".equals(res)) {
+	            response.setMessage("Case Transfer Successful");
+	            response.setStatus("200");
+	            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+	        }
+
+	        response.setMessage(res);
+	        response.setStatus("400");
+	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.setMessage("Internal Server Error");
+	        response.setStatus("500");
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
+	
+	@PostMapping("caseTranferFileshow")
+	
+	public ResponseEntity<?> getTranferFileshow(@RequestParam String userId) {
+		
+		 try {
+		        List<FileRequeistion> fileRequeistions = pdrService.findpendingNom(userId);
+
+		        if (!fileRequeistions.isEmpty()) {
+		            List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
+		                FileRequeistionDTO dto = new FileRequeistionDTO();
+		                dto.setRequeistionId(req.getRequeistionId());
+		                dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
+		                dto.setTotalInterestRate(req.getTotalInterestRate());
+		                dto.setInterestDueForm(req.getInterestDueForm());
+		                dto.setTotalCourtFee(req.getTotalCourtFee());
+		                dto.setMissllenousFee(req.getMissllenousFee());
+		                dto.setPaidCourFee(req.getPaidCourFee());
+		                dto.setTotalDemand(req.getTotalDemand());
+		                dto.setFinancialYear(req.getFinancialYear());
+		                dto.setDistrictName(req.getDistrictName());
+		                dto.setCurrentDate(req.getCurrentDate());
+		                dto.setUpdateDate(req.getUpdateDate());
+		                dto.setStatus(req.getStatus());
+		                dto.setReason(req.getReason());
+		                if (req.getUserId() != null) {
+		                    dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
+		                }
+		                return dto;
+		            }).collect(Collectors.toList());
+
+		            ReqiestionResponnse response = new ReqiestionResponnse();
+		            
+		            response.setListfileRequeistion(dtoList);
+		            response.setStatus("200");
+		            response.setMsg("Success");
+
+		            return ResponseEntity.ok(response);
+		        }
+
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		                .body("No requisitions found for district: " + userId);
+		    } catch (Exception e) {
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                .body("Error retrieving objections: " + e.getMessage());
+		    }
+	
+		
+	}
+	
+	
+	
+	
 	
 	
 }

@@ -45,6 +45,12 @@ public class FileRequeistion {
 		 @Column(name = "updateDate", length = 30)
 	    private String updateDate;
 	    private String status;
+	    
+	    private String caseTransferId;
+	    
+	    private String transferRemark;
+	    
+	    private Boolean modifiable;
 	  	  
 	  @Lob
 	    @Basic(fetch = FetchType.EAGER)  // Eager fetch for LOB
@@ -71,6 +77,50 @@ public class FileRequeistion {
 	  @OneToOne(mappedBy = "fileRequeistion")
 	  @JsonBackReference
 	  private CertificatOfficer certificatOfficer;
+	  
+	  
+	  private String   transNomId;
+
+	  @Column(columnDefinition = "boolean default true")
+	  private Boolean isTransOfficer = true;
+	  
+	  @Column(columnDefinition = "boolean default false")
+	  private Boolean isTransNomOfficer = false;
+
+	  @Column(columnDefinition = "boolean default false")
+	  private Boolean isTransBOR = false;
+	  
+	  
+	public Boolean getIsTransOfficer() {
+		return isTransOfficer;
+	}
+
+
+	public void setIsTransOfficer(Boolean isTransOfficer) {
+		this.isTransOfficer = isTransOfficer;
+	}
+
+
+	public Boolean getIsTransNomOfficer() {
+		return isTransNomOfficer;
+	}
+
+
+	public void setIsTransNomOfficer(Boolean isTransNomOfficer) {
+		this.isTransNomOfficer = isTransNomOfficer;
+	}
+
+
+	public Boolean getIsTransBOR() {
+		return isTransBOR;
+	}
+
+
+	public void setIsTransBOR(Boolean isTransBOR) {
+		this.isTransBOR = isTransBOR;
+	}
+
+
 	public String getRequeistionId() {
 		return requeistionId;
 	}
@@ -261,16 +311,13 @@ public class FileRequeistion {
 	}
 
 
-	@Override
-	public String toString() {
-		return "FileRequeistion [requeistionId=" + requeistionId + ", totalOutstandingAmmount="
-				+ totalOutstandingAmmount + ", totalInterestRate=" + totalInterestRate + ", interestDueForm="
-				+ interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee=" + missllenousFee
-				+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear=" + financialYear
-				+ ", districtName=" + districtName + ", currentDate=" + currentDate + ", updateDate=" + updateDate
-				+ ", status=" + status + ", reason=" + reason + ", documents=" + documents + ", role=" + role
-				+ ", userId=" + userId + ", certificateDebator=" + certificateDebator + ", certificateGuaranter="
-				+ certificateGuaranter + ", certificatOfficer=" + certificatOfficer + "]";
+	public String getCaseTransferId() {
+		return caseTransferId;
+	}
+
+
+	public void setCaseTransferId(String caseTransferId) {
+		this.caseTransferId = caseTransferId;
 	}
 
 
@@ -285,12 +332,58 @@ public class FileRequeistion {
 
 
 	
+	public Boolean getModifiable() {
+		return modifiable;
+	}
+
+
+	public void setModifiable(Boolean modifiable) {
+		this.modifiable = modifiable;
+	}
+
+
+	public FileRequeistion() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public String getTransNomId() {
+		return transNomId;
+	}
+
+
+	public void setTransNomId(String transNomId) {
+		this.transNomId = transNomId;
+	}
+
+
+	public String getTransferRemark() {
+		return transferRemark;
+	}
+
+
+	public void setTransferRemark(String transferRemark) {
+		this.transferRemark = transferRemark;
+	}
+
+
+	@Override
+	public String toString() {
+		return "FileRequeistion [requeistionId=" + requeistionId + ", totalOutstandingAmmount="
+				+ totalOutstandingAmmount + ", totalInterestRate=" + totalInterestRate + ", interestDueForm="
+				+ interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee=" + missllenousFee
+				+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear=" + financialYear
+				+ ", districtName=" + districtName + ", currentDate=" + currentDate + ", updateDate=" + updateDate
+				+ ", status=" + status + ", caseTransferId=" + caseTransferId + ", transferRemark=" + transferRemark
+				+ ", modifiable=" + modifiable + ", reason=" + reason + ", documents=" + documents + ", role=" + role
+				+ ", userId=" + userId + ", certificateDebator=" + certificateDebator + ", certificateGuaranter="
+				+ certificateGuaranter + ", certificatOfficer=" + certificatOfficer + ", transNomId=" + transNomId
+				+ ", isTransOfficer=" + isTransOfficer + ", isTransNomOfficer=" + isTransNomOfficer + ", isTransBOR="
+				+ isTransBOR + "]";
+	}
+
+
+
 	
-
-
-
-	  
-
-	  
-
 }

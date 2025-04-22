@@ -48,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200", "https://bor-staging.netlify.app", "http://125.20.102.86:4200"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "https://bor-staging.netlify.app", "http://125.20.102.86:4200","http://160.25.110.127:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // Allow credentials (e.g., cookies)

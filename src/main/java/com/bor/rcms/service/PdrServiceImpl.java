@@ -14,28 +14,38 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bor.rcms.dto.CaseNotes;
+import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
 import com.bor.rcms.entity.Admission;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
+import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.Mis;
 import com.bor.rcms.entity.NewObjection;
+import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
 import com.bor.rcms.repository.CertificatOfficerRepo;
+import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.DocumentRepository;
 import com.bor.rcms.repository.FileRequeistionRepo;
+import com.bor.rcms.repository.NewObjectionRepo;
+import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.ReqiestionResponnse;
+import com.bor.rcms.response.StatusRes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,6 +68,17 @@ public class PdrServiceImpl implements PdrService {
 	
 	@Autowired
 	private CertificatOfficerRepo certificatOfficerRepo;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+
+	@Autowired
+	private CourtAddRepo courtAddRepo;
+
+	@Autowired
+	private RoleRepository roleRepository;
+
 
 
 	@Override
@@ -88,8 +109,14 @@ public class PdrServiceImpl implements PdrService {
 		List<CertificateDebator> certificateDebatorslist=requisition.getCertificateDebator();
 		
 		
+		String debatorName=null;
+		String addressdebator=null;
+		
 		for(CertificateDebator certificateDebator:certificateDebatorslist)
 		{
+			debatorName=certificateDebator.getDebatorName();
+			addressdebator=certificateDebator.getAddress();
+			
 			certificateDebator.setRequeistion(requisition);
 			certificateDebators.add(certificateDebator);
 			
@@ -170,10 +197,10 @@ public class PdrServiceImpl implements PdrService {
 			
 			try {
 				 String district = requisition.getDistrictName();
-				 String debtorName  = null;;
+				// String debtorName  = ;
 			        String address  = requisition.getUserId().getAddress();
 			        String amount  = "200";
-			        String nature  = null;
+			        String nature  = "no";
 			        
 			        
 			        LocalDate localDate = LocalDate.parse(requisition.getCurrentDate());
@@ -181,8 +208,8 @@ public class PdrServiceImpl implements PdrService {
 			        String day = String.valueOf(localDate.getDayOfMonth());
 			        String month = String.valueOf(localDate.getMonthValue());
 			        String year = String.valueOf(localDate.getYear());
-   		        String designation = null;
-	            String notice = noticedgenerateform2(savedObjection,district,debtorName,address,nature, amount,month,year,day,designation);
+   		        String designation ="NULL"; ;
+	            String notice = noticedgenerateform2(savedObjection,district,debatorName,addressdebator,nature, amount,month,year,day,designation);
 		
 			}
 			catch (Exception e) {
@@ -268,7 +295,7 @@ public class PdrServiceImpl implements PdrService {
 		            
 		            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
 		            
-		            enNoticeRelease.setDocumentType("Form2");
+		            enNoticeRelease.setDocumentName("Form2");
 		            enNoticeRelease.setFilePath(fileName);
 		            enNoticeRelease.setFileRequeistion(fileRequeistion);
 		            
@@ -447,6 +474,11 @@ public class PdrServiceImpl implements PdrService {
 			// Fetch the NewObjection using the objection ID
 			FileRequeistion newObjection = fileRequeistionRepo.findByRequeistionId(casenotes.getObjId()).get();
 			
+			
+			
+			CertificateDebator certificateDebatorslist=newObjection.getCertificateDebator().get(0);
+
+			
 			   String formType = casenotes.getSelectForm().trim();  // Trim to remove any extra spaces
 
 		        // Check if the form is empty but hearing date is not empty
@@ -458,8 +490,8 @@ public class PdrServiceImpl implements PdrService {
 		        
                   if(formType.equals("Form1")) {
                 	  
-                	 String district = null;
-      		        String certificateHolder = newObjection.getUserId().getFullName();
+                	 String district = newObjection.getDistrictName();
+      		        String certificateHolder = certificateDebatorslist.getDebatorName();
       		        String certificateDebtor = null;
       		        String demandDetails = null;
       		        String furtherDetails = null;
@@ -469,12 +501,12 @@ public class PdrServiceImpl implements PdrService {
       	        String month = String.valueOf(currentDate.getMonthValue());
       	        String year = String.valueOf(currentDate.getYear());
       		        String officerDesignation = null;
-	            String notice = noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
+	       //     String notice = noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
 		        }
 //
 //		        // Check for Form B
 		        if(formType.equals("Form3")) {
-		        	 String debtorName = null;
+		        	 String debtorName = certificateDebatorslist.getDebatorName();
 		             String reason = null;
 		             String section = null;
 		             LocalDate currentDate = LocalDate.now();
@@ -484,7 +516,7 @@ public class PdrServiceImpl implements PdrService {
 		             String year = String.valueOf(currentDate.getYear());
 		             String officerLocation = null;
 		        	System.out.println("form2");
-		            String notice = noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
+		       //     String notice = noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
 		        }
 		        
 		        // Check for Form A (corrected comparison and removed extra semicolon)
@@ -608,7 +640,7 @@ public class PdrServiceImpl implements PdrService {
 		            
 		            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
 		            
-		            enNoticeRelease.setDocumentType("Form3");
+		            enNoticeRelease.setDocumentName("Form3");
 		            enNoticeRelease.setFilePath(fileName);
 		            enNoticeRelease.setFileRequeistion(fileRequeistion);
 		            
@@ -707,7 +739,7 @@ private String noticedgenerateform1(FileRequeistion fileRequeistion, String dist
 			            
 			            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
 			            
-			            enNoticeRelease.setDocumentType("Form1");
+			            enNoticeRelease.setDocumentName("Form1");
 			            enNoticeRelease.setFilePath(fileName);
 			            enNoticeRelease.setFileRequeistion(fileRequeistion);
 			            
@@ -726,4 +758,234 @@ private String noticedgenerateform1(FileRequeistion fileRequeistion, String dist
         return fileRequeistionRepo.findAllAdmit(district);
 
 	}
+
+
+	@Override
+	public String addCourt(CourtReq courtReq) {
+		
+		try {
+			UserEntity courtAdd=new UserEntity();
+			
+
+			courtAdd.setAddress(courtReq.getOfficeDetails());
+			
+			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
+			courtAdd.setFullName(courtReq.getOfficeName());
+			courtAdd.setEmail(courtReq.getOfficerEmail());
+			courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+			
+
+			
+//			courtReq.setOfficeDetails(courtAdd.getAddress());
+//			courtReq.setOfficeMobile(courtAdd.getPanNumber());
+//			courtReq.setOfficeName(courtAdd.getFullName());
+//			courtReq.setOfficerEmail(courtAdd.getFullName());
+//		
+//		
+		//courtReq.setAssignUSer(entity.getUserName());
+			
+			UserEntity entity=userRepository.findById(courtReq.getUserId()).get();
+			
+			courtAdd.setCreatedByuser(entity.getUserId());			
+			if(entity!=null)
+			{
+				courtAdd.setCreatedByuser(entity.getUserId());
+				courtAdd.setDistrict(entity.getDistrict());
+			//	courtAdd.setUserId(entity);
+				
+				String roleName=courtReq.getRole();
+				RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
+				if (role == null) {
+					role = new RoleEntity(roleName, roleName);
+					role = roleRepository.save(role);
+				}
+
+				courtAdd.setRole(role);
+				
+				UserEntity  courtAddsave = new UserEntity();
+				UserEntity  courtfindMobile=	userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
+				
+				
+				
+				if(courtReq.getUpdaStatus()==null&& courtfindMobile!=null)
+				{
+					return  "try another number";
+				}
+				try {
+
+				if(courtReq.getUpdaStatus().equals("update"))
+				{
+					courtAdd.setUserId(courtfindMobile.getUserId());
+					
+					  courtAddsave=	userRepository.save(courtAdd);
+						if(courtAdd!=null)
+						{
+							return "save";
+						}
+				}
+				
+				}catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				
+				  courtAddsave=	userRepository.save(courtAdd);
+				if(courtAddsave!=null)
+				{
+					return "save";
+				}
+				return   "something issue";
+				
+			}
+
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	@Override
+	public List<CourtReq> addCourtlistShow(Long userId) {
+		// TODO Auto-generated method stub
+		try {
+			UserEntity entity=userRepository.findById(userId).get();
+			if(entity!=null)
+			{			
+				List<UserEntity> courtAdds=userRepository.findByCreatedByuser(entity.getUserId());
+	
+			List<CourtReq> courtAddslist=new ArrayList<CourtReq>();
+			
+			for(UserEntity userEntity:courtAdds)
+			{
+				CourtReq courtReq=new CourtReq();
+			
+				courtReq.setOfficeDetails(userEntity.getAddress());
+				courtReq.setOfficeMobile(userEntity.getPhoneNumber());
+				courtReq.setOfficeName(userEntity.getFullName());
+				courtReq.setOfficerEmail(userEntity.getEmail());
+			
+			courtReq.setAssignUSer(entity.getFullName());
+			courtReq.setCourtId(entity.getUserId());
+			courtAddslist.add(courtReq);
+				
+			}
+			
+			return courtAddslist;
+
+		}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
+
+
+	@Override
+	public StatusRes noticeGenerate(String selectForm, String reqId) {
+		FileRequeistion newObjection = fileRequeistionRepo.findByRequeistionId(reqId).get();
+		
+		StatusRes statusRes =new StatusRes();
+		
+		CertificateDebator certificateDebatorslist=newObjection.getCertificateDebator().get(0);
+
+		
+		   String formType = selectForm.trim();  // Trim to remove any extra spaces
+		   
+
+
+	        // Check if the form is empty but hearing date is not empty
+	    
+              if(formType.equals("Form1")) {
+            	  
+            	 String district = newObjection.getDistrictName();
+  		        String certificateHolder = certificateDebatorslist.getDebatorName();
+  		        String certificateDebtor = null;
+  		        String demandDetails = null;
+  		        String furtherDetails = null;
+  		      LocalDate currentDate = LocalDate.now();
+
+  	        String day = String.valueOf(currentDate.getDayOfMonth());
+  	        String month = String.valueOf(currentDate.getMonthValue());
+  	        String year = String.valueOf(currentDate.getYear());
+  		        String officerDesignation = null;
+            String notice = noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
+            
+            if(notice!=null)
+            {
+            	statusRes.setMessage("form1 will be sumbitted");
+            	statusRes.setStatus("200");
+            }
+            return statusRes;
+
+	        }
+//
+//	        // Check for Form B
+	        if(formType.equals("Form3")) {
+	        	 String debtorName = certificateDebatorslist.getDebatorName();
+	             String reason = null;
+	             String section = null;
+	             LocalDate currentDate = LocalDate.now();
+
+	             String day = String.valueOf(currentDate.getDayOfMonth());
+	             String month = String.valueOf(currentDate.getMonthValue());
+	             String year = String.valueOf(currentDate.getYear());
+	             String officerLocation = null;
+	        	System.out.println("form2");
+	            String notice = noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
+	            
+	            if(notice!=null)
+	            {
+	            	statusRes.setMessage("form1 will be sumbitted");
+	            	statusRes.setStatus("200");
+	            }
+	            return statusRes;
+	        }
+			return statusRes;
+	}
+
+
+@Override
+public String caseTransfer(List<String> reqId, List<String> nouserId) {
+    try {
+        if (reqId.size() != nouserId.size()) {
+            return "Request and user ID list sizes do not match";
+        }
+
+        for (int i = 0; i < reqId.size(); i++) {
+            Optional<FileRequeistion> optionalRequest = fileRequeistionRepo.findByRequeistionId(reqId.get(i));
+            if (optionalRequest.isPresent()) {
+                FileRequeistion newObjection = optionalRequest.get();
+                newObjection.setIsTransOfficer(false);
+                newObjection.setIsTransNomOfficer(true);
+                newObjection.setTransNomId(nouserId.get(i));
+                fileRequeistionRepo.save(newObjection);
+            } else {
+                return "Request ID not found: " + reqId.get(i);
+            }
+        }
+
+        return "save";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Something went wrong during case transfer";
+    }
 }
+
+
+	@Override
+	public List<FileRequeistion> findpendingNom(String userId) {
+		// TODO Auto-generated method stub
+		return fileRequeistionRepo.findByTransNomId(userId);
+
+	}
+
+
+	}
+	
+	
+

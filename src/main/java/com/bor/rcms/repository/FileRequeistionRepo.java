@@ -18,7 +18,7 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 
 	Optional<FileRequeistion> findTopByDistrictNameOrderByCurrentDateDesc(String districtName);
 
-	 @Query("SELECT n FROM FileRequeistion n WHERE n.districtName = :districtName And n.status = 'pending'")
+	@Query("SELECT n FROM FileRequeistion n WHERE n.districtName = :districtName AND n.status = 'pending' AND n.isTransOfficer = true")
 	    List<FileRequeistion> findAllPending(@Param("districtName") String districtName);
 
 	Object findAllByRequeistionId(String obId);
@@ -30,6 +30,10 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 
 	 @Query("SELECT n FROM FileRequeistion n WHERE n.districtName = :districtName And n.status = 'Admit'")
 	    List<FileRequeistion> findAllAdmit(@Param("districtName") String districtName);
+
+	List<FileRequeistion> findByTransNomId(String userId);
+
+	 
 
 
 
