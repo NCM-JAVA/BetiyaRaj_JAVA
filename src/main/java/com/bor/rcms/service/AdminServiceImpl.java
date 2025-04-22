@@ -184,7 +184,7 @@ public class AdminServiceImpl implements AdminService {
 	
     private final String FILE_STORAGE_PATHA = "C:/Users/Admin/file/NoticeA";
 
-    private final String FILE_STORAGE_PATHB = "C:/Users/Admin/file/NoticeB";
+    private final String FILE_STORAGE_PATHB = "C:/Users/Admin/file/NoticeB/";
     
     
     private final String FILE_STORAGE_PATHC= "C:/Users/Admin/file/NoticeC";
@@ -778,6 +778,20 @@ public class AdminServiceImpl implements AdminService {
 		// TODO Auto-generated method stub
 		Admission admission=admissionRepo.findByNewObjection(objid);
 		return admission;
+	}
+
+	@Override
+	public List<UserEntity> findByDistrict(String district) {
+		 List<UserEntity> user = new ArrayList<>(); // List to hold filtered users
+		    try {
+		        List<UserEntity> entity = repository.findByDistrict(district); // Fetch all users
+		        
+		        return entity;
+		        
+		    } catch (Exception e) {
+		        e.printStackTrace(); // Handle exception (you could log it in production)
+		    }
+			return user;
 	}	
 	
 

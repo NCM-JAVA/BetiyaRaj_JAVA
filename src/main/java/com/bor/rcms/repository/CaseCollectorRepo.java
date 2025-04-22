@@ -14,8 +14,8 @@ import com.bor.rcms.entity.CaseCollector;
 public interface CaseCollectorRepo extends JpaRepository<CaseCollector, Long> {
 	@Query("SELECT MAX(o.collectorCase) FROM CaseCollector o")
 	String findHighestCollectorCase();
-	   @Query("SELECT a FROM CaseCollector a WHERE a.status != 'Reject' AND a.status != 'Dismiss'")
-	List<CaseCollector> findAlladmit();
+	   @Query("SELECT a FROM CaseCollector a WHERE a.status != 'Reject' AND a.status != 'Dismiss' AND a.district = :district")
+	List<CaseCollector> findAlladmit(@Param("district") String district);
 	   @Query("SELECT a FROM CaseCollector a WHERE a.hearingDate = :hearingDate AND (a.status != 'Reject' AND a.status != 'Transfer')")
 	   List<CaseCollector> findByHearingDateAndStatusNotRejectOrTransfer(@Param("hearingDate") String hearingDate);
 	   

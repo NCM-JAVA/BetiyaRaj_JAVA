@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.html2pdf.HtmlConverter;
 
 import org.bouncycastle.asn1.DERApplicationSpecific;
+import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -403,11 +404,11 @@ public class UserController {
 	
 	
 	@GetMapping("/getobjectionDismis")
-	public ResponseEntity<?> getobjectionDismis() {
+	public ResponseEntity<?> getobjectionDismis(@RequestParam String district) {
 		try {
 			//List<NewObjection> newObjection = objectionService.findaproved();
 			
-			List<Admission> admissions=objectionService.getfindDismis();
+			List<Admission> admissions=objectionService.getfindDismis(district);
 			return ResponseEntity.ok(admissions);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -442,7 +443,7 @@ public class UserController {
 	public ResponseEntity<?> getAllObjections(@RequestParam Long obId) {
 		try {
 			NewObjection newObjection = objectionService.findbyId(obId).get();
-
+		
 			DocumentEntity documentEntity = objectionService.getObjectionsDocumentdetials(obId);
 			return ResponseEntity.ok(newObjection);
 		} catch (Exception e) {
@@ -1232,7 +1233,22 @@ public class UserController {
 		return null;
 
 	}
+	
+	
+	@PostMapping("findAllSpecialOfficer")
+	public ResponseEntity<?> getallOfficer(@RequestParam String district) {
+		try {
+			List<UserEntity> userresult = adminService.findByDistrict(district);
+			if (userresult.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+			}
+			return ResponseEntity.ok(userresult);
 
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("issue casenotes: " + e.getMessage());
+		}
+
+	}
 	// update causelist
 	@GetMapping("findAdmitupdateCase")
 	public ResponseEntity<?> findAdmitupdateCase(@RequestParam String hearingDate, @RequestParam String caseId) {
@@ -1338,10 +1354,16 @@ public class UserController {
 
 	/// collector
 	@PostMapping("casesinform")
-	public ResponseEntity<?> casesinform() {
+	public ResponseEntity<?> casesinform(@RequestParam String district) {
 		try {
 
-			Casesinform casesinforn = noticeService.casesinform();
+			Casesinform casesinforn = noticeService.casesinform(district);
+			
+			if(casesinforn==null)
+			{
+				 return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                         .body("Not found");
+			}
 
 			return ResponseEntity.ok(casesinforn);
 
@@ -1375,11 +1397,11 @@ public class UserController {
 	}
 	
 	@GetMapping("/getAmitdatacollector")
-	public ResponseEntity<?> getAmitdatacollector() {
+	public ResponseEntity<?> getAmitdatacollector(@RequestParam String district) {
 		try {
 			//List<NewObjection> newObjection = objectionService.findaproved();
 			
-			List<CaseCollector> admissions=collectorService.getAmitdatacollector();
+			List<CaseCollector> admissions=collectorService.getAmitdatacollector(district);
 			return ResponseEntity.ok(admissions);
 		} catch (Exception e) {
 			e.printStackTrace();
