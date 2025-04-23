@@ -38,6 +38,8 @@ import com.bor.rcms.service.NoticeService;
 import com.bor.rcms.service.ObjectionService;
 import com.bor.rcms.service.UserService;
 
+import Validation.UserRegistrationValidator;
+
 @RestController
 @RequestMapping("api/auth")
 @CrossOrigin(origins = "http://localhost:4200") 
@@ -225,7 +227,18 @@ public class AuthController {
 	
 	@PostMapping("/registerPDR")
 	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
+		
+		UserRegistrationValidator.ValidationResult result = 
+			    UserRegistrationValidator.checkUser(request);
+
+			if (!result.passed()) {
+			    return ResponseEntity.badRequest().body(result.getErrors());
+			}
+		
+		
+		
 		try {
+			
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
 			user.setFullName(request.getFullName());
