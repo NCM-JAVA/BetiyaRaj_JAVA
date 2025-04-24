@@ -11,6 +11,7 @@ public class UserRegistrationValidator {
 
 	private static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]{10}$"); 
 
+
 	private static final Pattern AADHAR_PATTERN = Pattern.compile("^[0-9]{12}$");
 
 	private static final Pattern PINCODE_PATTERN = Pattern.compile("^[1-9][0-9]{5}$");
@@ -44,11 +45,19 @@ public class UserRegistrationValidator {
             result.addError("Phone number must be exactly 10 digits");
         }
         
+        // Validate Alternative phone number
+        if (request.getAlternatenumber() == null || request.getAlternatenumber().isEmpty()) {
+            result.addError("Phone number is required");
+        } else if (!PHONE_PATTERN.matcher(request.getAlternatenumber()).matches()) {
+            result.addError("Phone number must be exactly 10 digits");
+        }
+        
         // Validate password
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             result.addError("Password is required");
         } else if (!PASSWORD_PATTERN.matcher(request.getPassword()).matches()) {
-            result.addError("Password must be at least 8 characters with uppercase, lowercase, number and special character");
+            result.addError("Password must be at least 8 characters with uppercase,"
+            		+ " lowercase, number and special character");
         }
         
         // Validate Aadhar (optional)

@@ -10,7 +10,4 @@ public class RcmsApplication {
 		SpringApplication.run(RcmsApplication.class, args);
 	}
 	
-	
-	
-
 }

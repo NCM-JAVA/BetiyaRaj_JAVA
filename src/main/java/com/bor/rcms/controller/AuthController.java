@@ -152,6 +152,14 @@ public class AuthController {
     
 	@PostMapping("/registerCitizen")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
+      //	Validation Citizen
+		UserRegistrationValidator.ValidationResult result = 
+			    UserRegistrationValidator.checkUser(request);
+
+			if (!result.passed()) {
+			    return ResponseEntity.badRequest().body(result.getErrors());
+			}
+		
 		try {
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
@@ -227,7 +235,9 @@ public class AuthController {
 	
 	@PostMapping("/registerPDR")
 	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
-		
+           
+		//Validation user
+	
 		UserRegistrationValidator.ValidationResult result = 
 			    UserRegistrationValidator.checkUser(request);
 
@@ -336,10 +346,10 @@ public class AuthController {
 
 	        if (entity != null) {
 	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Try another mobile"));
+	            return ResponseEntity.ok(Map.of(400, "Try another mobile"));
 	        } else {
 	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+	            return ResponseEntity.ok(Map.of(200, "Phone number is available"));
 	        }
 
 	    } catch (Exception e) {
@@ -359,11 +369,11 @@ public class AuthController {
 			
 			if(entity!=null)
 			{
-	            return ResponseEntity.ok(Map.of("message", "Try another aadhar"));
+	            return ResponseEntity.ok(Map.of(400, "Try another aadhar"));
 
 			}
 			else {
-	            return ResponseEntity.ok(Map.of("message", "aadhar number is available"));
+	            return ResponseEntity.ok(Map.of(200, "aadhar number is available"));
 			}
 			
 		} catch (Exception e) {
