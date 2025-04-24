@@ -67,6 +67,8 @@ public class AuthController {
     @PostMapping("/login-officer")
     public ResponseEntity<?> loginOfficer(@RequestBody LoginRequest request) {
     	
+    	
+    	
     	if(request.getEmail()!=null&& request.getAct().equals("PDR"))
     	{
         	LoginResponse   Stringeres  = userService.loginOfficerEmail(request.getEmail(), request.getPassword(),request.getUserType());
@@ -152,14 +154,8 @@ public class AuthController {
     
 	@PostMapping("/registerCitizen")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
-      //	Validation Citizen
-		UserRegistrationValidator.ValidationResult result = 
-			    UserRegistrationValidator.checkUser(request);
-
-			if (!result.passed()) {
-			    return ResponseEntity.badRequest().body(result.getErrors());
-			}
-		
+      
+		StatusRes res = new StatusRes();
 		try {
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
@@ -186,7 +182,6 @@ public class AuthController {
 			user.setStatus(request.getStatus());
 			user.setDistrict(request.getDistrict());
 		//	user.setUserName(request.getUserName());
-			StatusRes res = new StatusRes();
 			try {
 				UserEntity entity = repository.findByPhoneNumber(request.getPhoneNumber());
 
@@ -237,12 +232,15 @@ public class AuthController {
 	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
            
 		//Validation user
-	
+		StatusRes res = new StatusRes();
+
 		UserRegistrationValidator.ValidationResult result = 
 			    UserRegistrationValidator.checkUser(request);
 
 			if (!result.passed()) {
-			    return ResponseEntity.badRequest().body(result.getErrors());
+				res.setStatus("400");
+				res.setMessage(result.getErrors());
+			    return ResponseEntity.badRequest().body(res);
 			}
 		
 		
@@ -276,7 +274,7 @@ public class AuthController {
 			user.setBankName(request.getBankName());
 			user.setBranchCode(request.getBranchCode());
 		//	user.setUserName(request.getUserName());
-			StatusRes res = new StatusRes();
+			//StatusRes res = new StatusRes();
 			try {
 				UserEntity entity = repository.findByEmail(request.getEmail());
 

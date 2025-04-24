@@ -48,6 +48,8 @@ import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import Validation.UserRegistrationValidator;
+
 @RestController
 @RequestMapping("api/pdr")
 
@@ -99,6 +101,15 @@ public class PDRController {
 	public ResponseEntity<?> submitObsjection(@RequestPart("requiestion") String requiestion,
 			@RequestPart(value = "files", required = false) MultipartFile[] files,     @RequestPart(value = "documentTypes", required = false) String  documentTypes,
 			@RequestPart("username") String username) {
+
+//		UserRegistrationValidator.ValidationResult result = 
+//			    UserRegistrationValidator.checkUser(requiestion);
+//		StatusRes res = new StatusRes();
+//			if (!result.passed()) {
+//				res.setStatus("400");
+//				res.setMessage(result.getErrors());
+//			    return ResponseEntity.badRequest().body(res);
+//			}
 		try {
 			// Debugging the received inputs
 			System.out.println("Received objection JSON: " + requiestion);
@@ -243,6 +254,10 @@ public class PDRController {
 
 	@GetMapping("/viewrequiestion")
 	public ResponseEntity<?> getAllObjections(@RequestParam String recuisition) {
+		
+		
+		
+		
 	    try {
 			FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(recuisition);
 

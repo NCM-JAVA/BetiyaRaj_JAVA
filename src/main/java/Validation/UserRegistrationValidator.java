@@ -11,7 +11,6 @@ public class UserRegistrationValidator {
 
 	private static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]{10}$"); 
 
-
 	private static final Pattern AADHAR_PATTERN = Pattern.compile("^[0-9]{12}$");
 
 	private static final Pattern PINCODE_PATTERN = Pattern.compile("^[1-9][0-9]{5}$");
@@ -24,11 +23,15 @@ public class UserRegistrationValidator {
     public static ValidationResult checkUser(UserRegistrationRequest request) {
         ValidationResult result = new ValidationResult();
         
+//        public static ValidationResult checkUser(UserRegistrationRequest requiestion) {
+//            ValidationResult result = new ValidationResult();
+//            
         // Validate full name
         if (request.getFullName() == null || request.getFullName().isEmpty()) {
             result.addError("Full name is required");
         } else if (!NAME_PATTERN.matcher(request.getFullName()).matches()) {
             result.addError("Full name should contain only letters and spaces");
+            return result;
         }
         
         // Validate email
@@ -36,6 +39,7 @@ public class UserRegistrationValidator {
             result.addError("Email is required");
         } else if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
             result.addError("Invalid email format");
+            return result;
         }
         
         // Validate phone number
@@ -43,6 +47,7 @@ public class UserRegistrationValidator {
             result.addError("Phone number is required");
         } else if (!PHONE_PATTERN.matcher(request.getPhoneNumber()).matches()) {
             result.addError("Phone number must be exactly 10 digits");
+            return result;
         }
         
         // Validate Alternative phone number
@@ -50,6 +55,7 @@ public class UserRegistrationValidator {
             result.addError("Phone number is required");
         } else if (!PHONE_PATTERN.matcher(request.getAlternatenumber()).matches()) {
             result.addError("Phone number must be exactly 10 digits");
+            return result;
         }
         
         // Validate password
@@ -64,42 +70,49 @@ public class UserRegistrationValidator {
         if (request.getAadhar() != null && !request.getAadhar().isEmpty() && 
             !AADHAR_PATTERN.matcher(request.getAadhar()).matches()) {
             result.addError("Aadhar must be 12 digits");
+            return result;
         }
         
         // Validate pincode
         if (request.getPincode() != null && !request.getPincode().isEmpty() && 
             !PINCODE_PATTERN.matcher(request.getPincode()).matches()) {
             result.addError("Pincode must be 6 digits");
+            return result;
         }
         
         // Validate bank name (for PDR)
         if (request.getBankName() != null && !request.getBankName().isEmpty() && 
             !BANK_BRANCH_PATTERN.matcher(request.getBankName()).matches()) {
             result.addError("Bank name contains invalid characters");
+            return result;
         }
         
         // Validate branch code (for PDR)
         if (request.getBranchCode() != null && !request.getBranchCode().isEmpty() && 
             !BANK_BRANCH_PATTERN.matcher(request.getBranchCode()).matches()) {
             result.addError("Branch code contains invalid characters");
+            return result;
         }
         
         // Validate city
         if (request.getCity() != null && !request.getCity().isEmpty() && 
             !NAME_PATTERN.matcher(request.getCity()).matches()) {
             result.addError("City name should contain only letters and spaces");
+            return result;
         }
         
         // Validate state
         if (request.getState() != null && !request.getState().isEmpty() && 
             !NAME_PATTERN.matcher(request.getState()).matches()) {
             result.addError("State name should contain only letters and spaces");
+            return result;
         }
         
         // Validate district
         if (request.getDistrict() != null && !request.getDistrict().isEmpty() && 
             !NAME_PATTERN.matcher(request.getDistrict()).matches()) {
             result.addError("District name should contain only letters and spaces");
+            return result;
         }
         
         return result;
