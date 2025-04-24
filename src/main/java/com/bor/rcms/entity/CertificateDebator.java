@@ -25,7 +25,10 @@ public class CertificateDebator {
 	    private  String subDivision;
 	    private  String circle;
 	    private  String policestation;
+	    
 	    private String phoneNumber;
+	    private  String otp;
+
 	    private String address1;
 	    private String address2;
 	    private String state;
@@ -154,34 +157,26 @@ public class CertificateDebator {
 		public void setPolicestation(String policestation) {
 			this.policestation = policestation;
 		}
-		public CertificateDebator(Long debatorId, String debatorName, String address, String email, String fatherNames,
-				String subDivision, String circle, String policestation, String phoneNumber, String address1,
-				String address2, String state, String city, String district, String pincode, String createdDate,
-				String modifiedDate, String status, FileRequeistion requeistion) {
-			super();
-			this.debatorId = debatorId;
-			this.debatorName = debatorName;
-			this.address = address;
-			this.email = email;
-			this.fatherNames = fatherNames;
-			this.subDivision = subDivision;
-			this.circle = circle;
-			this.policestation = policestation;
-			this.phoneNumber = phoneNumber;
-			this.address1 = address1;
-			this.address2 = address2;
-			this.state = state;
-			this.city = city;
-			this.district = district;
-			this.pincode = pincode;
-			this.createdDate = createdDate;
-			this.modifiedDate = modifiedDate;
-			this.status = status;
-			this.requeistion = requeistion;
+		
+		public String getOtp() {
+			return otp;
+		}
+		public void setOtp(String otp) {
+			this.otp = otp;
 		}
 		public CertificateDebator() {
 			super();
 			// TODO Auto-generated constructor stub
+		}
+		@Override
+		public String toString() {
+			return "CertificateDebator [debatorId=" + debatorId + ", debatorName=" + debatorName + ", address="
+					+ address + ", email=" + email + ", fatherNames=" + fatherNames + ", subDivision=" + subDivision
+					+ ", circle=" + circle + ", policestation=" + policestation + ", phoneNumber=" + phoneNumber
+					+ ", otp=" + otp + ", address1=" + address1 + ", address2=" + address2 + ", state=" + state
+					+ ", city=" + city + ", district=" + district + ", pincode=" + pincode + ", createdDate="
+					+ createdDate + ", modifiedDate=" + modifiedDate + ", status=" + status + ", requeistion="
+					+ requeistion + "]";
 		}
 		
 		

@@ -886,10 +886,28 @@ private String noticedgenerateform1(FileRequeistion fileRequeistion, String dist
 
 	@Override
 	public StatusRes noticeGenerate(String selectForm, String reqId) {
-		FileRequeistion newObjection = fileRequeistionRepo.findByRequeistionId(reqId).get();
-		
 		StatusRes statusRes =new StatusRes();
+
+		FileRequeistion newObjection = new FileRequeistion();
+		try {
+			newObjection=	fileRequeistionRepo.findByRequeistionId(reqId).get();
+
+		if(newObjection.getRequeistionId()==null)
+		{
+			statusRes.setMessage("reqId not found");
+        	statusRes.setStatus("404");
+        	return statusRes;
+		}
 		
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			statusRes.setMessage("reqId not found");
+        	statusRes.setStatus("404");
+			e.printStackTrace();
+        	return statusRes;
+
+		}
 		CertificateDebator certificateDebatorslist=newObjection.getCertificateDebator().get(0);
 
 		
@@ -939,11 +957,14 @@ private String noticedgenerateform1(FileRequeistion fileRequeistion, String dist
 	            
 	            if(notice!=null)
 	            {
-	            	statusRes.setMessage("form1 will be sumbitted");
+	            	statusRes.setMessage("form3 will be sumbitted");
 	            	statusRes.setStatus("200");
 	            }
 	            return statusRes;
 	        }
+        	statusRes.setMessage("check credentiall");
+        	statusRes.setStatus("404");
+
 			return statusRes;
 	}
 
@@ -982,6 +1003,26 @@ public String caseTransfer(List<String> reqId, List<String> nouserId) {
 		// TODO Auto-generated method stub
 		return fileRequeistionRepo.findByTransNomId(userId);
 
+	}
+
+
+	@Override
+	public List<FileRequeistion> findAllByuserId(String userId) {
+		// TODO Auto-generated method stub
+		
+		UserEntity entity=userRepository.findById(Long.valueOf(userId)).get();
+
+		return fileRequeistionRepo.findByUserId(entity);
+	}
+
+
+	@Override
+	public FileRequeistion findBydebatorId(String userId) {
+		// TODO Auto-generated method stub
+		
+        FileRequeistion optionalRequest = fileRequeistionRepo.findByRequeistionId(userId).get();
+
+		return optionalRequest;
 	}
 
 

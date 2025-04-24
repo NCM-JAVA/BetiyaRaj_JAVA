@@ -35,4 +35,8 @@ public interface PdrService {
 
 	List<FileRequeistion> findpendingNom(String userId);
 
+	List<FileRequeistion> findAllByuserId(String userId);
+
+	FileRequeistion findBydebatorId(String debtorId);
+
 }

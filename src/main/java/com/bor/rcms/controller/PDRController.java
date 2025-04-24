@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +40,14 @@ import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CertificatDebatorRepo;
+import com.bor.rcms.repository.CertificatOfficerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.ReqiestionResponnse;
 import com.bor.rcms.response.StatusRes;
+import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +59,10 @@ public class PDRController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private CertificatDebatorRepo certificatDebatorRepo;
+	
 	
 	
 	@Autowired
@@ -558,14 +566,14 @@ public class PDRController {
 	
 	@PostMapping("noticeForm")
 	public ResponseEntity<?> addcourtlist(@RequestParam String selectForm ,@RequestParam String reqId) {
-		
+		StatusRes res=new StatusRes();
 		try {
 			
 		
 			if(selectForm!=null && reqId!=null)
 			{
 				
-				StatusRes res=pdrService.noticeGenerate(selectForm,reqId);
+				 res=pdrService.noticeGenerate(selectForm,reqId);
 				
 				   
 	            if(res==null)
@@ -579,7 +587,9 @@ public class PDRController {
 
 				
 			}
-			return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+			res.setMessage("form  will  not be sumbitted");
+        	res.setStatus("400");
+			return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
 
 			
 		} catch (Exception e) {
@@ -672,6 +682,156 @@ public class PDRController {
 	
 	
 	
+	@GetMapping("/getrequiestionById")
+	public ResponseEntity<?> getrequiestionById(@RequestParam String userId) {
+        ReqiestionResponnse response = new ReqiestionResponnse();
+
+
+		 try {
+		        List<FileRequeistion> fileRequeistions = pdrService.findAllByuserId(userId);
+
+		        if (!fileRequeistions.isEmpty()) {
+		            List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
+		                FileRequeistionDTO dto = new FileRequeistionDTO();
+		                dto.setRequeistionId(req.getRequeistionId());
+		                dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
+		                dto.setTotalInterestRate(req.getTotalInterestRate());
+		                dto.setInterestDueForm(req.getInterestDueForm());
+		                dto.setTotalCourtFee(req.getTotalCourtFee());
+		                dto.setMissllenousFee(req.getMissllenousFee());
+		                dto.setPaidCourFee(req.getPaidCourFee());
+		                dto.setTotalDemand(req.getTotalDemand());
+		                dto.setFinancialYear(req.getFinancialYear());
+		                dto.setDistrictName(req.getDistrictName());
+		                dto.setCurrentDate(req.getCurrentDate());
+		                dto.setUpdateDate(req.getUpdateDate());
+		                dto.setStatus(req.getStatus());
+		                dto.setReason(req.getReason());
+		                if (req.getUserId() != null) {
+		                    dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
+		                }
+		                return dto;
+		            }).collect(Collectors.toList());
+
+		            
+		            response.setListfileRequeistion(dtoList);
+		            response.setStatus("200");
+		            response.setMsg("Success");
+
+		            return ResponseEntity.ok(response);
+		        }
+		      //  response.setListfileRequeistion();
+	            response.setStatus("400");
+	            response.setMsg("Not Found");
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		        		
+		        		
+		                .body("No requisitions found for district: " + response);
+		    } catch (Exception e) {
+	            response.setMsg("Not Found");
+	            response.setStatus("400");
+
+		    	return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        		
+        		
+                .body("No requisitions found for district: " + response);
+		    }
+		
+	}
 	
 	
+	@PostMapping("/findMobileNumberOREmailholder")
+	public ResponseEntity<?> findMobileNumberHolder(@RequestBody Map<String, String> request) {
+	    try {
+	        String phoneNumber = request.get("phoneNumber");  
+
+	        String email = request.get("email");
+	        CertificateDebator entity=new CertificateDebator();
+	        if(request.get("phoneNumber")== phoneNumber   &&  phoneNumber!=null)
+	        		{
+	        	entity   = certificatDebatorRepo.findByPhoneNumber(phoneNumber);
+	        	
+	        	if(entity != null)
+	        	{
+		            return ResponseEntity.ok(Map.of("message", "Try another mobile"));
+
+	        	
+	        	} else {
+	     	            // Return a JSON response
+	     	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+	     	        }
+
+	        		}
+	        
+	        else if(email==request.get("email"))
+	        {
+	        	entity   = certificatDebatorRepo.findByEmail(email);
+	        	if(entity != null)
+	        	{
+		            return ResponseEntity.ok(Map.of("message", "Try another email"));
+
+	        	}
+	        else {
+	            // Return a JSON response
+	            return ResponseEntity.ok(Map.of("message", "email  is available"));
+	        }
+	        }
+
+	       // if (entity != null) {
+//	            // Return a JSON response
+//	            return ResponseEntity.ok(Map.of("message", "Try another mobile"));
+//	        } else {
+//	            // Return a JSON response
+//	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+//	        }
+
+	    }  catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+		return null;
+	}
+
+	
+
+	@PostMapping("/debator-casestatus")
+	public ResponseEntity<?> findMobileNumberHolder(@RequestParam String userId) {
+	    StatusResponse<FileRequeistionDTO> res = new StatusResponse<>();
+
+	    try {
+	        CertificateDebator certificateDebator = certificatDebatorRepo.findByDebatorIdNative(Long.valueOf(userId));
+	        	//	certificatDebatorRepo.findByPhoneNumber(userId);
+
+	        if (certificateDebator != null && certificateDebator.getRequeistion() != null) {
+	            FileRequeistion requeistion = certificateDebator.getRequeistion();
+	            FileRequeistion fileRequeistion = pdrService.findBydebatorId(requeistion.getRequeistionId());
+
+	            if (fileRequeistion != null && fileRequeistion.getRequeistionId() != null) {
+	                FileRequeistionDTO dto = new FileRequeistionDTO();
+	                BeanUtils.copyProperties(fileRequeistion, dto);  // ✅ simple one-liner mapping
+
+	                // Set userName manually since it's a nested object
+	                if (fileRequeistion.getUserId() != null) {
+	                    dto.setUserName(fileRequeistion.getUserId().getUserName());
+	                }
+
+	                res.setOption(dto);
+	                res.setMessage("success");
+	                res.setStatus("200");
+	                return ResponseEntity.ok(res);
+	            }
+	        }
+
+	        res.setMessage("User not found");
+	        res.setStatus("400");
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        res.setMessage("Internal Server Error");
+	        res.setStatus("500");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+	    }
+	
+	}
 }

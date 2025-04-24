@@ -8,9 +8,11 @@ import okhttp3.MediaType;
 import okhttp3.Response;
 
 import com.bor.rcms.dto.EmailRequest;
+import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.LoginResponse;
@@ -40,6 +42,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private CertificatDebatorRepo certificatDebatorRepo;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -490,6 +495,95 @@ public class UserService {
 
 		return null;
 
+	}
+
+	public String debatorLoginotp(String mobileNumber) {
+		CertificateDebator user = certificatDebatorRepo.findByPhoneNumber(mobileNumber);
+		String otp = generateOTPs();
+		String apiKey = "5c20a6b499570"; // Example API key
+		String sender = "NCMSMS"; // Sender ID
+		String mobileNo = mobileNumber; // Recipient mobile number
+		String text = otp
+				+ " is mobile number verification OTP. Do not share with others Team JDA (NETCREATIVEMIND SOLUTIONS)."; // SMS
+																														// content
+
+		// Build the request URL with dynamic parameters
+		String url = String.format("https://www.mysmsapp.in/api/push.json?apikey=%s&sender=%s&mobileno=%s&text=%s",
+				apiKey, sender, mobileNo, text);
+
+		OkHttpClient client = new OkHttpClient();
+		// Create the request body (empty in this case, since the data is in the URL)
+		MediaType mediaType = MediaType.parse("text/plain");
+		RequestBody body = RequestBody.create(mediaType, "");
+
+		// Build the request
+		Request request = new Request.Builder().url(url).method("POST", body).build();
+
+		// Execute the request
+		try (Response response = client.newCall(request).execute()) {
+			if (response.isSuccessful()) {
+				System.out.println("SMS sent successfully!");
+				user.setOtp(otp);
+				certificatDebatorRepo.save(user);
+
+				return "OTP sent successfully to " + mobileNumber + ". " + response.body().string();
+
+			} else {
+				System.out.println("Error sending SMS: " + response.message());
+			}
+		} catch (Exception e) {
+			System.out.println("Request failed: " + e.getMessage());
+			return "Failed to send OTP: ";
+
+		}
+	
+		return null;
+	}
+
+	public LoginResponse loginwithphoneNumberDebator(String phoneNumber, String otp) {
+		System.out.println();
+		LoginResponse loginResponse = new LoginResponse();
+    	CertificateDebator user   = certificatDebatorRepo.findByPhoneNumber(phoneNumber);
+    	
+    	RoleEntity entity=new RoleEntity();
+    	
+    	//entity=roleRepository.findByRoleName("CERTIFICATE_HOLDER");
+    	
+    	entity.setRoleName("CERTIFICATE_DEBTOR");
+    	entity.setRolePermission("CERTIFICATE_DEBTOR");
+    	
+
+
+		if (user == null || user.getOtp() == null || !user.getOtp().equals(otp)) {
+			
+			loginResponse.setMsg("otp not matches");
+			loginResponse.setStatus("404");
+			return loginResponse;
+
+			//throw new RuntimeException("Invalid mobile number or OTP");
+		}
+
+		// Optional: clear OTP after use
+		user.setOtp(null);
+		//userRepository.save(user);
+//		loginResponse.setRole(user.getRole());
+//		loginResponse.setFullName(user.getFullName());
+//		loginResponse.setUserId(user.getUserId());
+//		loginResponse.setDistrict(user.getDistrict());
+	loginResponse.setFullName(user.getDebatorName());
+	loginResponse.setUserId(user.getDebatorId());
+	
+	
+	
+	loginResponse.setRole(entity);
+	loginResponse.setDistrict(user.getDistrict());
+	
+	loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+	loginResponse.setMsg("success");
+	loginResponse.setStatus("200");
+	user.setOtp("");
+	certificatDebatorRepo.save(user);
+		return loginResponse;
 	}
 
 }

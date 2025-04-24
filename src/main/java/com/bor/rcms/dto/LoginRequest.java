@@ -5,6 +5,7 @@ public class LoginRequest {
 	private String userName;
 	private String email;
 	private String act;
+	private String mobileNumber;
 
     private String password;
     private String userType;
@@ -77,16 +78,19 @@ public class LoginRequest {
 	public void setAct(String act) {
 		this.act = act;
 	}
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 	@Override
 	public String toString() {
-		return "LoginRequest [userName=" + userName + ", email=" + email + ", act=" + act + ", password=" + password
-				+ ", userType=" + userType + ", firstValue=" + firstValue + ", secondValue=" + secondValue
-				+ ", captchaValue=" + captchaValue + "]";
+		return "LoginRequest [userName=" + userName + ", email=" + email + ", act=" + act + ", mobileNumber="
+				+ mobileNumber + ", password=" + password + ", userType=" + userType + ", firstValue=" + firstValue
+				+ ", secondValue=" + secondValue + ", captchaValue=" + captchaValue + "]";
 	}
-	public LoginRequest() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	
 	
 
 	

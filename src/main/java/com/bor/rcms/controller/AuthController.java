@@ -25,8 +25,10 @@ import com.bor.rcms.dto.LoginRequest;
 import com.bor.rcms.dto.OTPRequest;
 import com.bor.rcms.dto.OtpLoginRequest;
 import com.bor.rcms.dto.UserRegistrationRequest;
+import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.Casesinform;
@@ -37,6 +39,7 @@ import com.bor.rcms.security.EmailService;
 import com.bor.rcms.service.NoticeService;
 import com.bor.rcms.service.ObjectionService;
 import com.bor.rcms.service.UserService;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 @RestController
 @RequestMapping("api/auth")
@@ -53,6 +56,9 @@ public class AuthController {
 	@Autowired
 	private ObjectionService objectionService;
 
+	@Autowired
+	private CertificatDebatorRepo certificatDebatorRepo;
+	
     @Autowired
     private UserService userService;
 
@@ -346,7 +352,10 @@ public class AuthController {
 			
 			if(entity!=null)
 			{
-	            return ResponseEntity.ok(Map.of("message", "Try another aadhar"));
+				
+				  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                          .body(Map.of("message", "Try another Aadhar"));
+	        //    return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
 
 			}
 			else {
@@ -371,6 +380,60 @@ public class AuthController {
 	        return "Email sent successfully to " + request.getTo();
 	    }
 	
+	  
+	  //
+	  @PostMapping("debatorLogin")
+	    public ResponseEntity<?>  debatorLogin(@RequestBody LoginRequest request) {
+      	StatusRes res=new  StatusRes();
+
+			if(request.getMobileNumber()!=null&& request.getAct().equals("PDR"))
+	    	{
+				
+	        CertificateDebator	  entity   = certificatDebatorRepo.findByPhoneNumber(request.getMobileNumber());
+	        
+	        if(entity==null)
+	        {
+	        	res.setMessage("try another mobile muber");
+	        	res.setStatus("404");
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+	        	String   Stringeres  = userService.debatorLoginotp(request.getMobileNumber());
+	        	
+	        	res.setMessage("success");
+	        	res.setStatus("200");
+	            return ResponseEntity.ok(res);
+	        	
+	           // return ResponseEntity.ok(Stringeres);
+
+	    	}else {
+	    	
+	    		//LoginResponse   Stringeres  = userService.loginOfficer(request.getUserName(), request.getPassword(),request.getUserType());
+	        return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
+	    	}
+	    }
+	
+	  
+	  @PostMapping("/verify-otp-debator")
+	    public ResponseEntity<?> logindebator(@RequestBody OTPRequest request) {
+	    	if(request.getAct().equals("PDR"))
+	    	{
+	    	if(request.getPhoneNumber()!=null&& !request.getPhoneNumber().equals(""))
+	    	{
+	    		
+	        	LoginResponse Stringeres = userService.loginwithphoneNumberDebator(request.getPhoneNumber(), request.getOtp());
+	        	
+	            return ResponseEntity.ok(Stringeres);
+	        	
+	    	}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different mobile" );
+
+	    	}
+			return null;
+	    	
+	    }
+	  
+	  
 	//
 	
 	
