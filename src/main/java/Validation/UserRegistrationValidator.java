@@ -1,6 +1,10 @@
 package Validation;
 
+import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.UserRegistrationRequest;
+
+import Validation.CaseNotesValidator.ValidationResult;
+
 import java.util.regex.Pattern;
 
 public class UserRegistrationValidator {
@@ -19,6 +23,13 @@ public class UserRegistrationValidator {
 
 	private static final Pattern PASSWORD_PATTERN = 
 	    Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!\\-_.,])(?=\\S+$).{8,64}$");
+	private static final Pattern GENERAL_TEXT_PATTERN = 
+	        Pattern.compile("^[\\p{L}0-9 .,'\"()\\-\\/]+$");
+	    private static final Pattern ACTION_PATTERN = 
+	        Pattern.compile("^[A-Za-z_]{3,20}$");
+	    private static final Pattern FORM_ID_PATTERN = 
+	        Pattern.compile("^[A-Za-z0-9-]{3,50}$");
+//	caseProcessdetails
 
     public static ValidationResult checkUser(UserRegistrationRequest request) {
         ValidationResult result = new ValidationResult();
@@ -42,20 +53,22 @@ public class UserRegistrationValidator {
             return result;
         }
         
-        // Validate phone number
+        // Clean and validate primary phone number
         if (request.getPhoneNumber() == null || request.getPhoneNumber().isEmpty()) {
-            result.addError("Phone number is required");
-        } else if (!PHONE_PATTERN.matcher(request.getPhoneNumber()).matches()) {
-            result.addError("Phone number must be exactly 10 digits");
-            return result;
+            result.addError("Primary phone number is required");
+        } else {
+            String cleanedPhone = request.getPhoneNumber().replaceAll("[^0-9]", "");
+            if (!PHONE_PATTERN.matcher(cleanedPhone).matches()) {
+                result.addError("Primary phone number must be exactly 10 digits");
+            }
         }
         
-        // Validate Alternative phone number
-        if (request.getAlternatenumber() == null || request.getAlternatenumber().isEmpty()) {
-            result.addError("Phone number is required");
-        } else if (!PHONE_PATTERN.matcher(request.getAlternatenumber()).matches()) {
-            result.addError("Phone number must be exactly 10 digits");
-            return result;
+        // Clean and validate alternate phone number (optional)
+        if (request.getAlternatenumber() != null && !request.getAlternatenumber().isEmpty()) {
+            String cleanedAltPhone = request.getAlternatenumber().replaceAll("[^0-9]", "");
+            if (!PHONE_PATTERN.matcher(cleanedAltPhone).matches()) {
+                result.addError("Alternate phone number must be exactly 10 digits");
+            }
         }
         
         // Validate password
@@ -117,6 +130,43 @@ public class UserRegistrationValidator {
         
         return result;
     }
+    public static ValidationResult checkUser(CaseNotes casenotes) {
+        ValidationResult result = new ValidationResult();
+   
+        if (casenotes == null) {
+            result.addError("Case notes object cannot be null");
+            return result;
+        }
+        
+        // Validate action (required field)
+        if (casenotes.getAction() == null || casenotes.getAction().isEmpty()) {
+            result.addError("Action is required");
+        } else if (!ACTION_PATTERN.matcher(casenotes.getAction()).matches()) {
+            result.addError("Action contains invalid characters (only letters and underscore allowed)");
+        }
+        
+        // Validate selectForm if present
+        if (casenotes.getSelectForm() != null && !casenotes.getSelectForm().isEmpty()) {
+            if (!FORM_ID_PATTERN.matcher(casenotes.getSelectForm()).matches()) {
+                result.addError("Select form ID format is invalid");
+            }
+        }
+        
+        // Validate note
+        if (casenotes.getCaseNotes() != null && !casenotes.getCaseNotes().isEmpty()) {
+            if (casenotes.getCaseNotes().length() > 1000) {
+                result.addError("Notes cannot exceed 1000 characters");
+            } else if (!GENERAL_TEXT_PATTERN.matcher(casenotes.getCaseNotes()).matches()) {
+                result.addError("Notes contain invalid characters");
+            }
+        }
+        
+        
+        return result;
+    }
+    
+    
+    
 
     public static class ValidationResult {
         private boolean passed = true;

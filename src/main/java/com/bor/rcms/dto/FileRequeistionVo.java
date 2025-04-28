@@ -9,6 +9,7 @@ public class FileRequeistionVo {
 	private List<DebatorVo> debatorVos;
 
 	    // Guarantor Details
+	
 	    private String guarantorName;
 	    private String guarantorAddress;
 	    private String guarantorAddress1;

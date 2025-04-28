@@ -156,6 +156,17 @@ public class AuthController {
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
       
 		StatusRes res = new StatusRes();
+		
+		UserRegistrationValidator.ValidationResult result = 
+			    UserRegistrationValidator.checkUser(request);
+
+			if (!result.passed()) {
+				res.setStatus("400");
+				res.setMessage(result.getErrors());
+			    return ResponseEntity.badRequest().body(res);
+			}
+		
+			
 		try {
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
@@ -224,8 +235,8 @@ public class AuthController {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	
 	}
-
 	
 	
 	@PostMapping("/registerPDR")
@@ -293,8 +304,11 @@ public class AuthController {
 				UserEntity entity = repository.findByPhoneNumber(request.getPhoneNumber());
 
 				if (entity != null) {
-					res.setMessage("try diiferent mobile ");
-					res.setStatus("400");
+					 res.setMessage("Phone number already in use. Please use a different number.");
+					    res.setStatus("400");
+					
+				//	res.setMessage("try diiferent mobile ");
+				//	res.setStatus("400");
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different" + res);
 				}
 			} catch (Exception e) {
