@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
 import com.bor.rcms.entity.FileRequeistion;
+import com.bor.rcms.entity.LegalRepresentative;
 import com.bor.rcms.entity.Mis;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.RoleEntity;
@@ -65,21 +67,18 @@ public class PdrServiceImpl implements PdrService {
 
 	@Autowired
 	private FileRequeistionRepo fileRequeistionRepo;
-	
+
 	@Autowired
 	private CertificatOfficerRepo certificatOfficerRepo;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
 
 	@Autowired
 	private CourtAddRepo courtAddRepo;
 
 	@Autowired
 	private RoleRepository roleRepository;
-
-
 
 	@Override
 	public String submitRequisition(FileRequeistion requisition, MultipartFile[] files, String username,
@@ -88,7 +87,7 @@ public class PdrServiceImpl implements PdrService {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 //  		userRepository.findByUserName(username)
 //      .orElseThrow(() -> new RuntimeException("User not found"));
-            requisition.setDistrictName(user.getDistrict());
+		requisition.setDistrictName(user.getDistrict());
 		// Generate Unique Objection ID
 		String objectionId = generateNextToken(requisition);
 		// UUID.randomUUID().toString().replace("-", "").substring(0, 10);
@@ -103,34 +102,31 @@ public class PdrServiceImpl implements PdrService {
 		// Save Objection to the database
 		ObjectMapper objectMapper = new ObjectMapper();
 		requisition.setRole(user.getRole());
-		
-		List<CertificateDebator> certificateDebators=new ArrayList<CertificateDebator>();
 
-		List<CertificateDebator> certificateDebatorslist=requisition.getCertificateDebator();
-		
-		
-		String debatorName=null;
-		String addressdebator=null;
-		
-		for(CertificateDebator certificateDebator:certificateDebatorslist)
-		{
-			debatorName=certificateDebator.getDebatorName();
-			addressdebator=certificateDebator.getAddress();
-			
+		List<CertificateDebator> certificateDebators = new ArrayList<CertificateDebator>();
+
+		List<CertificateDebator> certificateDebatorslist = requisition.getCertificateDebator();
+
+		String debatorName = null;
+		String addressdebator = null;
+
+		for (CertificateDebator certificateDebator : certificateDebatorslist) {
+			debatorName = certificateDebator.getDebatorName();
+			addressdebator = certificateDebator.getAddress();
+
 			certificateDebator.setRequeistion(requisition);
 			certificateDebators.add(certificateDebator);
-			
+
 		}
-		
-		
+
+		LegalRepresentative legalRepresentative = requisition.getLegalRepresentative();
+
+		legalRepresentative.setFileRequeistion(requisition);
+
 		requisition.setCertificateDebator(certificateDebators);
-		
 
 		FileRequeistion savedObjection = fileRequeistionRepo.save(requisition);
-		
-		
-		
-		
+
 		List<Map<String, String>> documentInfo = null;
 		if (documentTypes != null && !documentTypes.isEmpty()) {
 			try {
@@ -194,25 +190,25 @@ public class PdrServiceImpl implements PdrService {
 
 			// Save all documents to the database
 			documentRepository.saveAll(savedDocuments);
-			
-			try {
-				 String district = requisition.getDistrictName();
-				// String debtorName  = ;
-			        String address  = requisition.getUserId().getAddress();
-			        String amount  = "200";
-			        String nature  = "no";
-			        
-			        
-			        LocalDate localDate = LocalDate.parse(requisition.getCurrentDate());
 
-			        String day = String.valueOf(localDate.getDayOfMonth());
-			        String month = String.valueOf(localDate.getMonthValue());
-			        String year = String.valueOf(localDate.getYear());
-   		        String designation ="NULL"; ;
-	            String notice = noticedgenerateform2(savedObjection,district,debatorName,addressdebator,nature, amount,month,year,day,designation);
-		
-			}
-			catch (Exception e) {
+			try {
+				String district = requisition.getDistrictName();
+				// String debtorName = ;
+				String address = requisition.getUserId().getAddress();
+				String amount = "200";
+				String nature = "no";
+
+				LocalDate localDate = LocalDate.parse(requisition.getCurrentDate());
+
+				String day = String.valueOf(localDate.getDayOfMonth());
+				String month = String.valueOf(localDate.getMonthValue());
+				String year = String.valueOf(localDate.getYear());
+				String designation = "NULL";
+				;
+				String notice = noticedgenerateform2(savedObjection, district, debatorName, addressdebator, nature,
+						amount, month, year, day, designation);
+
+			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
@@ -225,90 +221,65 @@ public class PdrServiceImpl implements PdrService {
 		return objectionId;
 	}
 
-
-	private String noticedgenerateform2(FileRequeistion fileRequeistion, String district, String debtorName, String address, String nature,
-			String amount, String month, String year, String day, String designation) {
+	private String noticedgenerateform2(FileRequeistion fileRequeistion, String district, String debtorName,
+			String address, String nature, String amount, String month, String year, String day, String designation) {
 		// TODO Auto-generated method stub
-		 String htmlContent = "<!DOCTYPE html>"
-		            + "<html lang='en'>"
-		            + "<head>"
-		            + "<meta charset='UTF-8'>"
-		            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-		            + "<title>FORM No. 2</title>"
-		            + "<style>"
-		            + "body { font-family: Arial, sans-serif; margin: 20px; }"
-		            + ".center { text-align: center; font-weight: bold; }"
-		            + "table { width: 100%; border-collapse: collapse; border: 1px solid #000; }"
-		            + "th, td { border: 1px solid #000; padding: 10px; text-align: left; }"
-		            + ".section { margin-bottom: 20px; }"
-		            + "</style>"
-		            + "</head>"
-		            + "<body>"
+		String htmlContent = "<!DOCTYPE html>" + "<html lang='en'>" + "<head>" + "<meta charset='UTF-8'>"
+				+ "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" + "<title>FORM No. 2</title>"
+				+ "<style>" + "body { font-family: Arial, sans-serif; margin: 20px; }"
+				+ ".center { text-align: center; font-weight: bold; }"
+				+ "table { width: 100%; border-collapse: collapse; border: 1px solid #000; }"
+				+ "th, td { border: 1px solid #000; padding: 10px; text-align: left; }"
+				+ ".section { margin-bottom: 20px; }" + "</style>" + "</head>" + "<body>"
 
-		            + "<div style='max-width: 800px; margin: 0 auto;'>"
-		            + "<div class='center'><h2>FORM No. 2</h2><h3>Requisition for a certificate</h3><p style='font-style: italic;'>(See Section 5)</p></div>"
+				+ "<div style='max-width: 800px; margin: 0 auto;'>"
+				+ "<div class='center'><h2>FORM No. 2</h2><h3>Requisition for a certificate</h3><p style='font-style: italic;'>(See Section 5)</p></div>"
 
-		            + "<div class='section'><p>To</p>"
-		            + "<p style='margin-left: 40px;'>The Certificate Officer of the District of " + district + "</p></div>"
+				+ "<div class='section'><p>To</p>"
+				+ "<p style='margin-left: 40px;'>The Certificate Officer of the District of " + district + "</p></div>"
 
-		            + "<hr style='border: 2px solid #000;'>"
+				+ "<hr style='border: 2px solid #000;'>"
 
-		            + "<table>"
-		            + "<tr>"
-		            + "<th>Name of certificate debtor</th>"
-		            + "<th>Address of Certificate debtor</th>"
-		            + "<th>Amount of public demand</th>"
-		            + "<th>Nature of public demand</th>"
-		            + "</tr>"
-		            + "<tr>"
-		            + "<td>" + debtorName + "</td>"
-		            + "<td>" + address + "</td>"
-		            + "<td>Rs. " + amount + "</td>"
-		            + "<td>" + nature + "</td>"
-		            + "</tr>"
-		            + "</table>"
+				+ "<table>" + "<tr>" + "<th>Name of certificate debtor</th>" + "<th>Address of Certificate debtor</th>"
+				+ "<th>Amount of public demand</th>" + "<th>Nature of public demand</th>" + "</tr>" + "<tr>" + "<td>"
+				+ debtorName + "</td>" + "<td>" + address + "</td>" + "<td>Rs. " + amount + "</td>" + "<td>" + nature
+				+ "</td>" + "</tr>" + "</table>"
 
-		            + "<hr style='border: 2px solid #000; margin-top: 5px; margin-bottom: 30px;'>"
+				+ "<hr style='border: 2px solid #000; margin-top: 5px; margin-bottom: 30px;'>"
 
-		            + "<div class='section'>"
-		            + "<p>I request you to recover the above-mentioned sum of Rs. " + amount + ", which I am satisfied, after inquiry, is due from the said " + debtorName + " in respect of " + nature + ".</p>"
-		            + "</div>"
+				+ "<div class='section'>" + "<p>I request you to recover the above-mentioned sum of Rs. " + amount
+				+ ", which I am satisfied, after inquiry, is due from the said " + debtorName + " in respect of "
+				+ nature + ".</p>" + "</div>"
 
-		            + "<div class='section' style='margin-left: 40px;'>"
-		            + "<p>Verified by me on the " + day + " day of " + month + " 19" + year + ".</p>"
-		            + "</div>"
+				+ "<div class='section' style='margin-left: 40px;'>" + "<p>Verified by me on the " + day + " day of "
+				+ month + " 19" + year + ".</p>" + "</div>"
 
-		            + "<div style='text-align: right;'>"
-		            + "<p>A.B.</p>"
-		            + "<p style='font-style: italic;'>(" + designation + ")</p>"
-		            + "</div>"
+				+ "<div style='text-align: right;'>" + "<p>A.B.</p>" + "<p style='font-style: italic;'>(" + designation
+				+ ")</p>" + "</div>"
 
-		            + "</div>"
-		            + "</body></html>";
+				+ "</div>" + "</body></html>";
 
-		        try {
-		        	
-		            String fileName = "D:\\Form2_" +fileRequeistion.getRequeistionId()+ debtorName.replaceAll(" ", "_") + ".pdf";
-		            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
-		            System.out.println("✅ PDF successfully saved to: " + fileName);
-		            
-		            
-		            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
-		            
-		            enNoticeRelease.setDocumentName("Form2");
-		            enNoticeRelease.setFilePath(fileName);
-		            enNoticeRelease.setFileRequeistion(fileRequeistion);
-		            
-		            DocumentEntityPdr DocumentEntity=documentRepository.save(enNoticeRelease);
-		            
-		            
-		        } catch (IOException e) {
-		            System.err.println("❌ PDF generation failed: " + e.getMessage());
-		        }
+		try {
 
-		        return htmlContent;
-		    }	
+			String fileName = "D:\\Form2_" + fileRequeistion.getRequeistionId() + debtorName.replaceAll(" ", "_")
+					+ ".pdf";
+			HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
+			System.out.println("✅ PDF successfully saved to: " + fileName);
 
+			DocumentEntityPdr enNoticeRelease = new DocumentEntityPdr();
+
+			enNoticeRelease.setDocumentName("Form2");
+			enNoticeRelease.setFilePath(fileName);
+			enNoticeRelease.setFileRequeistion(fileRequeistion);
+
+			DocumentEntityPdr DocumentEntity = documentRepository.save(enNoticeRelease);
+
+		} catch (IOException e) {
+			System.err.println("❌ PDF generation failed: " + e.getMessage());
+		}
+
+		return htmlContent;
+	}
 
 	public String generateNextToken(FileRequeistion objection) {
 		try {
@@ -319,13 +290,14 @@ public class PdrServiceImpl implements PdrService {
 					: Integer.toString(LocalDate.now().getYear() % 100);
 
 			// Fetch last inserted NewObjection by districtName
-		//	Optional<FileRequeistion> lastInsertedUser = fileRequeistionRepo
-					
-			//		//.findTopByDistrictNameOrderByCurrentDateDesc(objection.getDistrictName());
-			
+			// Optional<FileRequeistion> lastInsertedUser = fileRequeistionRepo
+
+			// //.findTopByDistrictNameOrderByCurrentDateDesc(objection.getDistrictName());
+
 			String prefix = "REQ-" + objection.getDistrictName() + "-" + currentYear + "-";
 			Optional<FileRequeistion> lastInsertedUser = fileRequeistionRepo
-			    .findTopByDistrictNameAndRequeistionIdStartingWithOrderByRequeistionIdDesc(objection.getDistrictName(), prefix);
+					.findTopByDistrictNameAndRequeistionIdStartingWithOrderByRequeistionIdDesc(
+							objection.getDistrictName(), prefix);
 
 			if (lastInsertedUser.isPresent()) {
 				String caseId2 = lastInsertedUser.get().getRequeistionId();
@@ -354,14 +326,14 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public List<FileRequeistion> findpending(String district) {
-        return fileRequeistionRepo.findAllPending(district);
+		return fileRequeistionRepo.findAllPending(district);
 
 	}
 
 	@Override
 	public Object findbyId(String obId) {
 		// TODO Auto-generated method stub
-        return fileRequeistionRepo.findAllByRequeistionId(obId);
+		return fileRequeistionRepo.findAllByRequeistionId(obId);
 	}
 
 	@Override
@@ -369,8 +341,8 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			// Find the NewObjection entity
 			Optional<FileRequeistion> objection1 = fileRequeistionRepo.findByRequeistionId(statusvo.getCaseId());
-			FileRequeistion objection=objection1.get();
-			
+			FileRequeistion objection = objection1.get();
+
 			CertificatOfficer admission = new CertificatOfficer();
 
 			if (statusvo.getStatus().equals("Admit")) {
@@ -378,90 +350,90 @@ public class PdrServiceImpl implements PdrService {
 				admission.setAdmissionTime(statusvo.getAdmisionTime());
 				admission.setAffidavitDate(statusvo.getAffedefitDate());
 				admission.setOfficerName(statusvo.getOfficerName());
-				
-				String caseID=generateNextTokenadmision(objection);
+
+				String caseID = generateNextTokenadmision(objection);
 				admission.setCertOfficerId(caseID);
 				admission.setAdmisionCase(caseID);
 				objection.setStatus("Admit");
-				//objection.setObjectionId(objection.getObjectionId());
-			//	objection.setAdmission(admission);
+
+				// objection.setObjectionId(objection.getObjectionId());
+				// objection.setAdmission(admission);
 				admission.setFileRequeistion(objection);
 				admission.setUserId(objection.getUserId());
 				admission.setHearingDate(statusvo.getAdmissionDate());
 				admission.setStatus("Admit");
-				//admission.setNewObjection(objection);
+				// admission.setNewObjection(objection);
 				admission.setReequeistionId(objection.getRequeistionId());
-				
-			//	Mis mis = new Mis();
+
+				// Mis mis = new Mis();
 
 				if (statusvo.getUsertype().equals("CERTIFICATE_OFFICER")) {
 //					mis.setSpecialOfficer("SpecialOfficer");
 //					mis.setSpecialRemarks(statusvo.getStatus());
 //					mis.setObjId(objection.getTokenNo());
 //					mis.setNewObjection(objection);
-				//	objection.setAdmission(admission);
-					//objection.setMis(mis);
-					CertificatOfficer savedObjection =new CertificatOfficer();
+					// objection.setAdmission(admission);
+					// objection.setMis(mis);
+					CertificatOfficer savedObjection = new CertificatOfficer();
 					try {
-					
-				//	System.out.println("dd===>" + objection);
 
-					 savedObjection = certificatOfficerRepo.save(admission);
-					 if(savedObjection!=null)
-					 {
-						 return savedObjection.getCertOfficerId();
-					 }
-					 return null;
-					}
-					catch (Exception e) {
+						// System.out.println("dd===>" + objection);
+
+						savedObjection = certificatOfficerRepo.save(admission);
+						if (savedObjection != null) {
+							return savedObjection.getCertOfficerId();
+						}
+						return null;
+					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
-			
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
-				catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
-				}
 		return "";
-				
-			
-	
+
 	}
 
 	private String generateNextTokenadmision(FileRequeistion objection) {
 		try {
 			int initial = 0001;
 			String caseId;
-			
-			Admission admission=new Admission();
-		//	int currentYear = Year.now().getValue();
-		    String currentYear = LocalDate.now().getYear() % 100 < 10 ? "0" + (LocalDate.now().getYear() % 100) : Integer.toString(LocalDate.now().getYear() % 100);  // Two-digit year
 
-			//String caseId = user.getCaseId();
+			Admission admission = new Admission();
+			// int currentYear = Year.now().getValue();
+			String currentYear = LocalDate.now().getYear() % 100 < 10 ? "0" + (LocalDate.now().getYear() % 100)
+					: Integer.toString(LocalDate.now().getYear() % 100); // Two-digit year
+
+			// String caseId = user.getCaseId();
 			// Fetch last inserted user
-			
-			Optional<CertificatOfficer> lastInsertedUser = certificatOfficerRepo.findTopByDistrictOrderByCurrentdateDesc(objection.getDistrictName());
+
+			Optional<CertificatOfficer> lastInsertedUser = certificatOfficerRepo
+					.findTopByDistrictOrderByCurrentdateDesc(objection.getDistrictName());
 			if (lastInsertedUser.isPresent()) {
 				String caseId2 = lastInsertedUser.get().getAdmisionCase();
-				String[] parts = caseId2.split("-");  // Splitting by '-'
+				String[] parts = caseId2.split("-"); // Splitting by '-'
 				int caseNumber = Integer.parseInt(parts[parts.length - 1]);
-				int finalValue = caseNumber +1;
+				int finalValue = caseNumber + 1;
 				String formattedValue = String.format("%04d", finalValue);
-				admission.setAdmisionCase("Case-CO-"+objection.getDistrictName()+"-"+currentYear+"-"+formattedValue);
-			//	System.out.println("Last inserted user: " + lastInsertedUser.get());
+				admission.setAdmisionCase(
+						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+				// System.out.println("Last inserted user: " + lastInsertedUser.get());
 			} else {
 				String formattedValue = String.format("%04d", initial);
-				admission.setAdmisionCase("Case-CO-"+objection.getDistrictName()+"-"+currentYear+"-"+formattedValue);
+				admission.setAdmisionCase(
+						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 			}
-		//	System.out.println("last result--------->" + lastInsertedUser);
+			// System.out.println("last result--------->" + lastInsertedUser);
 
-         //   User savedUser = caseIdRepository.save(user);
-			caseId=admission.getAdmisionCase();
-			 return caseId;  // Fixed this line
+			// User savedUser = caseIdRepository.save(user);
+			caseId = admission.getAdmisionCase();
+			return caseId; // Fixed this line
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -473,84 +445,79 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			// Fetch the NewObjection using the objection ID
 			FileRequeistion newObjection = fileRequeistionRepo.findByRequeistionId(casenotes.getObjId()).get();
-			
-			
-			
-			CertificateDebator certificateDebatorslist=newObjection.getCertificateDebator().get(0);
 
-			
-			   String formType = casenotes.getSelectForm().trim();  // Trim to remove any extra spaces
+			CertificateDebator certificateDebatorslist = newObjection.getCertificateDebator().get(0);
 
-		        // Check if the form is empty but hearing date is not empty
-		        if(casenotes.getSelectForm().equals("") && !casenotes.getNextHearingDate().equals("")) {
-		        	FileRequeistion newObjection2 = new FileRequeistion();
-		            newObjection2.setStatus("date will be mandatory");
-		            return newObjection2;
-		        }
-		        
-                  if(formType.equals("Form1")) {
-                	  
-                	 String district = newObjection.getDistrictName();
-      		        String certificateHolder = certificateDebatorslist.getDebatorName();
-      		        String certificateDebtor = null;
-      		        String demandDetails = null;
-      		        String furtherDetails = null;
-      		      LocalDate currentDate = LocalDate.now();
+			String formType = casenotes.getSelectForm().trim(); // Trim to remove any extra spaces
 
-      	        String day = String.valueOf(currentDate.getDayOfMonth());
-      	        String month = String.valueOf(currentDate.getMonthValue());
-      	        String year = String.valueOf(currentDate.getYear());
-      		        String officerDesignation = null;
-	       //     String notice = noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
-		        }
+			// Check if the form is empty but hearing date is not empty
+			if (casenotes.getSelectForm().equals("") && !casenotes.getNextHearingDate().equals("")) {
+				FileRequeistion newObjection2 = new FileRequeistion();
+				newObjection2.setStatus("date will be mandatory");
+				return newObjection2;
+			}
+
+			if (formType.equals("Form1")) {
+
+				String district = newObjection.getDistrictName();
+				String certificateHolder = certificateDebatorslist.getDebatorName();
+				String certificateDebtor = null;
+				String demandDetails = null;
+				String furtherDetails = null;
+				LocalDate currentDate = LocalDate.now();
+
+				String day = String.valueOf(currentDate.getDayOfMonth());
+				String month = String.valueOf(currentDate.getMonthValue());
+				String year = String.valueOf(currentDate.getYear());
+				String officerDesignation = null;
+				// String notice =
+				// noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
+			}
 //
 //		        // Check for Form B
-		        if(formType.equals("Form3")) {
-		        	 String debtorName = certificateDebatorslist.getDebatorName();
-		             String reason = null;
-		             String section = null;
-		             LocalDate currentDate = LocalDate.now();
+			if (formType.equals("Form3")) {
+				String debtorName = certificateDebatorslist.getDebatorName();
+				String reason = null;
+				String section = null;
+				LocalDate currentDate = LocalDate.now();
 
-		             String day = String.valueOf(currentDate.getDayOfMonth());
-		             String month = String.valueOf(currentDate.getMonthValue());
-		             String year = String.valueOf(currentDate.getYear());
-		             String officerLocation = null;
-		        	System.out.println("form2");
-		       //     String notice = noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
-		        }
-		        
-		        // Check for Form A (corrected comparison and removed extra semicolon)
-		      
-			
+				String day = String.valueOf(currentDate.getDayOfMonth());
+				String month = String.valueOf(currentDate.getMonthValue());
+				String year = String.valueOf(currentDate.getYear());
+				String officerLocation = null;
+				System.out.println("form2");
+				// String notice =
+				// noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
+			}
+
+			// Check for Form A (corrected comparison and removed extra semicolon)
 
 			if (newObjection != null && newObjection.getRequeistionId() != null) {
 
 				CertificatOfficer admission = newObjection.getCertificatOfficer();
-				if(admission!=null)
-				{
-					
-				
-				admission.setAction(casenotes.getCaseClass());
-				admission.setHearingDate(casenotes.getNextHearingDate());
-				admission.setHearingTime(casenotes.getTime());
-				admission.setCaseClass(casenotes.getCaseClass());
-				admission.setStatus(casenotes.getAction());
-				admission.setReequeistionId(newObjection.getRequeistionId());
+				if (admission != null) {
+
+					admission.setAction(casenotes.getCaseClass());
+					admission.setHearingDate(casenotes.getNextHearingDate());
+					admission.setHearingTime(casenotes.getTime());
+					admission.setCaseClass(casenotes.getCaseClass());
+					admission.setStatus(casenotes.getAction());
+					admission.setReequeistionId(newObjection.getRequeistionId());
 
 //				byte[] notesBytes = casenotes.getCaseNotes().getBytes("UTF-8");
 //				Blob notesBlob = new SerialBlob(notesBytes);
-				
+
 //				if(casenotes.getAction().equals("Dismiss"))
 //				{
 //					admission.setStatusCollector("pending");
 //				}
 
-				admission.setCaseNotes(casenotes.getCaseNotes());
-				admission.setFileRequeistion(newObjection);
-				// Admission savedAdmission = admissionRepo.save(admission);
-				newObjection.setCertificatOfficer(admission);
-				
-				admission.setDistrict(newObjection.getDistrictName());
+					admission.setCaseNotes(casenotes.getCaseNotes());
+					admission.setFileRequeistion(newObjection);
+					// Admission savedAdmission = admissionRepo.save(admission);
+					newObjection.setCertificatOfficer(admission);
+
+					admission.setDistrict(newObjection.getDistrictName());
 //				Mis mis = new Mis();
 //				try {
 //					mis = newObjection.getMis();
@@ -562,21 +529,19 @@ public class PdrServiceImpl implements PdrService {
 //					e.printStackTrace();
 //				}
 //				newObjection.setMis(mis);
-				//newObjection.setStatus_officer("SpecialOfficer");
-				newObjection.setStatus(casenotes.getAction());
-				
+					// newObjection.setStatus_officer("SpecialOfficer");
+					newObjection.setStatus(casenotes.getAction());
+
 //				if(casenotes.getAction().equals("Dismiss"))
 //				{
 //					newObjection.setStatusCollector("pending");
 //				}
-				FileRequeistion savedNewObjection = fileRequeistionRepo.save(newObjection);
-				
-				
+					FileRequeistion savedNewObjection = fileRequeistionRepo.save(newObjection);
 
-				return savedNewObjection;
-				
+					return savedNewObjection;
+
 				}
-				
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -584,419 +549,384 @@ public class PdrServiceImpl implements PdrService {
 		return null;
 	}
 
-	
-		private String noticedgenerateform3(FileRequeistion fileRequeistion, String debtorName, String reason, String section, String day, String month,
-			String year, String officerLocation) {
-			String htmlContent = "<!DOCTYPE html>"
-		            + "<html lang='en'>"
-		            + "<head>"
-		            + "<meta charset='UTF-8'>"
-		            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-		            + "<title>FORM No. 3</title>"
-		            + "<style>"
-		            + "body { font-family: Arial, sans-serif; margin: 20px; }"
-		            + ".center { text-align: center; font-weight: bold; }"
-		            + ".italic { font-style: italic; }"
-		            + ".container { max-width: 800px; margin: 0 auto; padding: 20px; }"
-		            + "p { text-align: justify; line-height: 1.6; }"
-		            + "table { width: 100%; margin-top: 40px; }"
-		            + "td { vertical-align: top; }"
-		            + "</style>"
-		            + "</head>"
-		            + "<body>"
+	private String noticedgenerateform3(FileRequeistion fileRequeistion, String debtorName, String reason,
+			String section, String day, String month, String year, String officerLocation) {
+		String htmlContent = "<!DOCTYPE html>" + "<html lang='en'>" + "<head>" + "<meta charset='UTF-8'>"
+				+ "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" + "<title>FORM No. 3</title>"
+				+ "<style>" + "body { font-family: Arial, sans-serif; margin: 20px; }"
+				+ ".center { text-align: center; font-weight: bold; }" + ".italic { font-style: italic; }"
+				+ ".container { max-width: 800px; margin: 0 auto; padding: 20px; }"
+				+ "p { text-align: justify; line-height: 1.6; }" + "table { width: 100%; margin-top: 40px; }"
+				+ "td { vertical-align: top; }" + "</style>" + "</head>" + "<body>"
 
-		            + "<div class='container'>"
-		            + "<div class='center'><h2>FORM No. 3</h2><h3>Nature of Certificate-debtor</h3><p class='italic'>(See Section 7)</p></div>"
+				+ "<div class='container'>"
+				+ "<div class='center'><h2>FORM No. 3</h2><h3>Nature of Certificate-debtor</h3><p class='italic'>(See Section 7)</p></div>"
 
-		            + "<p>To</p>"
-		            + "<p style='margin-left: 40px;' class='italic'>" + debtorName + "</p>"
+				+ "<p>To</p>" + "<p style='margin-left: 40px;' class='italic'>" + debtorName + "</p>"
 
-		            + "<p>You are hereby informed that a certificate against you for Rs............................ due from you on account of " + reason + ", has this day been filed in my office, under section " + section + " of the Bihar and Orissa Public Demands Recovery Act, 1914. If you deny your liability to pay the said sum of Rs............................................... you may, within thirty days from the service of this notice, file in my office a petition denying liability, in whole or in part. If, within the said thirty days, you fail to file such a petition, or if you fail to show cause, or do not show sufficient cause, why such certificate should not be executed, it will be executed, under the provisions of the said Act, unless you pay Rs................................ (Rs......................... on account of the demand and Rs.................................... on account of costs of realization) into my office. Until the said amount is so paid you are hereby prohibited from alienating your immovable property, or any part of it, by sale, gift, mortgage or otherwise. If you in the meantime conceal, remove or dispose of any part of your movable property, the certificate will be executed immediately.</p>"
+				+ "<p>You are hereby informed that a certificate against you for Rs............................ due from you on account of "
+				+ reason + ", has this day been filed in my office, under section " + section
+				+ " of the Bihar and Orissa Public Demands Recovery Act, 1914. If you deny your liability to pay the said sum of Rs............................................... you may, within thirty days from the service of this notice, file in my office a petition denying liability, in whole or in part. If, within the said thirty days, you fail to file such a petition, or if you fail to show cause, or do not show sufficient cause, why such certificate should not be executed, it will be executed, under the provisions of the said Act, unless you pay Rs................................ (Rs......................... on account of the demand and Rs.................................... on account of costs of realization) into my office. Until the said amount is so paid you are hereby prohibited from alienating your immovable property, or any part of it, by sale, gift, mortgage or otherwise. If you in the meantime conceal, remove or dispose of any part of your movable property, the certificate will be executed immediately.</p>"
 
-		            + "<p>A copy of the certificate above-mentioned is hereto annexed.</p>"
-		            + "<p>You may remit the amount by money order, quoting the number and year of the certificate.</p>"
+				+ "<p>A copy of the certificate above-mentioned is hereto annexed.</p>"
+				+ "<p>You may remit the amount by money order, quoting the number and year of the certificate.</p>"
 
-		            + "<p>Dated this " + day + " Day of " + month + " 19" + year + ".</p>"
+				+ "<p>Dated this " + day + " Day of " + month + " 19" + year + ".</p>"
 
-		            + "<table>"
-		            + "<tr>"
-		            + "<td></td>"
-		            + "<td style='text-align: right;'>"
-		            + "<p>A.B.</p>"
-		            + "<p class='italic'>(Certificate Officer of " + officerLocation + ")</p>"
-		            + "</td>"
-		            + "</tr>"
-		            + "</table>"
+				+ "<table>" + "<tr>" + "<td></td>" + "<td style='text-align: right;'>" + "<p>A.B.</p>"
+				+ "<p class='italic'>(Certificate Officer of " + officerLocation + ")</p>" + "</td>" + "</tr>"
+				+ "</table>"
 
-		            + "</div>"
-		            + "</body></html>";
+				+ "</div>" + "</body></html>";
 
-		        try {
-		        	 DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
-		             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
-		            String fileName = "D:\\Form3_" +fileRequeistion.getRequeistionId() +currentMinute+ ".pdf";
-		            
-		            
-		            
-		            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
-		            
-		            enNoticeRelease.setDocumentName("Form3");
-		            enNoticeRelease.setFilePath(fileName);
-		            enNoticeRelease.setFileRequeistion(fileRequeistion);
-		            
-		            DocumentEntityPdr DocumentEntity=documentRepository.save(enNoticeRelease);
-		            
-		            
-		            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
-		            System.out.println("✅ PDF successfully saved to: " + fileName);
-		        } catch (IOException e) {
-		            System.out.println("❌ Error generating PDF: " + e.getMessage());
-		        }
+		try {
+			DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+			String currentMinute = LocalDateTime.now().format(fileNameFormatter);
+			String fileName = "D:\\Form3_" + fileRequeistion.getRequeistionId() + currentMinute + ".pdf";
 
-		        return htmlContent;
-		    }
+			DocumentEntityPdr enNoticeRelease = new DocumentEntityPdr();
 
-	
+			enNoticeRelease.setDocumentName("Form3");
+			enNoticeRelease.setFilePath(fileName);
+			enNoticeRelease.setFileRequeistion(fileRequeistion);
 
-		// TODO Auto-generated method stub
-	
+			DocumentEntityPdr DocumentEntity = documentRepository.save(enNoticeRelease);
 
-private String noticedgenerateform1(FileRequeistion fileRequeistion, String district, String certificateHolder, String certificateDebtor,
-		String demandDetails, String furtherDetails, String day, String month, String year,
-		String officerDesignation) {			
-			 
-			
-			 String htmlContent = "<!DOCTYPE html>"
-			            + "<html lang='en'>"
-			            + "<head>"
-			            + "<meta charset='UTF-8'>"
-			            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-			            + "<title>FORM No. 1</title>"
-			            + "<style>"
-			            + "body { font-family: Arial, sans-serif; margin: 20px; }"
-			            + ".center { text-align: center; }"
-			            + ".bold { font-weight: bold; }"
-			            + "table { width: 100%; border-collapse: collapse; border: 1px solid #000; margin-top: 20px; }"
-			            + "th, td { border: 1px solid #000; padding: 10px; vertical-align: top; }"
-			            + ".signature { margin-top: 50px; font-weight: bold; display: flex; justify-content: space-between; }"
-			            + "</style>"
-			            + "</head>"
-			            + "<body>"
+			HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
+			System.out.println("✅ PDF successfully saved to: " + fileName);
+		} catch (IOException e) {
+			System.out.println("❌ Error generating PDF: " + e.getMessage());
+		}
 
-			            + "<div style='max-width: 800px; margin: 0 auto;'>"
-			            + "<div class='center'>"
-			            + "<h2 class='bold'>FORM No. 1</h2>"
-			            + "<h3 class='bold'>Certificate of Public Demands</h3>"
-			            + "<p>(See Section 4 and 6)</p>"
-			            + "<p style='font-style: italic;'>Filed in the Office of the Certificate Officer of " + district + ".</p>"
-			            + "</div>"
+		return htmlContent;
+	}
 
-			            + "<hr style='border-top: 2px solid #000;'>"
+	// TODO Auto-generated method stub
 
-			            + "<table>"
-			            + "<tr>"
-			            + "<th>Number of Certificate</th>"
-			            + "<th>Name and address of certificate holder</th>"
-			            + "<th>Name and address of certificate debtor</th>"
-			            + "<th>Amount of public demand</th>"
-			            + "<th>Further particulars of the demand</th>"
-			            + "</tr>"
-			            + "<tr>"
-			            + "<td></td>"
-			            + "<td>" + certificateHolder + "</td>"
-			            + "<td>" + certificateDebtor + "</td>"
-			            + "<td>" + demandDetails + "</td>"
-			            + "<td>" + furtherDetails + "</td>"
-			            + "</tr>"
-			            + "</table>"
+	private String noticedgenerateform1(FileRequeistion fileRequeistion, String district, String certificateHolder,
+			String certificateDebtor, String demandDetails, String furtherDetails, String day, String month,
+			String year, String officerDesignation) {
 
-			            + "<hr style='border-top: 2px solid #000;'>"
+		String htmlContent = "<!DOCTYPE html>" + "<html lang='en'>" + "<head>" + "<meta charset='UTF-8'>"
+				+ "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" + "<title>FORM No. 1</title>"
+				+ "<style>" + "body { font-family: Arial, sans-serif; margin: 20px; }"
+				+ ".center { text-align: center; }" + ".bold { font-weight: bold; }"
+				+ "table { width: 100%; border-collapse: collapse; border: 1px solid #000; margin-top: 20px; }"
+				+ "th, td { border: 1px solid #000; padding: 10px; vertical-align: top; }"
+				+ ".signature { margin-top: 50px; font-weight: bold; display: flex; justify-content: space-between; }"
+				+ "</style>" + "</head>" + "<body>"
 
-			            + "<p>I hereby certify that the above-mentioned sum of Rs ....................................... is due from the above-named person.</p>"
-			            + "<p><i>[If the certificate is signed or represented under section 5, add-]</i></p>"
-			            + "<p>I further certify that the above-mentioned sum is justly recoverable, and that its recovery by suit is not barred by law.</p>"
-			            + "<p>Dated this " + day + " day of " + month + " 19" + year + ".</p>"
+				+ "<div style='max-width: 800px; margin: 0 auto;'>" + "<div class='center'>"
+				+ "<h2 class='bold'>FORM No. 1</h2>" + "<h3 class='bold'>Certificate of Public Demands</h3>"
+				+ "<p>(See Section 4 and 6)</p>"
+				+ "<p style='font-style: italic;'>Filed in the Office of the Certificate Officer of " + district
+				+ ".</p>" + "</div>"
 
-			            + "<div class='signature'>"
-			            + "<div><p>!Certificate Holder</p></div>"
-			            + "<div style='text-align: right;'>"
-			            + "<p>A.B.</p>"
-			            + "<p>" + officerDesignation + "</p>"
-			            + "</div>"
-			            + "</div>"
+				+ "<hr style='border-top: 2px solid #000;'>"
 
-			            + "</div>"
-			            + "</body></html>";
+				+ "<table>" + "<tr>" + "<th>Number of Certificate</th>"
+				+ "<th>Name and address of certificate holder</th>" + "<th>Name and address of certificate debtor</th>"
+				+ "<th>Amount of public demand</th>" + "<th>Further particulars of the demand</th>" + "</tr>" + "<tr>"
+				+ "<td></td>" + "<td>" + certificateHolder + "</td>" + "<td>" + certificateDebtor + "</td>" + "<td>"
+				+ demandDetails + "</td>" + "<td>" + furtherDetails + "</td>" + "</tr>" + "</table>"
 
-			        try {
-			        	
-			        	 DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
-			             String currentMinute = LocalDateTime.now().format(fileNameFormatter);
-			       
-			            String fileName = "D:\\Form1_" + fileRequeistion.getRequeistionId()+ currentMinute + ".pdf";
-			            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
-			            System.out.println("✅ PDF successfully saved to: " + fileName);
-			            
-			            DocumentEntityPdr enNoticeRelease=new DocumentEntityPdr();
-			            
-			            enNoticeRelease.setDocumentName("Form1");
-			            enNoticeRelease.setFilePath(fileName);
-			            enNoticeRelease.setFileRequeistion(fileRequeistion);
-			            
-			            DocumentEntityPdr DocumentEntity=documentRepository.save(enNoticeRelease);
-			            
-			        } catch (IOException e) {
-			            System.out.println("❌ Error generating PDF: " + e.getMessage());
-			        }
+				+ "<hr style='border-top: 2px solid #000;'>"
 
-			        return htmlContent;
-			    }
-	
+				+ "<p>I hereby certify that the above-mentioned sum of Rs ....................................... is due from the above-named person.</p>"
+				+ "<p><i>[If the certificate is signed or represented under section 5, add-]</i></p>"
+				+ "<p>I further certify that the above-mentioned sum is justly recoverable, and that its recovery by suit is not barred by law.</p>"
+				+ "<p>Dated this " + day + " day of " + month + " 19" + year + ".</p>"
+
+				+ "<div class='signature'>" + "<div><p>!Certificate Holder</p></div>"
+				+ "<div style='text-align: right;'>" + "<p>A.B.</p>" + "<p>" + officerDesignation + "</p>" + "</div>"
+				+ "</div>"
+
+				+ "</div>" + "</body></html>";
+
+		try {
+
+			DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+			String currentMinute = LocalDateTime.now().format(fileNameFormatter);
+
+			String fileName = "D:\\Form1_" + fileRequeistion.getRequeistionId() + currentMinute + ".pdf";
+			HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
+			System.out.println("✅ PDF successfully saved to: " + fileName);
+
+			DocumentEntityPdr enNoticeRelease = new DocumentEntityPdr();
+
+			enNoticeRelease.setDocumentName("Form1");
+			enNoticeRelease.setFilePath(fileName);
+			enNoticeRelease.setFileRequeistion(fileRequeistion);
+
+			DocumentEntityPdr DocumentEntity = documentRepository.save(enNoticeRelease);
+
+		} catch (IOException e) {
+			System.out.println("❌ Error generating PDF: " + e.getMessage());
+		}
+
+		return htmlContent;
+	}
 
 	@Override
 	public List<FileRequeistion> findAdmit(String district) {
-        return fileRequeistionRepo.findAllAdmit(district);
+		return fileRequeistionRepo.findAllAdmit(district);
 
 	}
 
-
 	@Override
 	public String addCourt(CourtReq courtReq) {
-		
+
 		try {
-			UserEntity courtAdd=new UserEntity();
-			
+			UserEntity courtAdd = new UserEntity();
 
 			courtAdd.setAddress(courtReq.getOfficeDetails());
-			
+
 			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
 			courtAdd.setFullName(courtReq.getOfficeName());
-			courtAdd.setEmail(courtReq.getOfficerEmail());
-			courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
-			
 
-			
+			courtAdd.setEmail(courtReq.getOfficerEmail());
+
+			UserEntity entity1 = new UserEntity();
+			try {
+				entity1 = userRepository.findByEmail(courtReq.getOfficerEmail());
+
+				if (entity1.getUserId() != null) {
+					return "try another email";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+
+			try {
+				courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
 //			courtReq.setOfficeDetails(courtAdd.getAddress());
 //			courtReq.setOfficeMobile(courtAdd.getPanNumber());
 //			courtReq.setOfficeName(courtAdd.getFullName());
 //			courtReq.setOfficerEmail(courtAdd.getFullName());
 //		
 //		
-		//courtReq.setAssignUSer(entity.getUserName());
-			
-			UserEntity entity=userRepository.findById(courtReq.getUserId()).get();
-			
-			courtAdd.setCreatedByuser(entity.getUserId());			
-			if(entity!=null)
-			{
+			// courtReq.setAssignUSer(entity.getUserName());
+
+			UserEntity entity = userRepository.findById(courtReq.getUserId())
+					.orElseThrow(() -> new RuntimeException("User not found"));
+
+			UserEntity courtfindMobile = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
+
+			courtAdd.setCreatedByuser(entity.getUserId());
+			if (entity != null) {
 				courtAdd.setCreatedByuser(entity.getUserId());
 				courtAdd.setDistrict(entity.getDistrict());
-			//	courtAdd.setUserId(entity);
-				
-				String roleName=courtReq.getRole();
-				RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
+				// courtAdd.setUserId(entity);
+				RoleEntity role = new RoleEntity();
+
+				String roleName = null;
+				try {
+					roleName = courtfindMobile.getRole().getRoleName();
+
+					role = roleRepository.findByRoleName(roleName);
+					if (role == null) {
+						role = new RoleEntity(roleName, roleName);
+						role = roleRepository.save(role);
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+
+				UserEntity courtAddsave = new UserEntity();
+
+				if (courtReq.getUpdaStatus() == null && courtfindMobile != null) {
+					return "try another number";
+				}
+				try {
+
+					// courtReq.setRole(entity.getRole().getRoleName());
+					if (courtReq.getUpdaStatus().equals("update")) {
+						courtAdd.setRole(role);
+						courtAdd.setUserId(courtfindMobile.getUserId());
+						courtAdd.setStatus(courtReq.getStatus());
+
+						courtAddsave = userRepository.save(courtAdd);
+						if (courtAddsave != null) {
+							return "save";
+						}
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				// courtAdd.setr;
+				role = roleRepository.findByRoleName(courtReq.getRole());
 				if (role == null) {
 					role = new RoleEntity(roleName, roleName);
 					role = roleRepository.save(role);
 				}
-
 				courtAdd.setRole(role);
-				
-				UserEntity  courtAddsave = new UserEntity();
-				UserEntity  courtfindMobile=	userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
-				
-				
-				
-				if(courtReq.getUpdaStatus()==null&& courtfindMobile!=null)
-				{
-					return  "try another number";
-				}
-				try {
-
-				if(courtReq.getUpdaStatus().equals("update"))
-				{
-					courtAdd.setUserId(courtfindMobile.getUserId());
-					
-					  courtAddsave=	userRepository.save(courtAdd);
-						if(courtAdd!=null)
-						{
-							return "save";
-						}
-				}
-				
-				}catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
-				}
-				
-				  courtAddsave=	userRepository.save(courtAdd);
-				if(courtAddsave!=null)
-				{
+				courtAdd.setStatus(courtReq.getStatus());
+				courtAddsave = userRepository.save(courtAdd);
+				if (courtAddsave != null) {
 					return "save";
 				}
-				return   "something issue";
-				
+				return "something issue";
+
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return null;
 	}
-
 
 	@Override
 	public List<CourtReq> addCourtlistShow(Long userId) {
 		// TODO Auto-generated method stub
 		try {
-			UserEntity entity=userRepository.findById(userId).get();
-			if(entity!=null)
-			{			
-				List<UserEntity> courtAdds=userRepository.findByCreatedByuser(entity.getUserId());
-	
-			List<CourtReq> courtAddslist=new ArrayList<CourtReq>();
-			
-			for(UserEntity userEntity:courtAdds)
-			{
-				CourtReq courtReq=new CourtReq();
-			
-				courtReq.setOfficeDetails(userEntity.getAddress());
-				courtReq.setOfficeMobile(userEntity.getPhoneNumber());
-				courtReq.setOfficeName(userEntity.getFullName());
-				courtReq.setOfficerEmail(userEntity.getEmail());
-			
-			courtReq.setAssignUSer(entity.getFullName());
-			courtReq.setCourtId(entity.getUserId());
-			courtAddslist.add(courtReq);
-				
-			}
-			
-			return courtAddslist;
+			UserEntity entity = userRepository.findById(userId).get();
+			if (entity != null) {
+				List<UserEntity> courtAdds = userRepository.findByCreatedByuser(entity.getUserId());
 
-		}
-		}
-		catch (Exception e) {
+				List<CourtReq> courtAddslist = new ArrayList<CourtReq>();
+
+				for (UserEntity userEntity : courtAdds) {
+					CourtReq courtReq = new CourtReq();
+
+					courtReq.setOfficeDetails(userEntity.getAddress());
+					courtReq.setOfficeMobile(userEntity.getPhoneNumber());
+					courtReq.setOfficeName(userEntity.getFullName());
+					courtReq.setOfficerEmail(userEntity.getEmail());
+
+					courtReq.setAssignUSer(entity.getFullName());
+					courtReq.setStatus(userEntity.getStatus());
+					courtReq.setCourtId(entity.getUserId());
+					courtAddslist.add(courtReq);
+
+				}
+
+				return courtAddslist;
+
+			}
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return null;
 	}
 
-
 	@Override
 	public StatusRes noticeGenerate(String selectForm, String reqId) {
-		StatusRes statusRes =new StatusRes();
+		StatusRes statusRes = new StatusRes();
 
 		FileRequeistion newObjection = new FileRequeistion();
 		try {
-			newObjection=	fileRequeistionRepo.findByRequeistionId(reqId).get();
+			newObjection = fileRequeistionRepo.findByRequeistionId(reqId).get();
 
-		if(newObjection.getRequeistionId()==null)
-		{
-			statusRes.setMessage("reqId not found");
-        	statusRes.setStatus("404");
-        	return statusRes;
-		}
-		
-		}
-		catch (Exception e) {
+			if (newObjection.getRequeistionId() == null) {
+				statusRes.setMessage("reqId not found");
+				statusRes.setStatus("404");
+				return statusRes;
+			}
+
+		} catch (Exception e) {
 			// TODO: handle exception
 			statusRes.setMessage("reqId not found");
-        	statusRes.setStatus("404");
+			statusRes.setStatus("404");
 			e.printStackTrace();
-        	return statusRes;
+			return statusRes;
 
 		}
-		CertificateDebator certificateDebatorslist=newObjection.getCertificateDebator().get(0);
+		CertificateDebator certificateDebatorslist = newObjection.getCertificateDebator().get(0);
 
-		
-		   String formType = selectForm.trim();  // Trim to remove any extra spaces
-		   
+		String formType = selectForm.trim(); // Trim to remove any extra spaces
 
+		// Check if the form is empty but hearing date is not empty
 
-	        // Check if the form is empty but hearing date is not empty
-	    
-              if(formType.equals("Form1")) {
-            	  
-            	 String district = newObjection.getDistrictName();
-  		        String certificateHolder = certificateDebatorslist.getDebatorName();
-  		        String certificateDebtor = null;
-  		        String demandDetails = null;
-  		        String furtherDetails = null;
-  		      LocalDate currentDate = LocalDate.now();
+		if (formType.equals("Form1")) {
 
-  	        String day = String.valueOf(currentDate.getDayOfMonth());
-  	        String month = String.valueOf(currentDate.getMonthValue());
-  	        String year = String.valueOf(currentDate.getYear());
-  		        String officerDesignation = null;
-            String notice = noticedgenerateform1(newObjection,district,certificateHolder,certificateDebtor,demandDetails,furtherDetails,day,month,year,officerDesignation);
-            
-            if(notice!=null)
-            {
-            	statusRes.setMessage("form1 will be sumbitted");
-            	statusRes.setStatus("200");
-            }
-            return statusRes;
+			String district = newObjection.getDistrictName();
+			String certificateHolder = certificateDebatorslist.getDebatorName();
+			String certificateDebtor = null;
+			String demandDetails = null;
+			String furtherDetails = null;
+			LocalDate currentDate = LocalDate.now();
 
-	        }
+			String day = String.valueOf(currentDate.getDayOfMonth());
+			String month = String.valueOf(currentDate.getMonthValue());
+			String year = String.valueOf(currentDate.getYear());
+			String officerDesignation = null;
+			String notice = noticedgenerateform1(newObjection, district, certificateHolder, certificateDebtor,
+					demandDetails, furtherDetails, day, month, year, officerDesignation);
+
+			if (notice != null) {
+				statusRes.setMessage("form1 will be sumbitted");
+				statusRes.setStatus("200");
+			}
+			return statusRes;
+
+		}
 //
 //	        // Check for Form B
-	        if(formType.equals("Form3")) {
-	        	 String debtorName = certificateDebatorslist.getDebatorName();
-	             String reason = null;
-	             String section = null;
-	             LocalDate currentDate = LocalDate.now();
+		if (formType.equals("Form3")) {
+			String debtorName = certificateDebatorslist.getDebatorName();
+			String reason = null;
+			String section = null;
+			LocalDate currentDate = LocalDate.now();
 
-	             String day = String.valueOf(currentDate.getDayOfMonth());
-	             String month = String.valueOf(currentDate.getMonthValue());
-	             String year = String.valueOf(currentDate.getYear());
-	             String officerLocation = null;
-	        	System.out.println("form2");
-	            String notice = noticedgenerateform3(newObjection,debtorName,reason,section,day,month,year,officerLocation);
-	            
-	            if(notice!=null)
-	            {
-	            	statusRes.setMessage("form3 will be sumbitted");
-	            	statusRes.setStatus("200");
-	            }
-	            return statusRes;
-	        }
-        	statusRes.setMessage("check credentiall");
-        	statusRes.setStatus("404");
+			String day = String.valueOf(currentDate.getDayOfMonth());
+			String month = String.valueOf(currentDate.getMonthValue());
+			String year = String.valueOf(currentDate.getYear());
+			String officerLocation = null;
+			System.out.println("form2");
+			String notice = noticedgenerateform3(newObjection, debtorName, reason, section, day, month, year,
+					officerLocation);
 
+			if (notice != null) {
+				statusRes.setMessage("form3 will be sumbitted");
+				statusRes.setStatus("200");
+			}
 			return statusRes;
+		}
+		statusRes.setMessage("check credentiall");
+		statusRes.setStatus("404");
+
+		return statusRes;
 	}
 
+	@Override
+	public String caseTransfer(List<String> reqId, List<String> nouserId) {
+		try {
+			if (reqId.size() != nouserId.size()) {
+				return "Request and user ID list sizes do not match";
+			}
 
-@Override
-public String caseTransfer(List<String> reqId, List<String> nouserId) {
-    try {
-        if (reqId.size() != nouserId.size()) {
-            return "Request and user ID list sizes do not match";
-        }
+			for (int i = 0; i < reqId.size(); i++) {
+				Optional<FileRequeistion> optionalRequest = fileRequeistionRepo.findByRequeistionId(reqId.get(i));
+				if (optionalRequest.isPresent()) {
+					FileRequeistion newObjection = optionalRequest.get();
+					newObjection.setIsTransOfficer(false);
+					newObjection.setNominalOffstatus(newObjection.getStatus());
+					newObjection.setIsTransNomOfficer(true);
+					newObjection.setTransNomId(nouserId.get(i));
+					fileRequeistionRepo.save(newObjection);
+				} else {
+					return "Request ID not found: " + reqId.get(i);
+				}
+			}
 
-        for (int i = 0; i < reqId.size(); i++) {
-            Optional<FileRequeistion> optionalRequest = fileRequeistionRepo.findByRequeistionId(reqId.get(i));
-            if (optionalRequest.isPresent()) {
-                FileRequeistion newObjection = optionalRequest.get();
-                newObjection.setIsTransOfficer(false);
-                newObjection.setIsTransNomOfficer(true);
-                newObjection.setTransNomId(nouserId.get(i));
-                fileRequeistionRepo.save(newObjection);
-            } else {
-                return "Request ID not found: " + reqId.get(i);
-            }
-        }
+			return "save";
 
-        return "save";
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "Something went wrong during case transfer";
-    }
-}
-
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Something went wrong during case transfer";
+		}
+	}
 
 	@Override
 	public List<FileRequeistion> findpendingNom(String userId) {
@@ -1005,28 +935,22 @@ public String caseTransfer(List<String> reqId, List<String> nouserId) {
 
 	}
 
-
 	@Override
 	public List<FileRequeistion> findAllByuserId(String userId) {
 		// TODO Auto-generated method stub
-		
-		UserEntity entity=userRepository.findById(Long.valueOf(userId)).get();
+
+		UserEntity entity = userRepository.findById(Long.valueOf(userId)).get();
 
 		return fileRequeistionRepo.findByUserId(entity);
 	}
 
-
 	@Override
 	public FileRequeistion findBydebatorId(String userId) {
 		// TODO Auto-generated method stub
-		
-        FileRequeistion optionalRequest = fileRequeistionRepo.findByRequeistionId(userId).get();
+
+		FileRequeistion optionalRequest = fileRequeistionRepo.findByRequeistionId(userId).get();
 
 		return optionalRequest;
 	}
 
-
-	}
-	
-	
-
+}

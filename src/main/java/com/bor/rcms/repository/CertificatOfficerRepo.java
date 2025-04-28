@@ -8,9 +8,12 @@ import org.springframework.stereotype.Repository;
 import com.bor.rcms.entity.Admission;
 import com.bor.rcms.entity.CaseStatusEntity;
 import com.bor.rcms.entity.CertificatOfficer;
+import com.bor.rcms.entity.FileRequeistion;
 @Repository
 public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, String> {
 
-	Optional<CertificatOfficer> findTopByDistrictOrderByCurrentdateDesc(String districtName); 
+	Optional<CertificatOfficer> findTopByDistrictOrderByCurrentdateDesc(String districtName);
+
+	CertificatOfficer findByFileRequeistion(FileRequeistion newObjection); 
 
 }
