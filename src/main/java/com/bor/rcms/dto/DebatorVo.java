@@ -1,26 +1,55 @@
 package com.bor.rcms.dto;
 
 import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class DebatorVo {
+	@NotBlank()
+	@Size(max = 100)
 	 private String debtorName;
+	@NotBlank()
+	@Size(max = 100)
 	    private String debtorAddress;
+	@NotBlank()
+	@Size(max = 100)    
 	    private String debtorAddress1;
+	@NotBlank()
+	@Size(max = 100)
 	    private String debtorAddress2;
+	@NotBlank()
+	@Size(max = 50)
 	    private String debtorState;
+	@NotBlank()
+	@Size(max = 50)
 	    private String debtorCity;
+	@NotBlank()
+	@Size(max = 50)
 	    private String debtorDistrict;
+	@NotBlank()
+	
 	    private String debtorPincode;
+	
 	    private String circle;
+	    @NotBlank
 	    private String userId;
-	    
+	    @NotBlank()
+		@Size(max = 100)  
 	    private String debtorfatherNames;
+	    @NotBlank()
+		@Size(max = 50)
 	    private  String debtorubDivision;
+	    @NotBlank()
+		@Size(max = 50)
 	    private  String debtorcircle;
+	    @NotBlank()
+		@Size(max = 100)
 	    private  String debtorpolicestation;
 	    @Column(unique = true, nullable = false)
 	    private String debtorPhoneNumber;
 	    private String debtorStatePhoneNumber;
+	    @Email
 	    private String debtorEmail;
 		public String getDebtorName() {
 			return debtorName;
