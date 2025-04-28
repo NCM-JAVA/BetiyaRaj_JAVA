@@ -3,6 +3,8 @@ package com.bor.rcms.resonse;
 import com.bor.rcms.entity.RoleEntity;
 
 public class LoginResponse {
+	private String msg;
+	private String status;
 	private String token;
     private Long userId;
     private String fullName;
@@ -45,25 +47,25 @@ public class LoginResponse {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	public String getMsg() {
+		return msg;
+	}
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	@Override
 	public String toString() {
-		return "LoginResponse [token=" + token + ", userId=" + userId + ", fullName=" + fullName + ", userName="
-				+ userName + ", district=" + district + ", role=" + role + "]";
+		return "LoginResponse [msg=" + msg + ", status=" + status + ", token=" + token + ", userId=" + userId
+				+ ", fullName=" + fullName + ", userName=" + userName + ", district=" + district + ", role=" + role
+				+ "]";
 	}
-	public LoginResponse(String token, Long userId, String fullName, String userName, String district,
-			RoleEntity role) {
-		super();
-		this.token = token;
-		this.userId = userId;
-		this.fullName = fullName;
-		this.userName = userName;
-		this.district = district;
-		this.role = role;
-	}
-	public LoginResponse() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	
 	
 	
 	

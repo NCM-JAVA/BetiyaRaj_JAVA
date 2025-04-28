@@ -46,6 +46,11 @@ public class FileRequeistion {
 	    private String updateDate;
 	    private String status;
 	    
+	    private String certificateOffstatus;
+	    
+	    private String nominalOffstatus;
+
+	    
 	    private String caseTransferId;
 	    
 	    private String transferRemark;
@@ -73,6 +78,11 @@ public class FileRequeistion {
 	  @OneToOne(cascade = CascadeType.ALL)
 	  @JoinColumn(name = "certificate_guaranter_id", nullable = false)
 	  private CertificateGuaranter certificateGuaranter;
+	  
+	  
+
+	  @OneToOne(mappedBy = "fileRequeistion", cascade = CascadeType.ALL)
+	    private LegalRepresentative legalRepresentative;
 	  
 	  @OneToOne(mappedBy = "fileRequeistion")
 	  @JsonBackReference
@@ -368,6 +378,36 @@ public class FileRequeistion {
 	}
 
 
+	public String getCertificateOffstatus() {
+		return certificateOffstatus;
+	}
+
+
+	public void setCertificateOffstatus(String certificateOffstatus) {
+		this.certificateOffstatus = certificateOffstatus;
+	}
+
+
+	public String getNominalOffstatus() {
+		return nominalOffstatus;
+	}
+
+
+	public void setNominalOffstatus(String nominalOffstatus) {
+		this.nominalOffstatus = nominalOffstatus;
+	}
+
+
+	public LegalRepresentative getLegalRepresentative() {
+		return legalRepresentative;
+	}
+
+
+	public void setLegalRepresentative(LegalRepresentative legalRepresentative) {
+		this.legalRepresentative = legalRepresentative;
+	}
+
+
 	@Override
 	public String toString() {
 		return "FileRequeistion [requeistionId=" + requeistionId + ", totalOutstandingAmmount="
@@ -375,13 +415,17 @@ public class FileRequeistion {
 				+ interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee=" + missllenousFee
 				+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear=" + financialYear
 				+ ", districtName=" + districtName + ", currentDate=" + currentDate + ", updateDate=" + updateDate
-				+ ", status=" + status + ", caseTransferId=" + caseTransferId + ", transferRemark=" + transferRemark
+				+ ", status=" + status + ", certificateOffstatus=" + certificateOffstatus + ", nominalOffstatus="
+				+ nominalOffstatus + ", caseTransferId=" + caseTransferId + ", transferRemark=" + transferRemark
 				+ ", modifiable=" + modifiable + ", reason=" + reason + ", documents=" + documents + ", role=" + role
 				+ ", userId=" + userId + ", certificateDebator=" + certificateDebator + ", certificateGuaranter="
-				+ certificateGuaranter + ", certificatOfficer=" + certificatOfficer + ", transNomId=" + transNomId
-				+ ", isTransOfficer=" + isTransOfficer + ", isTransNomOfficer=" + isTransNomOfficer + ", isTransBOR="
-				+ isTransBOR + "]";
+				+ certificateGuaranter + ", legalRepresentative=" + legalRepresentative + ", certificatOfficer="
+				+ certificatOfficer + ", transNomId=" + transNomId + ", isTransOfficer=" + isTransOfficer
+				+ ", isTransNomOfficer=" + isTransNomOfficer + ", isTransBOR=" + isTransBOR + "]";
 	}
+
+
+	
 
 
 

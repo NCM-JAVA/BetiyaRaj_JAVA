@@ -17,234 +17,223 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class CertificatOfficer {
 
-	  @Id
-	//    @GeneratedValue(strategy = GenerationType.AUTO)
-	  private String certOfficerId;
-	  
+	@Id
+	// @GeneratedValue(strategy = GenerationType.AUTO)
+	private String certOfficerId;
 
-		private String hearingDate;
-		private String hearingTime;
-	     private String district;
+	private String hearingDate;
+	private String hearingTime;
+	private String district;
 
-		private String admissionDate;
-		private String admissionTime;
+	private String admissionDate;
+	private String admissionTime;
 
-		private String affidavitDate;
-		private Date createdDate;
-		private Date modifiedDate;
-		private String status;
-		private String admisionCase;
-		private String objectioId;
-		private String officerName;
-	
-	    @CreationTimestamp
-		@Column(updatable = false)
-	    private LocalDateTime currentdate;
+	private String affidavitDate;
+	private Date createdDate;
+	private Date modifiedDate;
+	private String status;
+	private String admisionCase;
+	private String objectioId;
+	private String officerName;
 
-		
-		private String action;
-		private String caseClass;
-		 @Lob
-		    @Basic(fetch = FetchType.EAGER)  // Eager fetch for LOB
-		 private String caseNotes;
-		 
-		    @OneToOne
-		    @JoinColumn(name = "requeistion_id", referencedColumnName = "requeistion_id")
-		    private FileRequeistion fileRequeistion;
-		private String reequeistionId;
-		
-		
-		  @OneToOne
-			@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	@CreationTimestamp
+	@Column(updatable = false)
+	private LocalDateTime currentdate;
 
-		    private UserEntity userId;
+	private String action;
+	private String caseClass;
+	@Lob
+	@Basic(fetch = FetchType.EAGER) // Eager fetch for LOB
+	private String caseNotes;
 
+	@OneToOne
+	@JoinColumn(name = "requeistion_id", referencedColumnName = "requeistion_id")
+	private FileRequeistion fileRequeistion;
+	private String reequeistionId;
 
-		public String getCertOfficerId() {
-			return certOfficerId;
-		}
+	@OneToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 
-		public void setCertOfficerId(String certOfficerId) {
-			this.certOfficerId = certOfficerId;
-		}
+	private UserEntity userId;
 
-		public String getHearingDate() {
-			return hearingDate;
-		}
+	public String getCertOfficerId() {
+		return certOfficerId;
+	}
 
-		public void setHearingDate(String hearingDate) {
-			this.hearingDate = hearingDate;
-		}
+	public void setCertOfficerId(String certOfficerId) {
+		this.certOfficerId = certOfficerId;
+	}
 
-		public String getHearingTime() {
-			return hearingTime;
-		}
+	public String getHearingDate() {
+		return hearingDate;
+	}
 
-		public void setHearingTime(String hearingTime) {
-			this.hearingTime = hearingTime;
-		}
+	public void setHearingDate(String hearingDate) {
+		this.hearingDate = hearingDate;
+	}
 
-		public String getDistrict() {
-			return district;
-		}
+	public String getHearingTime() {
+		return hearingTime;
+	}
 
-		public void setDistrict(String district) {
-			this.district = district;
-		}
+	public void setHearingTime(String hearingTime) {
+		this.hearingTime = hearingTime;
+	}
 
-		public String getAdmissionDate() {
-			return admissionDate;
-		}
+	public String getDistrict() {
+		return district;
+	}
 
-		public void setAdmissionDate(String admissionDate) {
-			this.admissionDate = admissionDate;
-		}
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 
-		public String getAdmissionTime() {
-			return admissionTime;
-		}
+	public String getAdmissionDate() {
+		return admissionDate;
+	}
 
-		public void setAdmissionTime(String admissionTime) {
-			this.admissionTime = admissionTime;
-		}
+	public void setAdmissionDate(String admissionDate) {
+		this.admissionDate = admissionDate;
+	}
 
-		public String getAffidavitDate() {
-			return affidavitDate;
-		}
+	public String getAdmissionTime() {
+		return admissionTime;
+	}
 
-		public void setAffidavitDate(String affidavitDate) {
-			this.affidavitDate = affidavitDate;
-		}
+	public void setAdmissionTime(String admissionTime) {
+		this.admissionTime = admissionTime;
+	}
 
-		public Date getCreatedDate() {
-			return createdDate;
-		}
+	public String getAffidavitDate() {
+		return affidavitDate;
+	}
 
-		public void setCreatedDate(Date createdDate) {
-			this.createdDate = createdDate;
-		}
+	public void setAffidavitDate(String affidavitDate) {
+		this.affidavitDate = affidavitDate;
+	}
 
-		public Date getModifiedDate() {
-			return modifiedDate;
-		}
+	public Date getCreatedDate() {
+		return createdDate;
+	}
 
-		public void setModifiedDate(Date modifiedDate) {
-			this.modifiedDate = modifiedDate;
-		}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
 
-		public String getStatus() {
-			return status;
-		}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
 
-		public void setStatus(String status) {
-			this.status = status;
-		}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 
-		public String getAdmisionCase() {
-			return admisionCase;
-		}
+	public String getStatus() {
+		return status;
+	}
 
-		public void setAdmisionCase(String admisionCase) {
-			this.admisionCase = admisionCase;
-		}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-		public String getObjectioId() {
-			return objectioId;
-		}
+	public String getAdmisionCase() {
+		return admisionCase;
+	}
 
-		public void setObjectioId(String objectioId) {
-			this.objectioId = objectioId;
-		}
+	public void setAdmisionCase(String admisionCase) {
+		this.admisionCase = admisionCase;
+	}
 
-		public String getOfficerName() {
-			return officerName;
-		}
+	public String getObjectioId() {
+		return objectioId;
+	}
 
-		public void setOfficerName(String officerName) {
-			this.officerName = officerName;
-		}
+	public void setObjectioId(String objectioId) {
+		this.objectioId = objectioId;
+	}
 
-		public LocalDateTime getCurrentdate() {
-			return currentdate;
-		}
+	public String getOfficerName() {
+		return officerName;
+	}
 
-		public void setCurrentdate(LocalDateTime currentdate) {
-			this.currentdate = currentdate;
-		}
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
 
-		public String getAction() {
-			return action;
-		}
+	public LocalDateTime getCurrentdate() {
+		return currentdate;
+	}
 
-		public void setAction(String action) {
-			this.action = action;
-		}
+	public void setCurrentdate(LocalDateTime currentdate) {
+		this.currentdate = currentdate;
+	}
 
-		public String getCaseClass() {
-			return caseClass;
-		}
+	public String getAction() {
+		return action;
+	}
 
-		public void setCaseClass(String caseClass) {
-			this.caseClass = caseClass;
-		}
+	public void setAction(String action) {
+		this.action = action;
+	}
 
-		public String getCaseNotes() {
-			return caseNotes;
-		}
+	public String getCaseClass() {
+		return caseClass;
+	}
 
-		public void setCaseNotes(String caseNotes) {
-			this.caseNotes = caseNotes;
-		}
+	public void setCaseClass(String caseClass) {
+		this.caseClass = caseClass;
+	}
 
-		public FileRequeistion getFileRequeistion() {
-			return fileRequeistion;
-		}
+	public String getCaseNotes() {
+		return caseNotes;
+	}
 
-		public void setFileRequeistion(FileRequeistion fileRequeistion) {
-			this.fileRequeistion = fileRequeistion;
-		}
+	public void setCaseNotes(String caseNotes) {
+		this.caseNotes = caseNotes;
+	}
 
-		public UserEntity getUserId() {
-			return userId;
-		}
+	public FileRequeistion getFileRequeistion() {
+		return fileRequeistion;
+	}
 
-		public void setUserId(UserEntity userId) {
-			this.userId = userId;
-		}
+	public void setFileRequeistion(FileRequeistion fileRequeistion) {
+		this.fileRequeistion = fileRequeistion;
+	}
 
-		public String getReequeistionId() {
-			return reequeistionId;
-		}
+	public UserEntity getUserId() {
+		return userId;
+	}
 
-		public void setReequeistionId(String reequeistionId) {
-			this.reequeistionId = reequeistionId;
-		}
+	public void setUserId(UserEntity userId) {
+		this.userId = userId;
+	}
 
-		
-		@Override
-		public String toString() {
-			return "CertificatOfficer [certOfficerId=" + certOfficerId + ", hearingDate=" + hearingDate
-					+ ", hearingTime=" + hearingTime + ", district=" + district + ", admissionDate=" + admissionDate
-					+ ", admissionTime=" + admissionTime + ", affidavitDate=" + affidavitDate + ", createdDate="
-					+ createdDate + ", modifiedDate=" + modifiedDate + ", status=" + status + ", admisionCase="
-					+ admisionCase + ", objectioId=" + objectioId + ", officerName=" + officerName + ", currentdate="
-					+ currentdate + ", action=" + action + ", caseClass=" + caseClass + ", caseNotes=" + caseNotes
-					+ ", fileRequeistion=" + fileRequeistion + ", reequeistionId=" + reequeistionId + ", userId="
-					+ userId + "]";
-		}
+	public String getReequeistionId() {
+		return reequeistionId;
+	}
 
-		public CertificatOfficer() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
+	public void setReequeistionId(String reequeistionId) {
+		this.reequeistionId = reequeistionId;
+	}
 
-		
-		
-	  
-		  
-	  
+	@Override
+	public String toString() {
+		return "CertificatOfficer [certOfficerId=" + certOfficerId + ", hearingDate=" + hearingDate + ", hearingTime="
+				+ hearingTime + ", district=" + district + ", admissionDate=" + admissionDate + ", admissionTime="
+				+ admissionTime + ", affidavitDate=" + affidavitDate + ", createdDate=" + createdDate
+				+ ", modifiedDate=" + modifiedDate + ", status=" + status + ", admisionCase=" + admisionCase
+				+ ", objectioId=" + objectioId + ", officerName=" + officerName + ", currentdate=" + currentdate
+				+ ", action=" + action + ", caseClass=" + caseClass + ", caseNotes=" + caseNotes + ", fileRequeistion="
+				+ fileRequeistion + ", reequeistionId=" + reequeistionId + ", userId=" + userId + "]";
+	}
+
+	public CertificatOfficer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 }

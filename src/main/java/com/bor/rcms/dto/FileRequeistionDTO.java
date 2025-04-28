@@ -2,6 +2,8 @@ package com.bor.rcms.dto;
 
 public class FileRequeistionDTO {
 
+	
+	private String caseId;
 	 private String requeistionId;
 	    private String totalOutstandingAmmount;
 	    private String totalInterestRate;
@@ -107,19 +109,24 @@ public class FileRequeistionDTO {
 		public void setUserName(String userName) {
 			this.userName = userName;
 		}
+	
+		
+		
+		public String getCaseId() {
+			return caseId;
+		}
+		public void setCaseId(String caseId) {
+			this.caseId = caseId;
+		}
 		@Override
 		public String toString() {
-			return "FileRequeistionDTO [requeistionId=" + requeistionId + ", totalOutstandingAmmount="
-					+ totalOutstandingAmmount + ", totalInterestRate=" + totalInterestRate + ", interestDueForm="
-					+ interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee=" + missllenousFee
-					+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear="
-					+ financialYear + ", districtName=" + districtName + ", currentDate=" + currentDate
-					+ ", updateDate=" + updateDate + ", status=" + status + ", reason=" + reason + ", userName="
-					+ userName + "]";
+			return "FileRequeistionDTO [caseId=" + caseId + ", requeistionId=" + requeistionId
+					+ ", totalOutstandingAmmount=" + totalOutstandingAmmount + ", totalInterestRate="
+					+ totalInterestRate + ", interestDueForm=" + interestDueForm + ", totalCourtFee=" + totalCourtFee
+					+ ", missllenousFee=" + missllenousFee + ", paidCourFee=" + paidCourFee + ", totalDemand="
+					+ totalDemand + ", financialYear=" + financialYear + ", districtName=" + districtName
+					+ ", currentDate=" + currentDate + ", updateDate=" + updateDate + ", status=" + status + ", reason="
+					+ reason + ", userName=" + userName + "]";
 		}
-		public FileRequeistionDTO() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-
+		
 }

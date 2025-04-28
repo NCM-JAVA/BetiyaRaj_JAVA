@@ -33,6 +33,8 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 
 	List<FileRequeistion> findByTransNomId(String userId);
 
+	List<FileRequeistion> findByUserId(UserEntity entity);
+
 	 
 
 

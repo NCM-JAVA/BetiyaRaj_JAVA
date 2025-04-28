@@ -45,8 +45,10 @@ public class FileRequeistionVo {
 		  private String missllenousFee;
 		  private String paidCourFee;
 		  private String totalDemand;
-		  private String financialYear	 ;   
+		  private String financialYear;
 		  
+		  //legal Repersentative
+		  private LegalRepersentativeVo legalRepersentativeVo;
 		public String getTotalOutstandingAmmount() {
 			return totalOutstandingAmmount;
 		}
@@ -224,6 +226,12 @@ public class FileRequeistionVo {
 		public void setResion(String resion) {
 			this.resion = resion;
 		}
+		public LegalRepersentativeVo getLegalRepersentativeVo() {
+			return legalRepersentativeVo;
+		}
+		public void setLegalRepersentativeVo(LegalRepersentativeVo legalRepersentativeVo) {
+			this.legalRepersentativeVo = legalRepersentativeVo;
+		}
 		@Override
 		public String toString() {
 			return "FileRequeistionVo [debatorVos=" + debatorVos + ", guarantorName=" + guarantorName
@@ -239,8 +247,11 @@ public class FileRequeistionVo {
 					+ totalOutstandingAmmount + ", totalInterestRate=" + totalInterestRate + ", interestDueForm="
 					+ interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee=" + missllenousFee
 					+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear="
-					+ financialYear + "]";
+					+ financialYear + ", legalRepersentativeVo=" + legalRepersentativeVo + "]";
 		}
+	
+		
+		
 		
 	
 		

@@ -3,6 +3,7 @@ package com.bor.rcms.dto;
 public class OTPRequest {
 	
 	private String userName;
+	private String phoneNumber;
 	private String email;
     private String otp;
     private String act;
@@ -35,9 +36,16 @@ public class OTPRequest {
 	public void setAct(String act) {
 		this.act = act;
 	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 	@Override
 	public String toString() {
-		return "OTPRequest [userName=" + userName + ", email=" + email + ", otp=" + otp + ", act=" + act + "]";
+		return "OTPRequest [userName=" + userName + ", phoneNumber=" + phoneNumber + ", email=" + email + ", otp=" + otp
+				+ ", act=" + act + "]";
 	}
 	
 	
