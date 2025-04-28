@@ -39,4 +39,6 @@ public interface PdrService {
 
 	FileRequeistion findBydebatorId(String debtorId);
 
+	List<String> findSlotTime(String date);
+
 }

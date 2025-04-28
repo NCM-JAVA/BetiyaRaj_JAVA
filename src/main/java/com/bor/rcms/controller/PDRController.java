@@ -837,4 +837,28 @@ public class PDRController {
 		}
 
 	}
+	
+	@PostMapping("findtimeslot")
+	public ResponseEntity<?> findSlottime(@RequestParam String date) {
+		try {
+			List<String> slot=pdrService.findSlotTime(date);
+			
+			if(!slot.isEmpty())
+			{
+			return ResponseEntity.ok(slot);
+
+		}
+			StatusRes res=new StatusRes();
+			res.setMessage("no time slot Available");
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+		}
+			
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+		
+	}		
+
 }

@@ -8,9 +8,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.config.TimeSlot;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
@@ -952,5 +955,28 @@ public class PdrServiceImpl implements PdrService {
 
 		return optionalRequest;
 	}
+
+	@Override
+	public List<String> findSlotTime(String date) {
+	    List<CertificatOfficer> listslot = certificatOfficerRepo.findByAdmissionTime(date);
+
+	    Set<String> bookedTimes = new HashSet();
+	    for (CertificatOfficer officer : listslot) {
+	        bookedTimes.add(officer.getAdmissionTime());
+	    }
+
+	    TimeSlot timeSlot = new TimeSlot();
+	    List<String> allValidSlots = timeSlot.timeslote(); 
+
+	    List<String> availableSlots = new ArrayList<>();
+	    for (String slot : allValidSlots) {
+	        if (!bookedTimes.contains(slot)) {
+	            availableSlots.add(slot);
+	        }
+	    }
+
+	    return availableSlots;
+	}
+
 
 }
