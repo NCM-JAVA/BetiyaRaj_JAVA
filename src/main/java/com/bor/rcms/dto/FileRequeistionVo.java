@@ -20,9 +20,23 @@ public class FileRequeistionVo {
 	@Size(max = 100, message = "Max 100 chars")
 	private String guarantorAddress;
 
+//<<<<<<< HEAD
 	@NotBlank(message = "Address line 1 required")
 	@Size(max = 100, message = "Max 100 chars")
 	private String guarantorAddress1;
+//=======
+//	    private String guarantorPhoneNumber;
+//	    private String guarantorStatePhoneNumber;
+//	    private String guarantorEmail;
+//	    private String userId;
+//	    
+//	    private String reason;
+//	    
+//	    private String guarantorfatherNames;
+//	    private  String guarantorsubDivision;
+//	    private  String guarantorcircle;
+//	    private  String guarantorpolicestation;
+//>>>>>>> main
 
 	@NotBlank(message = "Address line 2 required")
 	@Size(max = 100, message = "Max 100 chars")
@@ -103,7 +117,8 @@ public class FileRequeistionVo {
 	private String financialYear;
 		  
 		  //legal Repersentative
-		  private LegalRepersentativeVo legalRepersentativeVo;
+		 // private LegalRepersentativeVo 
+		  private List<LegalRepersentativeVo> legalRepersentativeVo;
 		public String getTotalOutstandingAmmount() {
 			return totalOutstandingAmmount;
 		}
@@ -275,16 +290,16 @@ public class FileRequeistionVo {
 		public void setGuarantorpolicestation(String guarantorpolicestation) {
 			this.guarantorpolicestation = guarantorpolicestation;
 		}
-		public String getResion() {
-			return resion;
+		public String getreason() {
+			return reason;
 		}
-		public void setResion(String resion) {
-			this.resion = resion;
+		public void setreason(String reason) {
+			this.reason = reason;
 		}
-		public LegalRepersentativeVo getLegalRepersentativeVo() {
+		public List<LegalRepersentativeVo> getLegalRepersentativeVo() {
 			return legalRepersentativeVo;
 		}
-		public void setLegalRepersentativeVo(LegalRepersentativeVo legalRepersentativeVo) {
+		public void setLegalRepersentativeVo(List<LegalRepersentativeVo> legalRepersentativeVo) {
 			this.legalRepersentativeVo = legalRepersentativeVo;
 		}
 		@Override
@@ -295,7 +310,7 @@ public class FileRequeistionVo {
 					+ ", guarantorCity=" + guarantorCity + ", guarantorDistrict=" + guarantorDistrict
 					+ ", guarantorPincode=" + guarantorPincode + ", guarantorPhoneNumber=" + guarantorPhoneNumber
 					+ ", guarantorStatePhoneNumber=" + guarantorStatePhoneNumber + ", guarantorEmail=" + guarantorEmail
-					+ ", userId=" + userId + ", resion=" + resion + ", guarantorfatherNames=" + guarantorfatherNames
+					+ ", userId=" + userId + ", reason=" + reason + ", guarantorfatherNames=" + guarantorfatherNames
 					+ ", guarantorsubDivision=" + guarantorsubDivision + ", guarantorcircle=" + guarantorcircle
 					+ ", guarantorpolicestation=" + guarantorpolicestation + ", createdDate=" + createdDate
 					+ ", modifiedDate=" + modifiedDate + ", status=" + status + ", totalOutstandingAmmount="
@@ -304,6 +319,7 @@ public class FileRequeistionVo {
 					+ ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear="
 					+ financialYear + ", legalRepersentativeVo=" + legalRepersentativeVo + "]";
 		}
+		
 	
 		
 		

@@ -29,6 +29,7 @@ import com.bor.rcms.dto.DebatorVo;
 import com.bor.rcms.dto.DocumentDTO;
 import com.bor.rcms.dto.FileRequeistionDTO;
 import com.bor.rcms.dto.FileRequeistionVo;
+import com.bor.rcms.dto.LegalRepersentativeVo;
 import com.bor.rcms.dto.ObjectionVo;
 import com.bor.rcms.dto.OfficerStatusVo;
 import com.bor.rcms.entity.CertificatOfficer;
@@ -159,24 +160,30 @@ public class PDRController {
 			
 			/// end Legal
 			
+			List<LegalRepresentative> legalRepersentativelist = new ArrayList<LegalRepresentative>();
+
+			for (LegalRepersentativeVo legalRepersentativeVo : vo.getLegalRepersentativeVo()) {
+
 			LegalRepresentative legalRepersentative=new LegalRepresentative();
 			
-			legalRepersentative.setAddress(vo.getLegalRepersentativeVo().getLegaladdress());
-			legalRepersentative.setAddress(vo.getLegalRepersentativeVo().getLegaladdress1());
-			legalRepersentative.setAddress2(vo.getLegalRepersentativeVo().getLegaladdress2());
-			legalRepersentative.setApartmentNumber(vo.getLegalRepersentativeVo().getLegalapartmentNumber());
-			legalRepersentative.setCircle(vo.getLegalRepersentativeVo().getLegalcircle());
-			legalRepersentative.setCity(vo.getLegalRepersentativeVo().getLegalcity());
-			legalRepersentative.setDistrict(vo.getLegalRepersentativeVo().getLegaldistrict());
-			legalRepersentative.setEmail(vo.getLegalRepersentativeVo().getLegalemail());
-			legalRepersentative.setFatherNames(vo.getLegalRepersentativeVo().getLegalfatherNames());
-			legalRepersentative.setLegalName(vo.getLegalRepersentativeVo().getLegalName());
-			legalRepersentative.setPhoneNumber(vo.getLegalRepersentativeVo().getLegalphoneNumber());
-			legalRepersentative.setPincode(vo.getLegalRepersentativeVo().getLegalpincode());
-			legalRepersentative.setPolicestation(vo.getLegalRepersentativeVo().getLegalpolicestation());
-			legalRepersentative.setState(vo.getLegalRepersentativeVo().getLegalstate());
-			legalRepersentative.setSubDivision(vo.getLegalRepersentativeVo().getLegalsubDivision());
+			legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress());
+			legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress1());
+			legalRepersentative.setAddress2(legalRepersentativeVo.getLegaladdress2());
+			legalRepersentative.setApartmentNumber(legalRepersentativeVo.getLegalapartmentNumber());
+			legalRepersentative.setCircle(legalRepersentativeVo.getLegalcircle());
+			legalRepersentative.setCity(legalRepersentativeVo.getLegalcity());
+			legalRepersentative.setDistrict(legalRepersentativeVo.getLegaldistrict());
+			legalRepersentative.setEmail(legalRepersentativeVo.getLegalemail());
+			legalRepersentative.setFatherNames(legalRepersentativeVo.getLegalfatherNames());
+			legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
+			legalRepersentative.setPhoneNumber(legalRepersentativeVo.getLegalphoneNumber());
+			legalRepersentative.setPincode(legalRepersentativeVo.getLegalpincode());
+			legalRepersentative.setPolicestation(legalRepersentativeVo.getLegalpolicestation());
+			legalRepersentative.setState(legalRepersentativeVo.getLegalstate());
+			legalRepersentative.setSubDivision(legalRepersentativeVo.getLegalsubDivision());
+			legalRepersentativelist.add(legalRepersentative);
 			
+			}
 			
 			///end Legal
 
@@ -200,10 +207,10 @@ public class PDRController {
 			// Set up FileRequeistion
 			FileRequeistion requisition = new FileRequeistion();
 			requisition.setCertificateDebator(debatorlist);
-			requisition.setLegalRepresentative(legalRepersentative);
+			requisition.setLegalRepresentative(legalRepersentativelist);
 			requisition.setCertificateGuaranter(granter);
 			requisition.setFinancialYear(vo.getFinancialYear());
-			requisition.setReason(vo.getResion());
+			requisition.setReason(vo.getreason());
 
 			requisition.setInterestDueForm(vo.getInterestDueForm());
 			requisition.setMissllenousFee(vo.getMissllenousFee());

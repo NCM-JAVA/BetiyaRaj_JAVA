@@ -122,9 +122,19 @@ public class PdrServiceImpl implements PdrService {
 
 		}
 
-		LegalRepresentative legalRepresentative = requisition.getLegalRepresentative();
+		List<LegalRepresentative> legalRepresentative = requisition.getLegalRepresentative();
 
-		legalRepresentative.setFileRequeistion(requisition);
+		List<LegalRepresentative> legalRepresentativesave = new ArrayList<LegalRepresentative>();
+		
+		for(LegalRepresentative legalset :legalRepresentative)
+		{
+			legalset.setFileRequeistion(requisition);
+
+			legalRepresentativesave.add(legalset);
+			
+		}
+
+		requisition.setLegalRepresentative(legalRepresentativesave);
 
 		requisition.setCertificateDebator(certificateDebators);
 

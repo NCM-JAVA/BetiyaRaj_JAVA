@@ -80,10 +80,9 @@ public class FileRequeistion {
 	  private CertificateGuaranter certificateGuaranter;
 	  
 	  
+	  @OneToMany(mappedBy = "fileRequeistion", cascade = CascadeType.ALL)
+	  private List<LegalRepresentative> legalRepresentative;
 
-	  @OneToOne(mappedBy = "fileRequeistion", cascade = CascadeType.ALL)
-	    private LegalRepresentative legalRepresentative;
-	  
 	  @OneToOne(mappedBy = "fileRequeistion")
 	  @JsonBackReference
 	  private CertificatOfficer certificatOfficer;
@@ -398,12 +397,12 @@ public class FileRequeistion {
 	}
 
 
-	public LegalRepresentative getLegalRepresentative() {
+	public List<LegalRepresentative> getLegalRepresentative() {
 		return legalRepresentative;
 	}
 
 
-	public void setLegalRepresentative(LegalRepresentative legalRepresentative) {
+	public void setLegalRepresentative(List<LegalRepresentative> legalRepresentative) {
 		this.legalRepresentative = legalRepresentative;
 	}
 

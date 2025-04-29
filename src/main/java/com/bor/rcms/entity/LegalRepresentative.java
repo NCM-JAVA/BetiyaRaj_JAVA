@@ -8,8 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "legal_representative")
 public class LegalRepresentative {
@@ -42,9 +45,12 @@ public class LegalRepresentative {
 	    private String status;
 	    
 	    
-	    @OneToOne
-	    @JoinColumn(name = "requeistion_id", referencedColumnName = "requeistion_id")
+	    @ManyToOne
+	    @JoinColumn(name = "requeistion_id")
+	    @JsonIgnore
 	    private FileRequeistion fileRequeistion;
+
+
 		public Long getLegalId() {
 			return legalId;
 		}
@@ -159,14 +165,12 @@ public class LegalRepresentative {
 		public void setStatus(String status) {
 			this.status = status;
 		}
-		
 		public FileRequeistion getFileRequeistion() {
 			return fileRequeistion;
 		}
 		public void setFileRequeistion(FileRequeistion fileRequeistion) {
 			this.fileRequeistion = fileRequeistion;
 		}
-		
 		@Override
 		public String toString() {
 			return "LegalRepresentative [legalId=" + legalId + ", legalName=" + legalName + ", email=" + email
@@ -177,12 +181,7 @@ public class LegalRepresentative {
 					+ ", currentDate=" + currentDate + ", updateDate=" + updateDate + ", status=" + status
 					+ ", fileRequeistion=" + fileRequeistion + "]";
 		}
-		public LegalRepresentative() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-	    
-	    
-	    
+		
+		
 
 }
