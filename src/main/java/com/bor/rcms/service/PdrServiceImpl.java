@@ -435,12 +435,12 @@ public class PdrServiceImpl implements PdrService {
 				int finalValue = caseNumber + 1;
 				String formattedValue = String.format("%04d", finalValue);
 				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 				// System.out.println("Last inserted user: " + lastInsertedUser.get());
 			} else {
 				String formattedValue = String.format("%04d", initial);
 				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 			}
 			// System.out.println("last result--------->" + lastInsertedUser);
 
