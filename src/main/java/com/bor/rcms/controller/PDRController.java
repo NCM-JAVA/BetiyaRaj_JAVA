@@ -53,8 +53,8 @@ import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import Validation.CaseNotesValidator;
-import Validation.CaseNotesValidator.ValidationResult;
+//import Validation.CaseNotesValidator;
+//import Validation.CaseNotesValidator.ValidationResult;
 import Validation.FileRequeistionValidator;
 import Validation.UserRegistrationValidator;
 
@@ -455,7 +455,7 @@ public class PDRController {
 
 	@PostMapping("caseProcessdetails")
 	public ResponseEntity<?> caseprocedetailssace(@RequestBody CaseNotes casenotes) {
-		 ValidationResult validationResult = CaseNotesValidator.validateCaseNotes(casenotes);
+		// ValidationResult validationResult = CaseNotesValidator.validateCaseNotes(casenotes);
 
 		try {
 			System.out.println(casenotes.getSelectForm());

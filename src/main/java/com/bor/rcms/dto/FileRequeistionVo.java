@@ -3,49 +3,104 @@ package com.bor.rcms.dto;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class FileRequeistionVo {
 	 
 	private List<DebatorVo> debatorVos;
+	// Guarantor Details
+	@NotBlank(message = "Name required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String guarantorName;
 
-	    // Guarantor Details
-	
-	    private String guarantorName;
-	    private String guarantorAddress;
-	    private String guarantorAddress1;
-	    private String guarantorAddress2;
-	    private String guarantorState;
-	    private String guarantorCity;
-	    private String guarantorDistrict;
-	    private String guarantorPincode;
-	    
-	    
+	@NotBlank(message = "Address required")
+	@Size(max = 100, message = "Max 100 chars")
+	private String guarantorAddress;
 
-	    private String guarantorPhoneNumber;
-	    private String guarantorStatePhoneNumber;
-	    private String guarantorEmail;
-	    private String userId;
-	    
-	    private String resion;
-	    
-	    private String guarantorfatherNames;
-	    private  String guarantorsubDivision;
-	    private  String guarantorcircle;
-	    private  String guarantorpolicestation;
+	@NotBlank(message = "Address line 1 required")
+	@Size(max = 100, message = "Max 100 chars")
+	private String guarantorAddress1;
 
-	    // Common Fields
-	    private String createdDate;
-	    private String modifiedDate;
-	    private String status;
-	    
-	    private String totalOutstandingAmmount;
-		  private String totalInterestRate;
-		  private String interestDueForm;
-		  private String totalCourtFee;
-		  private String missllenousFee;
-		  private String paidCourFee;
-		  private String totalDemand;
-		  private String financialYear;
+	@NotBlank(message = "Address line 2 required")
+	@Size(max = 100, message = "Max 100 chars")
+	private String guarantorAddress2;
+
+	@NotBlank(message = "State required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String guarantorState;
+
+	@NotBlank(message = "City required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String guarantorCity;
+
+	@NotBlank(message = "District required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String guarantorDistrict;
+
+	@NotBlank(message = "Pincode required")
+	@Pattern(regexp = "^[0-9]{6}$", message = "Invalid pincode (6 digits)")
+	private String guarantorPincode;
+
+	@Column(unique = true, nullable = false)
+	@NotBlank(message = "Phone number required")
+	private String guarantorPhoneNumber;
+
+	private String guarantorStatePhoneNumber;
+
+	@Email(message = "Invalid email format")
+	private String guarantorEmail;
+
+	@NotBlank(message = "User ID required")
+	private String userId;
+
+	@NotBlank(message = "Reason required")
+	private String resion;
+
+	@NotBlank(message = "Father's name required")
+	private String guarantorfatherNames;
+
+	@NotBlank(message = "Subdivision required")
+	private String guarantorsubDivision;
+
+	@NotBlank(message = "Circle required")
+	private String guarantorcircle;
+
+	@NotBlank(message = "Police station required")
+	private String guarantorpolicestation;
+
+	// Common Fields
+	private String createdDate;
+
+	@Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date format: YYYY-MM-DD")
+	private String modifiedDate;
+
+	private String status;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
+	private String totalOutstandingAmmount;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid rate format")
+	private String totalInterestRate;
+
+	private String interestDueForm;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	private String totalCourtFee;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	private String missllenousFee;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	private String paidCourFee;
+
+	@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
+	private String totalDemand;
+
+	@Pattern(regexp = "^\\d{4}-\\d{4}$", message = "Format: YYYY-YYYY")
+	private String financialYear;
 		  
 		  //legal Repersentative
 		  private LegalRepersentativeVo legalRepersentativeVo;

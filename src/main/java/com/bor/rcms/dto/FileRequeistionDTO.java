@@ -1,9 +1,18 @@
 package com.bor.rcms.dto;
 
+import javax.validation.constraints.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 public class FileRequeistionDTO {
 
-	
+	 @NotBlank()
+	    @Size(min = 5, max = 20)
+	    @Pattern(regexp = "^[A-Z0-9-]+$")
 	private String caseId;
+	 
+	 
+	 
 	 private String requeistionId;
 	    private String totalOutstandingAmmount;
 	    private String totalInterestRate;

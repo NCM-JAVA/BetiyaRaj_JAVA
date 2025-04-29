@@ -393,7 +393,7 @@ public class AuthController {
 				
 				  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                           .body(Map.of("message", "Try another Aadhar"));
-	        //    return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
+	          //  return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
 //>>>>>>> main
 //
 			}

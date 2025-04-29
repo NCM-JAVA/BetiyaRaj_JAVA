@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 @Entity
 public class CertificateGuaranter {
 
@@ -12,20 +15,32 @@ public class CertificateGuaranter {
 	    @GeneratedValue(strategy = GenerationType.AUTO)
 	    @Column(name="granter_id")
 	    private Long granterId;
+	
 	    private String granterName;
+	 
 	    private String fatherNames;
-	    private  String subDivision;
+   
+	  private  String subDivision;
+    
 	    private  String circle;
+     
 	    private  String policestation;
+    
 	    private String address;
+    
 	    private String email;
-	//    @Column(unique = true, nullable = false)
 	    private String phoneNumber;
+	   
 	    private String address1;
+	  
 	    private String address2;
+	    
 	    private String state;
+	   
 	    private String city;
+	  
 	    private String district;
+	  
 	    private String pincode;
 	    private String createdDate;
 	    private String modifiedDate;

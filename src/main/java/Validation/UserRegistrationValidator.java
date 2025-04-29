@@ -1,9 +1,9 @@
 package Validation;
 
-import com.bor.rcms.dto.CaseNotes;
+//import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.UserRegistrationRequest;
 
-import Validation.CaseNotesValidator.ValidationResult;
+//import Validation.CaseNotesValidator.ValidationResult;
 
 import java.util.regex.Pattern;
 
@@ -130,41 +130,41 @@ public class UserRegistrationValidator {
         
         return result;
     }
-    public static ValidationResult checkUser(CaseNotes casenotes) {
-        ValidationResult result = new ValidationResult();
-   
-        if (casenotes == null) {
-            result.addError("Case notes object cannot be null");
-            return result;
-        }
-        
-        // Validate action (required field)
-        if (casenotes.getAction() == null || casenotes.getAction().isEmpty()) {
-            result.addError("Action is required");
-        } else if (!ACTION_PATTERN.matcher(casenotes.getAction()).matches()) {
-            result.addError("Action contains invalid characters (only letters and underscore allowed)");
-        }
-        
-        // Validate selectForm if present
-        if (casenotes.getSelectForm() != null && !casenotes.getSelectForm().isEmpty()) {
-            if (!FORM_ID_PATTERN.matcher(casenotes.getSelectForm()).matches()) {
-                result.addError("Select form ID format is invalid");
-            }
-        }
-        
-        // Validate note
-        if (casenotes.getCaseNotes() != null && !casenotes.getCaseNotes().isEmpty()) {
-            if (casenotes.getCaseNotes().length() > 1000) {
-                result.addError("Notes cannot exceed 1000 characters");
-            } else if (!GENERAL_TEXT_PATTERN.matcher(casenotes.getCaseNotes()).matches()) {
-                result.addError("Notes contain invalid characters");
-            }
-        }
-        
-        
-        return result;
-    }
-    
+//   // public static ValidationResult checkUser(CaseNotes casenotes) {
+//        ValidationResult result = new ValidationResult();
+//   
+//        if (casenotes == null) {
+//            result.addError("Case notes object cannot be null");
+//            return result;
+//        }
+//        
+//        // Validate action (required field)
+//        if (casenotes.getAction() == null || casenotes.getAction().isEmpty()) {
+//            result.addError("Action is required");
+//        } else if (!ACTION_PATTERN.matcher(casenotes.getAction()).matches()) {
+//            result.addError("Action contains invalid characters (only letters and underscore allowed)");
+//        }
+//        
+//        // Validate selectForm if present
+//        if (casenotes.getSelectForm() != null && !casenotes.getSelectForm().isEmpty()) {
+//            if (!FORM_ID_PATTERN.matcher(casenotes.getSelectForm()).matches()) {
+//                result.addError("Select form ID format is invalid");
+//            }
+//        }
+//        
+//        // Validate note
+//        if (casenotes.getCaseNotes() != null && !casenotes.getCaseNotes().isEmpty()) {
+//            if (casenotes.getCaseNotes().length() > 1000) {
+//                result.addError("Notes cannot exceed 1000 characters");
+//            } else if (!GENERAL_TEXT_PATTERN.matcher(casenotes.getCaseNotes()).matches()) {
+//                result.addError("Notes contain invalid characters");
+//            }
+//        }
+//        
+//        
+//        return result;
+//    }
+//    
     
     
 

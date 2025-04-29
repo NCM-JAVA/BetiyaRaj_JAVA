@@ -3,53 +3,70 @@ package com.bor.rcms.dto;
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class DebatorVo {
-	@NotBlank()
-	@Size(max = 100)
-	 private String debtorName;
-	@NotBlank()
-	@Size(max = 100)
-	    private String debtorAddress;
-	@NotBlank()
-	@Size(max = 100)    
-	    private String debtorAddress1;
-	@NotBlank()
-	@Size(max = 100)
-	    private String debtorAddress2;
-	@NotBlank()
-	@Size(max = 50)
-	    private String debtorState;
-	@NotBlank()
-	@Size(max = 50)
-	    private String debtorCity;
-	@NotBlank()
-	@Size(max = 50)
-	    private String debtorDistrict;
-	@NotBlank()
+	@NotBlank(message = "Name required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String debtorName;
+
+	@NotBlank(message = "Address required")
+	@Size(max = 100, message = "Max 100 chars")
+	private String debtorAddress;
+
+	@NotBlank(message = "Address line 1 required")
+	@Size(max = 100, message = "Max 100 chars")    
+	private String debtorAddress1;
+
+	@NotBlank(message = "Address line 2 required")
+	@Size(max = 100, message = "Max 100 chars")
+	private String debtorAddress2;
+
+	@NotBlank(message = "State required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String debtorState;
+
+	@NotBlank(message = "City required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String debtorCity;
+
+	@NotBlank(message = "District required")
+	@Size(max = 50, message = "Max 50 chars")
+	private String debtorDistrict;
 	
+	 @NotBlank(message = "Pincode is required")
+	    @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be 6 digits")
 	    private String debtorPincode;
 	
 	    private String circle;
-	    @NotBlank
+	    
+	    @NotBlank(message = "User ID is required")
 	    private String userId;
-	    @NotBlank()
-		@Size(max = 100)  
+	    
+	    @NotBlank(message = "Father's name is required")
+	    @Size(max = 100, message = "Father's name too long")  
 	    private String debtorfatherNames;
-	    @NotBlank()
-		@Size(max = 50)
+	    
+	    @NotBlank(message = "Subdivision is required")
+	    @Size(max = 50, message = "Subdivision too long")
 	    private  String debtorubDivision;
-	    @NotBlank()
-		@Size(max = 50)
+	    
+	    @NotBlank(message = "Circle is required")
+	    @Size(max = 50, message = "Circle name too long")
 	    private  String debtorcircle;
-	    @NotBlank()
-		@Size(max = 100)
+	    
+	    @NotBlank(message = "Police station is required")
+	    @Size(max = 100, message = "Police station name too long")
 	    private  String debtorpolicestation;
+	    
 	    @Column(unique = true, nullable = false)
+	    @NotBlank(message = "Phone number is required")	 
 	    private String debtorPhoneNumber;
+	    
 	    private String debtorStatePhoneNumber;
-	    @Email
+	    
+	    @Email(message = "Invalid email format")
 	    private String debtorEmail;
 		public String getDebtorName() {
 			return debtorName;
