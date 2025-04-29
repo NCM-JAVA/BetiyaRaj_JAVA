@@ -41,4 +41,6 @@ public interface PdrService {
 
 	List<String> findSlotTime(String date);
 
+	List<CertificatOfficer> findByReqId(String caseId, String caseDate);
+
 }
