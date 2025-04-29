@@ -7,20 +7,28 @@ import javax.validation.constraints.Size;
 public class FileRequeistionDTO {
 
 	 @NotBlank()
-	    @Size(min = 5, max = 20)
+	    @Size(min = 3, max = 30)
 	    @Pattern(regexp = "^[A-Z0-9-]+$")
 	private String caseId;
 	 
 	 
-	 
+	 @NotBlank
 	 private String requeistionId;
+	 @NotBlank
 	    private String totalOutstandingAmmount;
+	 @NotBlank
 	    private String totalInterestRate;
+	 @NotBlank
 	    private String interestDueForm;
+	 @NotBlank 
 	    private String totalCourtFee;
+	 @NotBlank
 	    private String missllenousFee;
+	 @NotBlank
 	    private String paidCourFee;
+	 @NotBlank
 	    private String totalDemand;
+	 @NotBlank
 	    private String financialYear;
 	    private String districtName;
 	    private String currentDate;
