@@ -160,7 +160,7 @@ public class AuthController {
     ///Registration Citizen
     
 	@PostMapping("/registerCitizen")
-	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
+	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
       
 		StatusRes res = new StatusRes();
 //		

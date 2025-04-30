@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 public class FileRequeistionDTO {
 
 	@NotBlank(message = "Case ID is required")
-	@Size(min = 3, max = 30, message = "Case ID must be 3-30 characters")
+//	@Size(min = 3, max = 30, message = "Case ID must be 3-30 characters")
 	private String caseId;
 
 	@NotBlank(message = "Requisition ID is required")

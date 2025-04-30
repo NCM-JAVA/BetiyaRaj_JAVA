@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -111,7 +113,7 @@ public class PDRController {
 	}
 
 	@PostMapping("/fileRequiestion")
-	public ResponseEntity<?> submitObsjection(@RequestPart("requiestion") String requiestion,
+	public ResponseEntity<?> submitObsjection(@Valid @RequestPart("requiestion") String requiestion,
 			@RequestPart(value = "files", required = false) MultipartFile[] files,
 			@RequestPart(value = "documentTypes", required = false) String documentTypes,
 			@RequestPart("username") String username) {
@@ -251,7 +253,7 @@ public class PDRController {
 	}
 
 	@GetMapping("/getrequiestion")
-	public ResponseEntity<?> getObjections(@RequestParam String district) {
+	public ResponseEntity<?> getObjections(@Valid @RequestParam String district) {
 		try {
 			List<FileRequeistion> fileRequeistions = pdrService.findpending(district);
 
@@ -304,7 +306,7 @@ public class PDRController {
 	}
 
 	@GetMapping("/viewrequiestion")
-	public ResponseEntity<?> getAllObjections(@RequestParam String recuisition) {
+	public ResponseEntity<?> getAllObjections(@Valid @RequestParam String recuisition) {
 		
 		
 		

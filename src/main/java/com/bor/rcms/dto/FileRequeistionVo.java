@@ -13,6 +13,8 @@ public class FileRequeistionVo {
 	private List<DebatorVo> debatorVos;
 	// Guarantor Details
 	@NotBlank(message = "Name required")
+	@Size(max = 50, message = "Max 50 chars")
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
 	private String guarantorName;
 
 	@NotBlank(message = "Address required")
