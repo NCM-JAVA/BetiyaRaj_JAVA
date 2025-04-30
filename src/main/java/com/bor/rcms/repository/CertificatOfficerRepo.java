@@ -12,6 +12,7 @@ import com.bor.rcms.entity.Admission;
 import com.bor.rcms.entity.CaseStatusEntity;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.FileRequeistion;
+import com.bor.rcms.entity.UserEntity;
 @Repository
 public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, String> {
 
@@ -22,6 +23,14 @@ public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, 
     @Query(value = "SELECT * FROM certificat_officer WHERE admission_date = :admission_date", nativeQuery = true)
 
     List<CertificatOfficer> findByAdmissionTime(@Param("admission_date") String admissionTime);
+
+    Optional<CertificatOfficer> findByReequeistionIdAndHearingDate(String reequeistionId, String hearingDate);
+
+	Optional<CertificatOfficer> findByCertOfficerIdAndHearingDate(String caseId, String caseDate);
+
+	Optional<CertificatOfficer> findByCertOfficerId(String caseId);
+
+	Optional<CertificatOfficer> findByadmissionDate(String caseDate);
 
 
 }

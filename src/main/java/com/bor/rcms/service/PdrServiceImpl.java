@@ -435,12 +435,12 @@ public class PdrServiceImpl implements PdrService {
 				int finalValue = caseNumber + 1;
 				String formattedValue = String.format("%04d", finalValue);
 				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 				// System.out.println("Last inserted user: " + lastInsertedUser.get());
 			} else {
 				String formattedValue = String.format("%04d", initial);
 				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 			}
 			// System.out.println("last result--------->" + lastInsertedUser);
 
@@ -987,6 +987,39 @@ public class PdrServiceImpl implements PdrService {
 
 	    return availableSlots;
 	}
+	@Override
+	public List<CertificatOfficer> findByReqId(String caseId, String caseDate) {
+	    
+	    List<CertificatOfficer> result=new ArrayList<CertificatOfficer>();
+
+	    try {
+	        boolean hasCaseId = caseId != null && !caseId.isEmpty();
+	        boolean hasCaseDate = caseDate != null && !caseDate.isEmpty();
+
+	        if (hasCaseId && hasCaseDate) {
+	        	
+	          //  fileRequeistionRepo.findByRequeistionIdAndCurrentDate(caseId, caseDate);
+	            
+	            //    .ifPresent(result::add);
+	            
+	        	certificatOfficerRepo.findByCertOfficerIdAndHearingDate(caseId, caseDate)
+		                .ifPresent(result::add);
+
+	            
+	        } else if (hasCaseId) {
+	        	certificatOfficerRepo.findByCertOfficerId(caseId)
+	                .ifPresent(result::add);
+	        } else if (hasCaseDate) {
+	        	certificatOfficerRepo.findByadmissionDate(caseDate)
+	                .ifPresent(result::add);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Consider proper logging in production
+	    }
+
+	    return result;
+	}
+
 
 
 }

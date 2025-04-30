@@ -49,6 +49,7 @@ import com.bor.rcms.repository.CertificatOfficerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.UserRepository;
+import com.bor.rcms.resonse.CauseListResponse;
 import com.bor.rcms.resonse.ReqiestionResponnse;
 import com.bor.rcms.response.StatusRes;
 import com.bor.rcms.response.StatusResponse;
@@ -895,5 +896,54 @@ public class PDRController {
 		return null;
 		
 	}		
+	
+	//causeList
+	
+	@PostMapping("/findcauselist")
+	public ResponseEntity<StatusResponse<List<CauseListResponse>>> findCauseList(@RequestBody Map<String, String> request) {
+	    StatusResponse<List<CauseListResponse>> response = new StatusResponse<>();
+	    
+	    String caseId = request.get("caseId");
+	    String caseDate = request.get("caseDate");
+
+//	    // Validate input
+//	    if (caseId == null || caseDate == null || caseId.isBlank() || caseDate.isBlank()) {
+//	        response.setMessage("Invalid request: caseId and caseDate are required.");
+//	        response.setStatus(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//	    }
+
+	    try {
+	        List<CertificatOfficer> officers = pdrService.findByReqId(caseId, caseDate);
+	        if (officers.isEmpty()) {
+	            response.setMessage("No records found");
+	            response.setStatus(String.valueOf(HttpStatus.NOT_FOUND.value()));
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	        }
+
+	        List<CauseListResponse> causeList = officers.stream().map(officer -> {
+	            CauseListResponse res = new CauseListResponse();
+	            res.setAction(officer.getAction());
+	            res.setCaseId(officer.getCertOfficerId());
+	            res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
+	            res.setHearingDate(officer.getHearingDate());
+	            res.setHearingtime(officer.getHearingTime());
+	            res.setHolderName(officer.getUserId().getFullName());
+	            return res;
+	        }).collect(Collectors.toList());
+
+	        response.setOption(causeList);
+	        response.setMessage("Success");
+	        response.setStatus(String.valueOf(HttpStatus.OK.value()));
+	        return ResponseEntity.ok(response);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.setMessage("Internal Server Error");
+	        response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
+	}
+
 
 }
