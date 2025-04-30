@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 public class DebatorVo {
 	@NotBlank(message = "Name required")
 	@Size(max = 50, message = "Max 50 chars")
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
 	private String debtorName;
 
 	@NotBlank(message = "Address required")
@@ -61,7 +62,7 @@ public class DebatorVo {
 	    private  String debtorpolicestation;
 	    
 	    @Column(unique = true, nullable = false)
-	    @NotBlank(message = "Phone number is required")	 
+	    @Pattern(regexp = "^[0-9]{10}$", message = "Mobile must be 10 digits")
 	    private String debtorPhoneNumber;
 	    
 	    private String debtorStatePhoneNumber;

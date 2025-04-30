@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ import com.bor.rcms.service.ObjectionService;
 import com.bor.rcms.service.UserService;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
-import Validation.UserRegistrationValidator;
+//import Validation.UserRegistrationValidator;
 
 @RestController
 @RequestMapping("api/auth")
@@ -162,15 +163,15 @@ public class AuthController {
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
       
 		StatusRes res = new StatusRes();
-		
-		UserRegistrationValidator.ValidationResult result = 
-			    UserRegistrationValidator.checkUser(request);
-
-			if (!result.passed()) {
-				res.setStatus("400");
-				res.setMessage(result.getErrors());
-			    return ResponseEntity.badRequest().body(res);
-			}
+//		
+//		UserRegistrationValidator.ValidationResult result = 
+//			    UserRegistrationValidator.checkUser(request);
+//
+//			if (!result.passed()) {
+//				res.setStatus("400");
+//				res.setMessage(result.getErrors());
+//			    return ResponseEntity.badRequest().body(res);
+//			}
 		
 			
 		try {
@@ -246,20 +247,20 @@ public class AuthController {
 	
 	
 	@PostMapping("/registerPDR")
-	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
+	public ResponseEntity<?> registerUserPDR(@Valid @RequestBody UserRegistrationRequest request) {
            
 		//Validation user
 		StatusRes res = new StatusRes();
-
-		UserRegistrationValidator.ValidationResult result = 
-			    UserRegistrationValidator.checkUser(request);
-
-			if (!result.passed()) {
-				res.setStatus("400");
-				res.setMessage(result.getErrors());
-			    return ResponseEntity.badRequest().body(res);
-			}
-		
+//
+//		UserRegistrationValidator.ValidationResult result = 
+//			    UserRegistrationValidator.checkUser(request);
+//
+//			if (!result.passed()) {
+//				res.setStatus("400");
+//				res.setMessage(result.getErrors());
+//			    return ResponseEntity.badRequest().body(res);
+//			}
+//		
 		
 		
 		try {

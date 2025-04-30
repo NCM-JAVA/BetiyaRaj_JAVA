@@ -56,8 +56,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 //import Validation.CaseNotesValidator;
 //import Validation.CaseNotesValidator.ValidationResult;
-import Validation.FileRequeistionValidator;
-import Validation.UserRegistrationValidator;
+//import Validation.FileRequeistionValidator;
+//import Validation.UserRegistrationValidator;
 
 @RestController
 @RequestMapping("api/pdr")

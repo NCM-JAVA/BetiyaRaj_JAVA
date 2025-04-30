@@ -3,7 +3,7 @@ package com.bor.rcms.response;
 import java.util.Optional;
 
 public class StatusResponse <T> {
-    private String status;
+    private String status;  
     private String message;
     private Optional<T> option = Optional.empty(); // default to empty
 
