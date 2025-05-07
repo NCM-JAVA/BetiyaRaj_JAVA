@@ -2,8 +2,10 @@ package com.bor.rcms.service;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.ExceptionHand.ResponseSet;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
@@ -29,7 +31,7 @@ public interface PdrService {
 
 	List<CourtReq> addCourtlistShow(Long userId);
 
-	StatusRes noticeGenerate(String selectForm, String reqId);
+	ResponseEntity<?> noticeGenerate(String selectForm, String reqId);
 
 	String caseTransfer(List<String> reqId, List<String> nouserId);
 

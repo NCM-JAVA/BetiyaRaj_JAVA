@@ -5,12 +5,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.bor.rcms.ExceptionHand.ResponseSet;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.DebatorVo;
@@ -56,6 +61,7 @@ import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.mail.iap.ResponseHandler;
 
 //import Validation.CaseNotesValidator;
 //import Validation.CaseNotesValidator.ValidationResult;
@@ -84,6 +90,8 @@ public class PDRController {
 
 	@Autowired
 	private UserRepository repository;
+	
+	
 
 	@GetMapping("/Hello")
 	public String HelloApi() {
@@ -95,21 +103,24 @@ public class PDRController {
 		try {
 			String email = request.get("email"); // Extract phone number from the request body
 			UserEntity entity = repository.findByEmail(email);
-
+			
 			if (entity != null) {
 				// Return a JSON response
-
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Try another email");
+          return ResponseSet.generateResponse("Email already in use",HttpStatus.CONFLICT,entity);
+				//return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusRes(Responsedata.getMessage(400),"Message:Try Another Email"));
 
 				// return ResponseEntity.ok(Map.of("message", "Try another email"));
 			} else {
-				// Return a JSON response
-				return ResponseEntity.ok(Map.of("message", "email number is available"));
-			}
+				// Returrn a JSON response
+				//return ResponseSet.generateResponse("", null)
+		          return ResponseSet.generateResponse("Email is Available",HttpStatus.OK,entity);
 
+				//return ResponseEntity.status(HttpStatus.OK).body(new StatusRes(Responsedata.getMessage(200),"Email is Available"));
+			}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseSet.generateResponse(e.getMessage(),HttpStatus.BAD_REQUEST, null);
 		}
 	}
 
@@ -125,8 +136,9 @@ public class PDRController {
 //			if (!result.passed()) {
 //				res.setStatus("400");
 //				res.setMessage(result.getErrors());
-//			    return ResponseEntity.badRequest().body(res);
-//			}
+//			    return ResponseEntity.badRequest().body(res)
+		 
+				
 		try {
 			// Debugging the received inputs
 			System.out.println("Received objection JSON: " + requiestion);
@@ -136,7 +148,22 @@ public class PDRController {
 			// Convert the JSON string to ObjectionEntity
 			ObjectMapper objectMapper = new ObjectMapper();
 			FileRequeistionVo vo = objectMapper.readValue(requiestion, FileRequeistionVo.class);
-
+       
+			
+			//Validating the field
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator = factory.getValidator();
+			Set<ConstraintViolation<FileRequeistionVo>> violations = validator.validate(vo);
+	       
+			
+			// 3. Check for validation errors  
+          if (!violations.isEmpty()) {
+	            Map<String, String> errors = new HashMap<>();
+	            for (ConstraintViolation<FileRequeistionVo> violation : violations) {
+	                errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+	            }
+	      return ResponseSet.generateResponse("Validation failed", HttpStatus.BAD_REQUEST, errors);
+	        }
 			List<CertificateDebator> debatorlist = new ArrayList<CertificateDebator>();
 
 			for (DebatorVo debatorVo : vo.getDebatorVos()) {
@@ -233,8 +260,8 @@ public class PDRController {
 
 			// Call the service to handle the objection and files
 			String objectionId = pdrService.submitRequisition(requisition, files, username, documentTypes);
-			return ResponseEntity.ok(objectionId);
-
+		//	return ResponseEntity.ok(objectionId);
+        return ResponseSet.generateResponse("Succese Full ",HttpStatus.OK,objectionId);
 			//
 
 			// Get user from service
@@ -249,10 +276,12 @@ public class PDRController {
 			// objectionId));
 		} catch (Exception e) {
 			e.printStackTrace(); // Log the full exception for debugging
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        return ResponseSet.generateResponse("Message:Error Data ", HttpStatus.INTERNAL_SERVER_ERROR, null);
 		}
 	}
 
+		
 	@GetMapping("/getrequiestion")
 	public ResponseEntity<?> getObjections(@Valid @RequestParam String district) {
 		try {
@@ -290,19 +319,21 @@ public class PDRController {
 					return dto;
 				}).collect(Collectors.toList());
 
-				ReqiestionResponnse response = new ReqiestionResponnse();
+//			ReqiestionResponnse response = new ReqiestionResponnse();
+//
+//				response.setListfileRequeistion(dtoList);
+//				response.setStatus("200");
+//				response.setMsg("Success");
 
-				response.setListfileRequeistion(dtoList);
-				response.setStatus("200");
-				response.setMsg("Success");
-
-				return ResponseEntity.ok(response);
+				 return ResponseSet.generateResponse("Successfully retrieved data",HttpStatus.OK,  dtoList);
 			}
-
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body("No requisitions found for district: " + district);
+             return ResponseSet.generateResponse("NO requisition found for Distic",HttpStatus.NOT_FOUND,district);
+			//return ResponseEntity.status(HttpStatus.ACCEPTED).body("No requisitions found for district: " + district);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving objections: " + e.getMessage());
+		
+			return ResponseSet.generateResponse("Error retrieving objections: ",HttpStatus.INTERNAL_SERVER_ERROR, null);
+			//	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		//			.body("Error retrieving objections: " + e.getMessage());
 		}
 	}
 
@@ -316,7 +347,8 @@ public class PDRController {
 			FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(recuisition);
 
 	        if (newObjection == null) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data found for requisition ID: " + recuisition);
+	        	return ResponseSet.generateResponse("No Data found for Requisition ID:",HttpStatus.NOT_FOUND,recuisition);
+	            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data found for requisition ID: " + recuisition);
 	        }
 
 	        // FileRequeistionDTO
@@ -426,29 +458,34 @@ public class PDRController {
 	        response.setEntity(newObjection.getUserId());
 	      //  response.setDocumentEntityPdrs(newObjection.getDocuments());
 	        response.setFileRequeistionVo(vo);
-	        response.setStatus("200");
-	        response.setMsg("Success");
-
-	        return ResponseEntity.ok(response);
+//	        response.setStatus("200");
+//	        response.setMsg("Success");
+           return ResponseSet.generateResponse("Success",HttpStatus.OK, response);
+	      //  return ResponseEntity.ok(response);
 	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error retrieving requisition: " + e.getMessage());
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Error retrieving requisition: " + e.getMessage());
+	    	
+	    	return ResponseSet.generateResponse("Error retrieving requisition: ",HttpStatus.INTERNAL_SERVER_ERROR, null);
 	    }
 	}
 
 	// CertificateOfficer
 
 	@PostMapping("officersAdmission")
-	public ResponseEntity<?> Admission(@RequestBody OfficerStatusVo statusvo) {
+	public ResponseEntity<?> Admission(@Valid @RequestBody OfficerStatusVo statusvo) {
 		// TODO: process POST request
 
 		try {
 
 			String status = pdrService.upadateStatus(statusvo);
 			if (!status.equals("")) {
-				return ResponseEntity.ok(status);
+				//return ResponseEntity.ok(status);
+				return ResponseSet.generateResponse(" ",HttpStatus.OK, status);
 			} else {
-				return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Error retrieving objections: " + status);
+				//return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Error retrieving objections: " + status);
+			return ResponseSet.generateResponse("Error retrieving objections: ",HttpStatus.BAD_GATEWAY,status);
+			
 			}
 
 			// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error
@@ -456,32 +493,36 @@ public class PDRController {
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Internal Server Error: " + e.getMessage());
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Internal Server Error: " + e.getMessage());
+			
+			return ResponseSet.generateResponse(" error",HttpStatus.INTERNAL_SERVER_ERROR , null);
 			// e.printStackTrace();
 		}
 		// return null;
 	}
 
 	@PostMapping("caseProcessdetails")
-	public ResponseEntity<?> caseprocedetailssace(@RequestBody CaseNotes casenotes) {
+	public ResponseEntity<?> caseprocedetailssace(@Valid @RequestBody CaseNotes casenotes) {
 		// ValidationResult validationResult = CaseNotesValidator.validateCaseNotes(casenotes);
 
 		try {
 			System.out.println(casenotes.getSelectForm());
 			if (casenotes.getAction() == null) {
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+				//return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
 
 			}
 			FileRequeistion admission = pdrService.savecaseDetails(casenotes);
 			if (admission == null) {
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+				//return ResponseEntity.status(HttpStatus.NO_CONTENT).body(" some issue casenotes.");
+			return ResponseSet.generateResponse("some issue casenotes.", HttpStatus.NO_CONTENT, admission);
 			}
 
-			return ResponseEntity.ok("save success");
-
+			//return ResponseEntity.ok("save success");
+       return ResponseSet.generateResponse("Save success",HttpStatus.OK, admission);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("issue casenotes: " + e.getMessage());
+			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("issue casenotes: " + e.getMessage());
+		return ResponseSet.generateResponse("issue casenotes", HttpStatus.INTERNAL_SERVER_ERROR,null);
 		}
 
 	}
@@ -533,21 +574,27 @@ public class PDRController {
 					}
 					return dto;
 				}).collect(Collectors.toList());
-
-				ReqiestionResponnse response = new ReqiestionResponnse();
-
-				response.setListfileRequeistion(dtoList);
-
-				response.setStatus("200");
-				response.setMsg("Success");
-
-				return ResponseEntity.ok(response);
+//
+//				ReqiestionResponnse response = new ReqiestionResponnse();
+//
+//				response.setListfileRequeistion(dtoList);
+//
+//				response.setStatus("200");
+//				response.setMsg("Success");
+//
+//				return ResponseEntity.ok(response);
+			return ResponseSet.generateResponse("Success",HttpStatus.OK , dtoList);	
+				
+				
+				
 			}
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No requisitions found for district: " + district);
+     return ResponseSet.generateResponse("No requisitions found for district: ", HttpStatus.NOT_FOUND, district);
+			//return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No requisitions found for district: " + district);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving objections: " + e.getMessage());
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Error retrieving objections: " + e.getMessage());
+			
+			return ResponseSet.generateResponse("Error retrieving objections: ", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 
@@ -563,7 +610,8 @@ public class PDRController {
 			// Ensure that the file exists
 			Path imagePath = Paths.get(filePath);
 			if (!Files.exists(imagePath)) {
-				return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+				//return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+				return ResponseSet.generateResponse("File not found", HttpStatus.NOT_FOUND, imagePath);
 			}
 
 			// Load the file into a byte array
@@ -572,39 +620,47 @@ public class PDRController {
 			String base64String = Base64.getEncoder().encodeToString(fileBytes);
 
 			if (base64String != null && !base64String.isEmpty()) {
-				return new ResponseEntity<>(base64String, HttpStatus.ACCEPTED);
+				//return new ResponseEntity<>(base64String, HttpStatus.ACCEPTED);
+			return ResponseSet.generateResponse("Accepted ",HttpStatus.ACCEPTED, base64String);
+			
 			}
 
-			return new ResponseEntity<>("File encoding failed", HttpStatus.BAD_REQUEST);
-
+			//return new ResponseEntity<>("File encoding failed", HttpStatus.BAD_REQUEST);
+      return ResponseSet.generateResponse("File encoding failed", HttpStatus.BAD_REQUEST, imagePath);
+		
 		} catch (Exception e) {
 			e.printStackTrace();
-
-			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+  return ResponseSet.generateResponse("Error: ", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			//return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@PostMapping("addcourt")
 	public ResponseEntity<?> addcourt(@RequestBody CourtReq courtReq) {
 
-		StatusRes response = new StatusRes();
+		//StatusRes response = new StatusRes();
 		try {
 
 			String res = pdrService.addCourt(courtReq);
 			if (res.equals("save"))
 
 			{
-				response.setMessage(res);
-				response.setStatus("200");
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+				
+				return ResponseSet.generateResponse("success",HttpStatus.ACCEPTED , res);
+//				response.setMessage(res);
+//				response.setStatus("200");
+//				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
 			}
-			response.setMessage(res);
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-
+//			response.setMessage(res);
+//			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+   return ResponseSet.generateResponse("", HttpStatus.BAD_REQUEST, res);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			//return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		
+			   return ResponseSet.generateResponse("Error: ", HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage() );
+
 		}
 		// return null;
 	}
@@ -617,46 +673,56 @@ public class PDRController {
 
 			List<CourtReq> reslist = pdrService.addCourtlistShow(userId);
 			if (!reslist.isEmpty()) {
+				   return ResponseSet.generateResponse("Success",HttpStatus.ACCEPTED ,reslist );
 
-				return new ResponseEntity<>(reslist, HttpStatus.ACCEPTED);
+				//return new ResponseEntity<>(reslist, HttpStatus.ACCEPTED);
 
 			}
-			response.setMessage("not Found");
-			response.setStatus("400");
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//			response.setMessage("not Found");
+//			response.setStatus("400");
+//			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			   return ResponseSet.generateResponse("not Found",HttpStatus.BAD_REQUEST,reslist );
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			return new ResponseEntity<>("Internal Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			   return ResponseSet.generateResponse("Internal Error: ",HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage() );
+
+			//return new ResponseEntity<>("Internal Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		// return null;
 	}
 
 	@PostMapping("noticeForm")
 	public ResponseEntity<?> addcourtlist(@RequestParam String selectForm, @RequestParam String reqId) {
-		StatusRes res = new StatusRes();
+		//StatusRes res = new StatusRes();
 		try {
 
 			if (selectForm != null && reqId != null) {
+			//	StatusRes	res = pdrService.noticeGenerate(selectForm, reqId);
 
-				res = pdrService.noticeGenerate(selectForm, reqId);
+			ResponseEntity<?>	res =  pdrService.noticeGenerate(selectForm, reqId);
 
 				if (res == null) {
-					res.setMessage("form  will  not be sumbitted");
-					res.setStatus("400");
-					return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+//					res.setMessage("form  will  not be sumbitted");
+//					res.setStatus("400");
+//					return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+					return ResponseSet.generateResponse("form  will  not be sumbitted", HttpStatus.BAD_REQUEST, res);
 
 				}
-				return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+				//return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+				return ResponseSet.generateResponse("Accepted", HttpStatus.ACCEPTED, res);
 
 			}
-			res.setMessage("form  will  not be sumbitted");
-			res.setStatus("400");
-			return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+//			res.setMessage("form  will  not be sumbitted");
+//			res.setStatus("400");
+//			return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+			return ResponseSet.generateResponse("form  will  not be sumbitted", HttpStatus.BAD_REQUEST,null);
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			return new ResponseEntity<>("INTERNAL_SERVER_ERROR: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			//return new ResponseEntity<>("INTERNAL_SERVER_ERROR: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		return ResponseSet.generateResponse("INTERNAL_SERVER_ERROR: ", HttpStatus.INTERNAL_SERVER_ERROR, null );
+		
 		}
 		// return null;
 	}
@@ -670,20 +736,29 @@ public class PDRController {
 		try {
 			String res = pdrService.caseTransfer(reqId, nouserId);
 			if ("save".equals(res)) {
-				response.setMessage("Case Transfer Successful");
-				response.setStatus("200");
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+//				response.setMessage("Case Transfer Successful");
+//				response.setStatus("200");
+//				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+		
+				return ResponseSet.generateResponse("Case Transfer Successful: ", HttpStatus.ACCEPTED, res );
+
+			
 			}
 
-			response.setMessage(res);
-			response.setStatus("400");
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//			response.setMessage(res);
+//			response.setStatus("400");
+//			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			return ResponseSet.generateResponse("Error", HttpStatus.BAD_REQUEST, res );
+	
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.setMessage("Internal Server Error");
-			response.setStatus("500");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//			response.setMessage("Internal Server Error");
+//			response.setStatus("500");
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseSet.generateResponse("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR );
+
+		
 		}
 	}
 
@@ -718,18 +793,28 @@ public class PDRController {
 				}).collect(Collectors.toList());
 
 				ReqiestionResponnse response = new ReqiestionResponnse();
-
-				response.setListfileRequeistion(dtoList);
-				response.setStatus("200");
-				response.setMsg("Success");
-
-				return ResponseEntity.ok(response);
+//
+//				response.setListfileRequeistion(dtoList);
+//				response.setStatus("200");
+//				response.setMsg("Success");
+           //	return ResponseEntity.ok(response);
+			
+			return ResponseSet.generateResponse("Success", HttpStatus.OK, response);
+			
 			}
 
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No requisitions found for district: " + userId);
+			//return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No requisitions found for district: " + userId);
+		
+			return ResponseSet.generateResponse("No requisitions found for district: ", HttpStatus.NOT_FOUND,userId );
+
+		
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving objections: " + e.getMessage());
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Error retrieving objections: " + e.getMessage());
+			return ResponseSet.generateResponse("Error retrieving objections:", HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage() );
+
+		
+		
 		}
 
 	}
@@ -765,24 +850,35 @@ public class PDRController {
 				}).collect(Collectors.toList());
 
 				response.setListfileRequeistion(dtoList);
-				response.setStatus("200");
-				response.setMsg("Success");
+//				response.setStatus("200");
+//				response.setMsg("Success");
+//
+//				return ResponseEntity.ok(response);
+				return ResponseSet.generateResponse("Success",HttpStatus.OK ,response );
 
-				return ResponseEntity.ok(response);
+			
 			}
 			// response.setListfileRequeistion();
-			response.setStatus("400");
-			response.setMsg("Not Found");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//			response.setStatus("400");
+//			response.setMsg("Not Found");
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//			.body("No requisitions found for district: " + response);
 
-					.body("No requisitions found for district: " + response);
+			
+			return ResponseSet.generateResponse("No requisitions found for district:",HttpStatus.NOT_FOUND ,response );
+
+
 		} catch (Exception e) {
-			response.setMsg("Not Found");
-			response.setStatus("400");
+//			response.setMsg("Not Found");
+//			response.setStatus("400");
+//
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//
+//					.body("No requisitions found for district: " + response);
+			
+			return ResponseSet.generateResponse("Error",HttpStatus.INTERNAL_SERVER_ERROR ,response );
 
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-
-					.body("No requisitions found for district: " + response);
+			
 		}
 
 	}
@@ -836,6 +932,7 @@ public class PDRController {
 	@PostMapping("/debator-casestatus")
 	public ResponseEntity<?> findMobileNumberHolder(@RequestParam String userId) {
 		StatusResponse<FileRequeistionDTO> res = new StatusResponse<>();
+		
 
 		try {
 			CertificateDebator certificateDebator = certificatDebatorRepo.findByDebatorIdNative(Long.valueOf(userId));
@@ -873,6 +970,21 @@ public class PDRController {
 		}
 
 	}
+	
+	
+//	@GetMapping("/case-status")
+//	public ResponseEntity<?> getCaseStatus(@RequestParam String caseId) {
+//	    try {
+//	        CaseStatusDTO caseStatus = pdrService.getCaseStatus(caseId);
+//	        if (caseStatus != null) {
+//	            return ResponseEntity.ok(caseStatus);
+//	        }
+//	        return ResponseEntity.notFound().build();
+//	    } catch (Exception e) {
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Error retrieving case status: " + e.getMessage());
+//	    }
+//	}
 	
 	@PostMapping("findtimeslot")
 	public ResponseEntity<?> findSlottime(@RequestParam String date) {

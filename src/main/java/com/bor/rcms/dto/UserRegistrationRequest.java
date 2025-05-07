@@ -30,7 +30,7 @@ public class UserRegistrationRequest {
 	private String bankName;
 	@NotNull(message = "Branch code cannot be null")
 	@Size(min = 3, max = 20, message = "Branch code must be between 3 and 10 characters")
-	@Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z0-9]*$", message = "Branch code must start with 2 letters and contain only alphanumeric characters")
+	//@Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z0-9]*$", message = "Branch code must start with 2 letters and contain only alphanumeric characters")
 	private String branchCode;
 
 	private String alternatenumber;
@@ -47,7 +47,7 @@ public class UserRegistrationRequest {
 	@Email
 	private String email;
 	@NotBlank
-	@Pattern(regexp = "^[0-9]{10}$", message = "aadhar must be 10 digits")
+	@Pattern(regexp = "^[0-9]{10}$", message = "Phone Number must be 10 digits")
 	private String phoneNumber;
 	@NotBlank
 	private String address;

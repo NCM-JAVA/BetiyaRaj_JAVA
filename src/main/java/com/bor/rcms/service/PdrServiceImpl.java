@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.ExceptionHand.ResponseSet;
 import com.bor.rcms.config.TimeSlot;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CourtReq;
@@ -834,25 +836,29 @@ public class PdrServiceImpl implements PdrService {
 	}
 
 	@Override
-	public StatusRes noticeGenerate(String selectForm, String reqId) {
-		StatusRes statusRes = new StatusRes();
+	public  ResponseEntity<?> noticeGenerate(String selectForm, String reqId  ) {
+		//StatusRes statusRes = new StatusRes();
 
 		FileRequeistion newObjection = new FileRequeistion();
 		try {
 			newObjection = fileRequeistionRepo.findByRequeistionId(reqId).get();
 
 			if (newObjection.getRequeistionId() == null) {
-				statusRes.setMessage("reqId not found");
-				statusRes.setStatus("404");
-				return statusRes;
+//				statusRes.setMessage("reqId not found");
+//				statusRes.setStatus("404");
+//				return statusRes;
+			
+			return ResponseSet.generateResponse("reqId not found",HttpStatus.NOT_FOUND,newObjection);
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			statusRes.setMessage("reqId not found");
-			statusRes.setStatus("404");
+//			statusRes.setMessage("reqId not found");
+//			statusRes.setStatus("404");
 			e.printStackTrace();
-			return statusRes;
+//			return statusRes;
+			return ResponseSet.generateResponse("reqId not found",HttpStatus.NOT_FOUND, newObjection);
+
 
 		}
 		CertificateDebator certificateDebatorslist = newObjection.getCertificateDebator().get(0);
@@ -878,10 +884,12 @@ public class PdrServiceImpl implements PdrService {
 					demandDetails, furtherDetails, day, month, year, officerDesignation);
 
 			if (notice != null) {
-				statusRes.setMessage("form1 will be sumbitted");
-				statusRes.setStatus("200");
+//				statusRes.setMessage("form1 will be sumbitted");
+//				statusRes.setStatus("200");
+				ResponseSet.generateResponse("form1 will be sumbitted", HttpStatus.OK,notice);
 			}
-			return statusRes;
+//			return statusRes;
+			ResponseSet.generateResponse("form1 will be sumbitted", HttpStatus.OK,notice);
 
 		}
 //
@@ -890,7 +898,7 @@ public class PdrServiceImpl implements PdrService {
 			String debtorName = certificateDebatorslist.getDebatorName();
 			String reason = null;
 			String section = null;
-			LocalDate currentDate = LocalDate.now();
+ 			LocalDate currentDate = LocalDate.now();
 
 			String day = String.valueOf(currentDate.getDayOfMonth());
 			String month = String.valueOf(currentDate.getMonthValue());
@@ -901,15 +909,23 @@ public class PdrServiceImpl implements PdrService {
 					officerLocation);
 
 			if (notice != null) {
-				statusRes.setMessage("form3 will be sumbitted");
-				statusRes.setStatus("200");
-			}
-			return statusRes;
-		}
-		statusRes.setMessage("check credentiall");
-		statusRes.setStatus("404");
+//				statusRes.setMessage("form3 will be sumbitted");
+//				statusRes.setStatus("200");
+				ResponseSet.generateResponse("form3 will be sumbitted", HttpStatus.OK,notice);
 
-		return statusRes;
+			}
+			//return statusRes;
+			ResponseSet.generateResponse("form3 will be sumbitted", HttpStatus.OK,notice);
+
+		}
+//		statusRes.setMessage("check credentiall");
+//		statusRes.setStatus("404");
+
+//		return statusRes;
+		
+	return ResponseSet.generateResponse("Check Credential Details", HttpStatus.BAD_REQUEST,newObjection);
+
+		
 	}
 
 	@Override

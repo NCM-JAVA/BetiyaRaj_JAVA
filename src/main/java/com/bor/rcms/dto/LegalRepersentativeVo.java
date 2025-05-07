@@ -21,7 +21,7 @@ public class LegalRepersentativeVo {
     private  String legalpolicestation;
     @NotBlank(message = "Name required")
 	@Size(max = 50, message = "Max 50 chars")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Mobile No must be 10 digits")   
     private String legalphoneNumber;
     @NotBlank
     private String legaladdress;
@@ -36,7 +36,8 @@ public class LegalRepersentativeVo {
     @NotBlank
     private String legaldistrict;
     @NotBlank(message = "Pincode is required")
-    @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be 6 digits")    private String legalpincode;
+    @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be 6 digits")   
+    private String legalpincode;
 	public String getLegalName() {
 		return legalName;
 	}

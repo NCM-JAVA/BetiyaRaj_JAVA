@@ -1,16 +1,20 @@
 package com.bor.rcms.dto;
 
 import java.util.List;
+import javax.validation.constraints.AssertTrue;
 
 import javax.persistence.Column;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+ @Valid
 public class FileRequeistionVo {
-
+	@Valid
 	private List<DebatorVo> debatorVos;
+	
 	// Guarantor Details
 	@NotBlank(message = "Name required")
 	@Size(max = 50, message = "Max 50 chars")
@@ -46,7 +50,7 @@ public class FileRequeistionVo {
 	private String guarantorCity;
 
 	@NotBlank(message = "District required")
-	//@Size(max = 50, message = "Max 50 chars")
+	// @Size(max = 50, message = "Max 50 chars")
 	private String guarantorDistrict;
 
 	@NotBlank(message = "Pincode required")
@@ -60,7 +64,7 @@ public class FileRequeistionVo {
 
 	private String guarantorStatePhoneNumber;
 
-	//@Email(message = "Invalid email format")
+	// @Email(message = "Invalid email format")
 	private String guarantorEmail;
 
 	@NotBlank(message = "User ID required")
@@ -84,36 +88,38 @@ public class FileRequeistionVo {
 	// Common Fields
 	private String createdDate;
 	@NotBlank
-	//@Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date format: YYYY-MM-DD")
+	// @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date format:
+	// YYYY-MM-DD")
 	private String modifiedDate;
 	@NotBlank
 	private String status;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
 	private String totalOutstandingAmmount;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid rate format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid rate format")
 	private String totalInterestRate;
 	@NotBlank
 	private String interestDueForm;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String totalCourtFee;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String missllenousFee;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String paidCourFee;
 	@NotBlank
-	//@Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
+	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
 	private String totalDemand;
 	@NotBlank
-	//@Pattern(regexp = "^\\d{4}-\\d{4}$", message = "Format: YYYY-YYYY")
+	// @Pattern(regexp = "^\\d{4}-\\d{4}$", message = "Format: YYYY-YYYY")
 	private String financialYear;
 
 	// legal Repersentative
 	// private LegalRepersentativeVo
+	@Valid
 	private List<LegalRepersentativeVo> legalRepersentativeVo;
 
 	public String getTotalOutstandingAmmount() {
