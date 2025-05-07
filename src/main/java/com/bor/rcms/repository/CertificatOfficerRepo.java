@@ -33,4 +33,7 @@ public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, 
 	Optional<CertificatOfficer> findByadmissionDate(String caseDate);
 
 
+	List<CertificatOfficer> findByDistrict(String district);
+
+
 }

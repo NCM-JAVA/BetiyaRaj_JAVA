@@ -1,7 +1,9 @@
 package com.bor.rcms.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -26,15 +28,19 @@ import com.bor.rcms.dto.OTPRequest;
 import com.bor.rcms.dto.OtpLoginRequest;
 import com.bor.rcms.dto.UserRegistrationRequest;
 import com.bor.rcms.entity.CertificateDebator;
+import com.bor.rcms.entity.CommisionaryMap;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
 import com.bor.rcms.repository.CertificatDebatorRepo;
+import com.bor.rcms.repository.CommisionaryMapRepo;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
+import com.bor.rcms.resonse.CaseRecodeRes;
 import com.bor.rcms.resonse.Casesinform;
 import com.bor.rcms.resonse.LoginResponse;
 import com.bor.rcms.response.CaptchaResponsed;
 import com.bor.rcms.response.StatusRes;
+import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.security.EmailService;
 import com.bor.rcms.service.NoticeService;
 import com.bor.rcms.service.ObjectionService;
@@ -58,6 +64,8 @@ public class AuthController {
 
 	@Autowired
 	private CertificatDebatorRepo certificatDebatorRepo;
+	
+	@Autowired CommisionaryMapRepo commisionaryMapRepo;
 	
     @Autowired
     private UserService userService;
@@ -244,6 +252,8 @@ public class AuthController {
 			user.setCity(request.getCity());
 			user.setState(request.getState());
 			user.setPincode(request.getPincode());
+			user.setDepartment(request.getDepartment());
+			user.setSector(request.getSector());
 			try {
 			user.setGender(request.getGender());
 			user.setDob(request.getDob());
@@ -433,6 +443,65 @@ public class AuthController {
 	    	
 	    }
 	  
+	  //
+	  
+	  @GetMapping("getcommisonorydistrict")
+	    public ResponseEntity<?> getComissioneryDistrict() {
+	        StatusResponse<List<CommisionaryMap>> response = new StatusResponse<>();
+
+		  try {
+			  
+			  List<CommisionaryMap> commisionaryMap=commisionaryMapRepo.findAll();
+			  
+			  if(!commisionaryMap.isEmpty())
+				  
+			  {
+				  response.setMessage("success");
+				  response.setStatus("200");
+				  response.setOption(commisionaryMap);
+			        return ResponseEntity.ok(response);
+			  }
+			  response.setMessage("not found");
+			  response.setStatus("404");
+			  
+			     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+		  }
+		  catch (Exception e) {
+			// TODO: handle exception
+     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+		}
+		  
+		  
+	  }
+	  
+	  
+	  @GetMapping("getdistrictBycommsionary")
+	  public ResponseEntity<?> getdistrictBycommsionary(@RequestParam String commissName) {
+	        StatusResponse<List<CommisionaryMap>> response = new StatusResponse<>();
+
+	      try {
+	          List<CommisionaryMap> district = commisionaryMapRepo.findByCommisonary(commissName);
+
+	          if (!district.isEmpty()) {
+	              response.setMessage("success");
+	              response.setStatus("200");
+	              response.setOption(district);
+	              return ResponseEntity.ok(response);
+	          }
+
+	          response.setMessage("not found");
+	          response.setStatus("404");
+	          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+
+	      } catch (Exception e) {
+	          response.setMessage("error occurred");
+	          response.setStatus("500");
+	          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	      }
+	  }
+
 	  
 	//
 	

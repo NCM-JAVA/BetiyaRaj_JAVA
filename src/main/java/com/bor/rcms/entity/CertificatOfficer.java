@@ -59,6 +59,7 @@ public class CertificatOfficer {
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 
 	private UserEntity userId;
+	private String  reason;
 
 	public String getCertOfficerId() {
 		return certOfficerId;
@@ -220,6 +221,22 @@ public class CertificatOfficer {
 		this.reequeistionId = reequeistionId;
 	}
 
+	
+	
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public CertificatOfficer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public String toString() {
 		return "CertificatOfficer [certOfficerId=" + certOfficerId + ", hearingDate=" + hearingDate + ", hearingTime="
@@ -228,12 +245,8 @@ public class CertificatOfficer {
 				+ ", modifiedDate=" + modifiedDate + ", status=" + status + ", admisionCase=" + admisionCase
 				+ ", objectioId=" + objectioId + ", officerName=" + officerName + ", currentdate=" + currentdate
 				+ ", action=" + action + ", caseClass=" + caseClass + ", caseNotes=" + caseNotes + ", fileRequeistion="
-				+ fileRequeistion + ", reequeistionId=" + reequeistionId + ", userId=" + userId + "]";
-	}
-
-	public CertificatOfficer() {
-		super();
-		// TODO Auto-generated constructor stub
+				+ fileRequeistion + ", reequeistionId=" + reequeistionId + ", userId=" + userId + ", reason=" + reason
+				+ "]";
 	}
 
 }

@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bor.rcms.dto.CaseNotes;
+import com.bor.rcms.dto.CauseVo;
+import com.bor.rcms.dto.CommisionaryReq;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.DebatorVo;
 import com.bor.rcms.dto.DocumentDTO;
@@ -38,6 +43,7 @@ import com.bor.rcms.entity.CertificateGuaranter;
 import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
+import com.bor.rcms.entity.DraftSaveCaseProceeding;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.LegalRepresentative;
 import com.bor.rcms.entity.NewObjection;
@@ -47,8 +53,10 @@ import com.bor.rcms.repository.CertificatOfficerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.UserRepository;
+import com.bor.rcms.resonse.CaseRecodeRes;
 import com.bor.rcms.resonse.CauseListResponse;
 import com.bor.rcms.resonse.ReqiestionResponnse;
+import com.bor.rcms.resonse.ReqrusitionStatus;
 import com.bor.rcms.response.StatusRes;
 import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.service.PdrService;
@@ -71,7 +79,7 @@ public class PDRController {
 
 	@Autowired
 	private CertificatOfficerRepo certificatOfficerRepo;
-	
+
 	@Autowired
 	private PdrService pdrService;
 
@@ -144,35 +152,35 @@ public class PDRController {
 				debatorlist.add(debator);
 
 			}
-			
+
 			/// end Legal
-			
+
 			List<LegalRepresentative> legalRepersentativelist = new ArrayList<LegalRepresentative>();
 
 			for (LegalRepersentativeVo legalRepersentativeVo : vo.getLegalRepersentativeVo()) {
 
-			LegalRepresentative legalRepersentative=new LegalRepresentative();
-			
-			legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress());
-			legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress1());
-			legalRepersentative.setAddress2(legalRepersentativeVo.getLegaladdress2());
-			legalRepersentative.setApartmentNumber(legalRepersentativeVo.getLegalapartmentNumber());
-			legalRepersentative.setCircle(legalRepersentativeVo.getLegalcircle());
-			legalRepersentative.setCity(legalRepersentativeVo.getLegalcity());
-			legalRepersentative.setDistrict(legalRepersentativeVo.getLegaldistrict());
-			legalRepersentative.setEmail(legalRepersentativeVo.getLegalemail());
-			legalRepersentative.setFatherNames(legalRepersentativeVo.getLegalfatherNames());
-			legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
-			legalRepersentative.setPhoneNumber(legalRepersentativeVo.getLegalphoneNumber());
-			legalRepersentative.setPincode(legalRepersentativeVo.getLegalpincode());
-			legalRepersentative.setPolicestation(legalRepersentativeVo.getLegalpolicestation());
-			legalRepersentative.setState(legalRepersentativeVo.getLegalstate());
-			legalRepersentative.setSubDivision(legalRepersentativeVo.getLegalsubDivision());
-			legalRepersentativelist.add(legalRepersentative);
-			
+				LegalRepresentative legalRepersentative = new LegalRepresentative();
+
+				legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress());
+				legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress1());
+				legalRepersentative.setAddress2(legalRepersentativeVo.getLegaladdress2());
+				legalRepersentative.setApartmentNumber(legalRepersentativeVo.getLegalapartmentNumber());
+				legalRepersentative.setCircle(legalRepersentativeVo.getLegalcircle());
+				legalRepersentative.setCity(legalRepersentativeVo.getLegalcity());
+				legalRepersentative.setDistrict(legalRepersentativeVo.getLegaldistrict());
+				legalRepersentative.setEmail(legalRepersentativeVo.getLegalemail());
+				legalRepersentative.setFatherNames(legalRepersentativeVo.getLegalfatherNames());
+				legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
+				legalRepersentative.setPhoneNumber(legalRepersentativeVo.getLegalphoneNumber());
+				legalRepersentative.setPincode(legalRepersentativeVo.getLegalpincode());
+				legalRepersentative.setPolicestation(legalRepersentativeVo.getLegalpolicestation());
+				legalRepersentative.setState(legalRepersentativeVo.getLegalstate());
+				legalRepersentative.setSubDivision(legalRepersentativeVo.getLegalsubDivision());
+				legalRepersentativelist.add(legalRepersentative);
+
 			}
-			
-			///end Legal
+
+			/// end Legal
 
 			// Set up Granter
 			CertificateGuaranter granter = new CertificateGuaranter();
@@ -247,13 +255,14 @@ public class PDRController {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
 					try {
 						FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(dto.getRequeistionId());
-						CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(newObjection);
+						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
+					dto.setRequeistionId(req.getRequeistionId());
+
 					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
 					dto.setTotalInterestRate(req.getTotalInterestRate());
 					dto.setInterestDueForm(req.getInterestDueForm());
@@ -266,7 +275,7 @@ public class PDRController {
 					dto.setCurrentDate(req.getCurrentDate());
 					dto.setUpdateDate(req.getUpdateDate());
 					dto.setStatus(req.getStatus());
-					
+
 					dto.setReason(req.getReason());
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
@@ -292,128 +301,134 @@ public class PDRController {
 
 	@GetMapping("/viewrequiestion")
 	public ResponseEntity<?> getAllObjections(@RequestParam String recuisition) {
-	    try {
+		try {
 			FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(recuisition);
 
-	        if (newObjection == null) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data found for requisition ID: " + recuisition);
-	        }
+			if (newObjection == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("No data found for requisition ID: " + recuisition);
+			}
 
-	        // FileRequeistionDTO
-	        FileRequeistionDTO dto = new FileRequeistionDTO();
-	        dto.setRequeistionId(newObjection.getRequeistionId());
-	        dto.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
-	        dto.setTotalInterestRate(newObjection.getTotalInterestRate());
-	        dto.setInterestDueForm(newObjection.getInterestDueForm());
-	        dto.setTotalCourtFee(newObjection.getTotalCourtFee());
-	        dto.setMissllenousFee(newObjection.getMissllenousFee());
-	        dto.setPaidCourFee(newObjection.getPaidCourFee());
-	        dto.setTotalDemand(newObjection.getTotalDemand());
-	        dto.setFinancialYear(newObjection.getFinancialYear());
-	        dto.setDistrictName(newObjection.getDistrictName());
-	        dto.setCurrentDate(newObjection.getCurrentDate());
-	        dto.setUpdateDate(newObjection.getUpdateDate());
-	        dto.setStatus(newObjection.getStatus());
-	        dto.setReason(newObjection.getReason());
+			// FileRequeistionDTO
+			FileRequeistionDTO dto = new FileRequeistionDTO();
+			dto.setRequeistionId(newObjection.getRequeistionId());
 
-	        if (newObjection.getUserId() != null) {
-	            dto.setUserName(newObjection.getUserId().getFullName());
-	        }
+			try {
+				CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
 
-	        // FileRequeistionVo mapping (Guarantor + Debtors)
-	        FileRequeistionVo vo = new FileRequeistionVo();
+				dto.setCaseId(certificatOfficer.getCertOfficerId());
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			dto.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
+			dto.setTotalInterestRate(newObjection.getTotalInterestRate());
+			dto.setInterestDueForm(newObjection.getInterestDueForm());
+			dto.setTotalCourtFee(newObjection.getTotalCourtFee());
+			dto.setMissllenousFee(newObjection.getMissllenousFee());
+			dto.setPaidCourFee(newObjection.getPaidCourFee());
+			dto.setTotalDemand(newObjection.getTotalDemand());
+			dto.setFinancialYear(newObjection.getFinancialYear());
+			dto.setDistrictName(newObjection.getDistrictName());
+			dto.setCurrentDate(newObjection.getCurrentDate());
+			dto.setUpdateDate(newObjection.getUpdateDate());
+			dto.setStatus(newObjection.getStatus());
+			dto.setReason(newObjection.getReason());
 
-	        // Guarantor
-	        CertificateGuaranter grantor = newObjection.getCertificateGuaranter();
-	        if (grantor != null) {
-	            vo.setGuarantorName(grantor.getGranterName());
-	            vo.setGuarantorAddress(grantor.getAddress());
-	            vo.setGuarantorAddress1(grantor.getAddress1());
-	            vo.setGuarantorAddress2(grantor.getAddress2());
-	            vo.setGuarantorState(grantor.getState());
-	            vo.setGuarantorCity(grantor.getCity());
-	            vo.setGuarantorDistrict(grantor.getDistrict());
-	            vo.setGuarantorPincode(grantor.getPincode());
-	            vo.setGuarantorPhoneNumber(grantor.getPhoneNumber());
-	         //   vo.setGuarantorStatePhoneNumber(g.get);
-	            vo.setGuarantorEmail(grantor.getEmail());
-	            vo.setGuarantorfatherNames(grantor.getFatherName());
-	            vo.setGuarantorsubDivision(grantor.getSubDivision());
-	            vo.setGuarantorcircle(grantor.getCircle());
-	            vo.setGuarantorpolicestation(grantor.getPolicestation());
-	            vo.setCreatedDate(grantor.getCreatedDate());
-	            vo.setModifiedDate(grantor.getModifiedDate());
-	        }
+			if (newObjection.getUserId() != null) {
+				dto.setUserName(newObjection.getUserId().getFullName());
+			}
 
-	        // Debtors
-	        List<DebatorVo> debatorVoList = new ArrayList<>();
-	        if (newObjection.getCertificateDebator() != null) {
-	            for (CertificateDebator debator : newObjection.getCertificateDebator()) {
-	                DebatorVo dvo = new DebatorVo();
-	                dvo.setDebtorName(debator.getDebatorName());
-	                dvo.setDebtorAddress(debator.getAddress());
-	                dvo.setDebtorAddress1(debator.getAddress1());
-	                dvo.setDebtorAddress2(debator.getAddress2());
-	                dvo.setDebtorState(debator.getState());
-	                dvo.setDebtorCity(debator.getCity());
-	                dvo.setDebtorDistrict(debator.getDistrict());
-	                dvo.setDebtorPincode(debator.getPincode());
-	                dvo.setDebtorPhoneNumber(debator.getPhoneNumber());
-	                dvo.setDebtorStatePhoneNumber(debator.getState()); // Check if this is correct
-	                dvo.setDebtorEmail(debator.getEmail());
-	                dvo.setDebtorfatherNames(debator.getFatherNames());
-	                dvo.setDebtorubDivision(debator.getSubDivision());
-	                dvo.setDebtorcircle(debator.getCircle());
-	                dvo.setDebtorpolicestation(debator.getPolicestation());
-	                debatorVoList.add(dvo);
-	            }
-	        }
+			// FileRequeistionVo mapping (Guarantor + Debtors)
+			FileRequeistionVo vo = new FileRequeistionVo();
 
-	        vo.setDebatorVos(debatorVoList);
+			// Guarantor
+			CertificateGuaranter grantor = newObjection.getCertificateGuaranter();
+			if (grantor != null) {
+				vo.setGuarantorName(grantor.getGranterName());
+				vo.setGuarantorAddress(grantor.getAddress());
+				vo.setGuarantorAddress1(grantor.getAddress1());
+				vo.setGuarantorAddress2(grantor.getAddress2());
+				vo.setGuarantorState(grantor.getState());
+				vo.setGuarantorCity(grantor.getCity());
+				vo.setGuarantorDistrict(grantor.getDistrict());
+				vo.setGuarantorPincode(grantor.getPincode());
+				vo.setGuarantorPhoneNumber(grantor.getPhoneNumber());
+				// vo.setGuarantorStatePhoneNumber(g.get);
+				vo.setGuarantorEmail(grantor.getEmail());
+				vo.setGuarantorfatherNames(grantor.getFatherName());
+				vo.setGuarantorsubDivision(grantor.getSubDivision());
+				vo.setGuarantorcircle(grantor.getCircle());
+				vo.setGuarantorpolicestation(grantor.getPolicestation());
+				vo.setCreatedDate(grantor.getCreatedDate());
+				vo.setModifiedDate(grantor.getModifiedDate());
+			}
 
-	        // Set common financial fields in vo too
-	        vo.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
-	        vo.setTotalInterestRate(newObjection.getTotalInterestRate());
-	        vo.setInterestDueForm(newObjection.getInterestDueForm());
-	        vo.setTotalCourtFee(newObjection.getTotalCourtFee());
-	        vo.setMissllenousFee(newObjection.getMissllenousFee());
-	        vo.setPaidCourFee(newObjection.getPaidCourFee());
-	        vo.setTotalDemand(newObjection.getTotalDemand());
-	        vo.setFinancialYear(newObjection.getFinancialYear());
+			// Debtors
+			List<DebatorVo> debatorVoList = new ArrayList<>();
+			if (newObjection.getCertificateDebator() != null) {
+				for (CertificateDebator debator : newObjection.getCertificateDebator()) {
+					DebatorVo dvo = new DebatorVo();
+					dvo.setDebtorName(debator.getDebatorName());
+					dvo.setDebtorAddress(debator.getAddress());
+					dvo.setDebtorAddress1(debator.getAddress1());
+					dvo.setDebtorAddress2(debator.getAddress2());
+					dvo.setDebtorState(debator.getState());
+					dvo.setDebtorCity(debator.getCity());
+					dvo.setDebtorDistrict(debator.getDistrict());
+					dvo.setDebtorPincode(debator.getPincode());
+					dvo.setDebtorPhoneNumber(debator.getPhoneNumber());
+					dvo.setDebtorStatePhoneNumber(debator.getState()); // Check if this is correct
+					dvo.setDebtorEmail(debator.getEmail());
+					dvo.setDebtorfatherNames(debator.getFatherNames());
+					dvo.setDebtorubDivision(debator.getSubDivision());
+					dvo.setDebtorcircle(debator.getCircle());
+					dvo.setDebtorpolicestation(debator.getPolicestation());
+					debatorVoList.add(dvo);
+				}
+			}
 
-	        // Response mapping
-	        ReqiestionResponnse response = new ReqiestionResponnse();
-	        
-	        
-	        
-	     // Map DocumentEntityPdr to DocumentDTO
-	        List<DocumentDTO> documentDTOs = newObjection.getDocuments().stream()
-	            .map(doc -> {
-	                DocumentDTO docDto = new DocumentDTO();
-	                docDto.setId(doc.getId());
-	                docDto.setDocumentName(doc.getDocumentName()); // Assuming fileName holds documentName
-	                docDto.setFilePath(doc.getFilePath());     // Assuming this exists in DocumentEntityPdr
-	                docDto.setFileType(doc.getFileType());     // Assuming this exists
-	                docDto.setFileSize(doc.getFileSize());     // Assuming this exists
-	                docDto.setDocumentType(recuisition);       // If this is meant to be a label or ID
-	                return docDto;
-	            })
-	            .collect(Collectors.toList());
+			vo.setDebatorVos(debatorVoList);
 
-	        response.setDocumentEntityPdrs(documentDTOs);
+			// Set common financial fields in vo too
+			vo.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
+			vo.setTotalInterestRate(newObjection.getTotalInterestRate());
+			vo.setInterestDueForm(newObjection.getInterestDueForm());
+			vo.setTotalCourtFee(newObjection.getTotalCourtFee());
+			vo.setMissllenousFee(newObjection.getMissllenousFee());
+			vo.setPaidCourFee(newObjection.getPaidCourFee());
+			vo.setTotalDemand(newObjection.getTotalDemand());
+			vo.setFinancialYear(newObjection.getFinancialYear());
 
-	        response.setFileRequeistion(dto);
-	        response.setEntity(newObjection.getUserId());
-	      //  response.setDocumentEntityPdrs(newObjection.getDocuments());
-	        response.setFileRequeistionVo(vo);
-	        response.setStatus("200");
-	        response.setMsg("Success");
+			// Response mapping
+			ReqiestionResponnse response = new ReqiestionResponnse();
 
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error retrieving requisition: " + e.getMessage());
-	    }
+			// Map DocumentEntityPdr to DocumentDTO
+			List<DocumentDTO> documentDTOs = newObjection.getDocuments().stream().map(doc -> {
+				DocumentDTO docDto = new DocumentDTO();
+				docDto.setId(doc.getId());
+				docDto.setDocumentName(doc.getDocumentName()); // Assuming fileName holds documentName
+				docDto.setFilePath(doc.getFilePath()); // Assuming this exists in DocumentEntityPdr
+				docDto.setFileType(doc.getFileType()); // Assuming this exists
+				docDto.setFileSize(doc.getFileSize()); // Assuming this exists
+				docDto.setDocumentType(recuisition); // If this is meant to be a label or ID
+				return docDto;
+			}).collect(Collectors.toList());
+
+			response.setDocumentEntityPdrs(documentDTOs);
+
+			response.setFileRequeistion(dto);
+			response.setEntity(newObjection.getUserId());
+			// response.setDocumentEntityPdrs(newObjection.getDocuments());
+			response.setFileRequeistionVo(vo);
+			response.setStatus("200");
+			response.setMsg("Success");
+
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error retrieving requisition: " + e.getMessage());
+		}
 	}
 
 	// CertificateOfficer
@@ -473,17 +488,15 @@ public class PDRController {
 			if (!fileRequeistions.isEmpty()) {
 				List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
-					
-					
+
 					dto.setRequeistionId(req.getRequeistionId());
-					
-				//	FileRequeistionDTO dto = new FileRequeistionDTO();
+
+					// FileRequeistionDTO dto = new FileRequeistionDTO();
 					try {
 						FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(dto.getRequeistionId());
-						CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(newObjection);
+						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
@@ -556,6 +569,7 @@ public class PDRController {
 		}
 	}
 
+	
 	@PostMapping("addcourt")
 	public ResponseEntity<?> addcourt(@RequestBody CourtReq courtReq) {
 
@@ -845,38 +859,38 @@ public class PDRController {
 		}
 
 	}
-	
+
 	@PostMapping("findtimeslot")
 	public ResponseEntity<?> findSlottime(@RequestParam String date) {
 		try {
-			List<String> slot=pdrService.findSlotTime(date);
-			
-			if(!slot.isEmpty())
-			{
-			return ResponseEntity.ok(slot);
+			List<String> slot = pdrService.findSlotTime(date);
 
-		}
-			StatusRes res=new StatusRes();
+			if (!slot.isEmpty()) {
+				return ResponseEntity.ok(slot);
+
+			}
+			StatusRes res = new StatusRes();
 			res.setMessage("no time slot Available");
 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
 		}
-			
+
 		catch (Exception e) {
 			// TODO: handle exception
 		}
 		return null;
-		
-	}		
-	
-	//causeList
-	
+
+	}
+
+	// causeList
+
 	@PostMapping("/findcauselist")
-	public ResponseEntity<StatusResponse<List<CauseListResponse>>> findCauseList(@RequestBody Map<String, String> request) {
-	    StatusResponse<List<CauseListResponse>> response = new StatusResponse<>();
-	    
-	    String caseId = request.get("caseId");
-	    String caseDate = request.get("caseDate");
+	public ResponseEntity<StatusResponse<List<CauseListResponse>>> findCauseList(
+			@RequestBody Map<String, String> request) {
+		StatusResponse<List<CauseListResponse>> response = new StatusResponse<>();
+
+		String caseId = request.get("caseId");
+		String caseDate = request.get("caseDate");
 
 //	    // Validate input
 //	    if (caseId == null || caseDate == null || caseId.isBlank() || caseDate.isBlank()) {
@@ -885,37 +899,332 @@ public class PDRController {
 //	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 //	    }
 
-	    try {
-	        List<CertificatOfficer> officers = pdrService.findByReqId(caseId, caseDate);
-	        if (officers.isEmpty()) {
-	            response.setMessage("No records found");
-	            response.setStatus(String.valueOf(HttpStatus.NOT_FOUND.value()));
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-	        }
+		try {
+			List<CertificatOfficer> officers = pdrService.findByReqId(caseId, caseDate);
+			if (officers.isEmpty()) {
+				response.setMessage("No records found");
+				response.setStatus(String.valueOf(HttpStatus.NOT_FOUND.value()));
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
 
-	        List<CauseListResponse> causeList = officers.stream().map(officer -> {
-	            CauseListResponse res = new CauseListResponse();
-	            res.setAction(officer.getAction());
-	            res.setCaseId(officer.getCertOfficerId());
-	            res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
-	            res.setHearingDate(officer.getHearingDate());
-	            res.setHearingtime(officer.getHearingTime());
-	            res.setHolderName(officer.getUserId().getFullName());
-	            return res;
-	        }).collect(Collectors.toList());
+			List<CauseListResponse> causeList = officers.stream().map(officer -> {
+				CauseListResponse res = new CauseListResponse();
+				res.setAction(officer.getAction());
+				res.setCaseId(officer.getCertOfficerId());
+				res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
+				res.setHearingDate(officer.getHearingDate());
+				res.setHearingtime(officer.getHearingTime());
+				res.setHolderName(officer.getUserId().getFullName());
+				return res;
+			}).collect(Collectors.toList());
 
-	        response.setOption(causeList);
-	        response.setMessage("Success");
-	        response.setStatus(String.valueOf(HttpStatus.OK.value()));
-	        return ResponseEntity.ok(response);
+			response.setOption(causeList);
+			response.setMessage("Success");
+			response.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.ok(response);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        response.setMessage("Internal Server Error");
-	        response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage("Internal Server Error");
+			response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 
+	@PostMapping("/findcauselistBydistrict")
+	public ResponseEntity<StatusResponse<List<CauseListResponse>>> findCauseList(@RequestParam String district) {
+		StatusResponse<List<CauseListResponse>> response = new StatusResponse<>();
 
+//	    // Validate input
+//	    if (caseId == null || caseDate == null || caseId.isBlank() || caseDate.isBlank()) {
+//	        response.setMessage("Invalid request: caseId and caseDate are required.");
+//	        response.setStatus(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//	    }
+
+		try {
+			List<CertificatOfficer> officers = pdrService.findAllCause(district);
+			if (officers.isEmpty() || officers == null) {
+				response.setMessage("No records found");
+				response.setStatus(String.valueOf(HttpStatus.NOT_FOUND.value()));
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+
+			List<CauseListResponse> causeList = officers.stream().map(officer -> {
+				CauseListResponse res = new CauseListResponse();
+				res.setAction(officer.getAction());
+				res.setCaseId(officer.getCertOfficerId());
+				res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
+				res.setHearingDate(officer.getHearingDate());
+				res.setHearingtime(officer.getHearingTime());
+				res.setHolderName(officer.getUserId().getFullName());
+				return res;
+			}).collect(Collectors.toList());
+
+			response.setOption(causeList);
+			response.setMessage("Success");
+			response.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.ok(response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage("Internal Server Error");
+			response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@PostMapping("/causeupadate")
+	public ResponseEntity<?> causeupadate(@Valid @RequestBody CauseVo causeVo, BindingResult result) {
+		StatusRes res = new StatusRes();
+		if (result.hasErrors()) {
+			// Return first error message (you can customize this as needed)
+			return ResponseEntity.badRequest().body(result.getFieldError().getDefaultMessage());
+		}
+		try {
+			String response = pdrService.upadateCauseStatus(causeVo);
+
+			if (response.equals("update")) {
+				res.setMessage(response);
+				res.setStatus("200");
+				return ResponseEntity.status(HttpStatus.OK).body(res);
+
+			}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("internal Server erroe");
+
+		}
+
+		// return null;
+
+	}
+
+	@PostMapping("/caseStatusReq")
+	public ResponseEntity<StatusResponse<List<ReqrusitionStatus>>> caseStatusReq(@RequestParam String userId) {
+		StatusResponse<List<ReqrusitionStatus>> response = new StatusResponse<>();
+
+		try {
+			List<ReqrusitionStatus> requisitionStatusList = pdrService.getcaseStatus(userId);
+
+			if (requisitionStatusList == null || requisitionStatusList.isEmpty()) {
+				response.setOption(Collections.emptyList());
+				response.setMessage("No records found");
+				response.setStatus(String.valueOf(HttpStatus.OK.value()));
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			}
+
+			response.setOption(requisitionStatusList);
+			response.setMessage("Success");
+			response.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.ok(response);
+
+		} catch (Exception e) {
+			response.setMessage("An error occurred.");
+			response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@PostMapping("/draftSave")
+	public ResponseEntity<?> draftSave(@RequestParam String draft, @RequestParam String caseId) {
+		try {
+			StatusRes res = pdrService.addDraft(draft, caseId);
+
+			if (res.getMessage().equals("save")) {
+				res.setStatus(String.valueOf(HttpStatus.OK.value()));
+				return ResponseEntity.ok(res);
+
+			}
+			res.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@PostMapping("/draftfind")
+	public ResponseEntity<?> draftSave(@RequestParam String caseId) {
+		try {
+			DraftSaveCaseProceeding res = pdrService.FindDraft(caseId);
+
+			StatusResponse<DraftSaveCaseProceeding> response = new StatusResponse<DraftSaveCaseProceeding>();
+			if (res != null) {
+				response.setStatus(String.valueOf(HttpStatus.OK.value()));
+				response.setOption(res);
+				return ResponseEntity.ok(response);
+
+			}
+			response.setStatus("404");
+			response.setMessage("not found");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@PostMapping("caseRecord")
+	public ResponseEntity<?> caseRecord(@RequestParam String userId) {
+		StatusResponse<List<CaseRecodeRes>> response = new StatusResponse<>();
+
+		try {
+			List<CaseRecodeRes> requisitionStatusList = pdrService.getcaseRecord(userId);
+
+			if (requisitionStatusList == null || requisitionStatusList.isEmpty()) {
+				response.setOption(Collections.emptyList());
+				response.setMessage("No records found");
+				response.setStatus(String.valueOf(HttpStatus.OK.value()));
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			}
+
+			response.setOption(requisitionStatusList);
+			response.setMessage("Success");
+			response.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.ok(response);
+
+		} catch (Exception e) {
+			response.setMessage("An error occurred.");
+			response.setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@PostMapping("/caseRecordFilter")
+	public ResponseEntity<StatusResponse<List<CaseRecodeRes>>> caseRecordList(@RequestBody Map<String, String> request) {
+        StatusResponse<List<CaseRecodeRes>> response = new StatusResponse<>();
+
+	    try {
+	        String sector = request.get("sector");
+	        String bank = request.get("bank");
+	        String department = request.get("department");
+	        String branchCode = request.get("branchCode");
+
+	        List<CaseRecodeRes> requisitionStatusList = pdrService.getcaseRecordFilter(sector, bank, department, branchCode);
+
+	        if(requisitionStatusList!=null)
+	        {
+	        response.setStatus("SUCCESS");
+			response.setOption(requisitionStatusList);
+	        response.setMessage("Filtered records retrieved successfully.");
+
+	        return ResponseEntity.ok(response);
+
+	        }
+	    } catch (Exception e) {
+	    	response.setStatus("ERROR");
+	    	response.setMessage("Something went wrong: " + e.getMessage());
+	       // errorResponse.setData(Collections.emptyList());
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
+	    response.setStatus("404");
+	  //  response.setMessage("Something went wrong: " + e.getMessage());
+       // errorResponse.setData(Collections.emptyList());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
+	
+	//BOR
+	
+	@PostMapping("addcommisionary")
+	public ResponseEntity<?> addcommisionary(@RequestBody CommisionaryReq commisionaryReq ) {
+
+		StatusRes response = new StatusRes();
+		try {
+
+			String res = pdrService.addcommisionary(commisionaryReq);
+			if (res.equals("save"))
+
+			{
+				response.setMessage(res);
+				response.setStatus("200");
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+			}
+			response.setMessage(res);
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// return null;
+	}
+	
+	
+	@PostMapping("showcommisionaryList")
+	public ResponseEntity<?> showcommisionaryList(@RequestParam Long userId) {
+		StatusRes response = new StatusRes();
+
+		try {
+
+			List<CommisionaryReq> reslist = pdrService.showcommisionaryList(userId);
+			if (!reslist.isEmpty()) {
+
+				return new ResponseEntity<>(reslist, HttpStatus.ACCEPTED);
+
+			}
+			response.setMessage("not Found");
+			response.setStatus("400");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new ResponseEntity<>("Internal Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// return null;
+	}
+	//add  Certificate Officer
+	@PostMapping("addCertificateOfficer")
+	public ResponseEntity<?> addCertificateOfficer(@RequestBody CourtReq courtReq) {
+
+		StatusRes response = new StatusRes();
+		try {
+
+			String res = pdrService.addCourt(courtReq);
+			if (res.equals("save"))
+
+			{
+				response.setMessage(res);
+				response.setStatus("200");
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+			}
+			response.setMessage(res);
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// return null;
+	}
+	
+	@PostMapping("certificateOfficerList")
+	public ResponseEntity<?> certificateOfficerList(@RequestParam Long userId) {
+		StatusRes response = new StatusRes();
+
+		try {
+
+			List<CourtReq> reslist = pdrService.addCourtlistShow(userId);
+			if (!reslist.isEmpty()) {
+
+				return new ResponseEntity<>(reslist, HttpStatus.ACCEPTED);
+
+			}
+			response.setMessage("not Found");
+			response.setStatus("400");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new ResponseEntity<>("Internal Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// return null;
+	}
 }
