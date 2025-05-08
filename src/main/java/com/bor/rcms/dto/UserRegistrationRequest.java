@@ -33,6 +33,10 @@ public class UserRegistrationRequest {
     private Date dob;
     private String roleName; // Optional
     private String status;
+    //add
+    private String sector;
+    private String department;
+    
 	public String getUserName() {
 		return userName;
 	}
@@ -157,10 +161,33 @@ public class UserRegistrationRequest {
 	public void setBranchCode(String branchCode) {
 		this.branchCode = branchCode;
 	}
+	
+	public String getSector() {
+		return sector;
+	}
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	@Override
+	public String toString() {
+		return "UserRegistrationRequest [userName=" + userName + ", aadhar=" + aadhar + ", category=" + category
+				+ ", city=" + city + ", gender=" + gender + ", pincode=" + pincode + ", state=" + state + ", relation="
+				+ relation + ", bankName=" + bankName + ", branchCode=" + branchCode + ", alternatenumber="
+				+ alternatenumber + ", password=" + password + ", fullName=" + fullName + ", email=" + email
+				+ ", phoneNumber=" + phoneNumber + ", address=" + address + ", district=" + district + ", dob=" + dob
+				+ ", roleName=" + roleName + ", status=" + status + ", sector=" + sector + ", department=" + department
+				+ "]";
+	}
 	public UserRegistrationRequest(String userName, String aadhar, String category, String city, String gender,
 			String pincode, String state, String relation, String bankName, String branchCode, String alternatenumber,
 			String password, String fullName, String email, String phoneNumber, String address, String district,
-			Date dob, String roleName, String status) {
+			Date dob, String roleName, String status, String sector, String department) {
 		super();
 		this.userName = userName;
 		this.aadhar = aadhar;
@@ -182,16 +209,11 @@ public class UserRegistrationRequest {
 		this.dob = dob;
 		this.roleName = roleName;
 		this.status = status;
+		this.sector = sector;
+		this.department = department;
 	}
-	@Override
-	public String toString() {
-		return "UserRegistrationRequest [userName=" + userName + ", aadhar=" + aadhar + ", category=" + category
-				+ ", city=" + city + ", gender=" + gender + ", pincode=" + pincode + ", state=" + state + ", relation="
-				+ relation + ", bankName=" + bankName + ", branchCode=" + branchCode + ", alternatenumber="
-				+ alternatenumber + ", password=" + password + ", fullName=" + fullName + ", email=" + email
-				+ ", phoneNumber=" + phoneNumber + ", address=" + address + ", district=" + district + ", dob=" + dob
-				+ ", roleName=" + roleName + ", status=" + status + "]";
-	}
+	
+	
 	
 
     

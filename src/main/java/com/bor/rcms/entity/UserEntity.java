@@ -54,6 +54,10 @@ public class UserEntity {
     //pdr ADD
     private String bankName;
     private String branchCode;
+    private String sector;
+    private String department;
+    
+    private String commisionary;
     
    
     @ManyToMany
@@ -298,6 +302,30 @@ public class UserEntity {
 		this.createdByuser = createdByuser;
 	}
 
+	public String getSector() {
+		return sector;
+	}
+
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getCommisionary() {
+		return commisionary;
+	}
+
+	public void setCommisionary(String commisionary) {
+		this.commisionary = commisionary;
+	}
+
 	@Override
 	public String toString() {
 		return "UserEntity [userId=" + userId + ", userName=" + userName + ", password=" + password + ", fullName="
@@ -307,51 +335,11 @@ public class UserEntity {
 				+ ", address2=" + address2 + ", state=" + state + ", city=" + city + ", district=" + district
 				+ ", pincode=" + pincode + ", gender=" + gender + ", category=" + category + ", otp=" + otp + ", dob="
 				+ dob + ", role=" + role + ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate
-				+ ", status=" + status + ", bankName=" + bankName + ", branchCode=" + branchCode + ", groups=" + groups
-				+ "]";
-	}
-
-	public UserEntity(Long userId, String userName, String password, String fullName, String address, String email,
-			String phoneNumber, String alternateNumber, String relationName, String adhar, Long createdByuser,
-			String panNumber, String address1, String address2, String state, String city, String district,
-			String pincode, String gender, String category, String otp, Date dob, RoleEntity role, Date createdDate,
-			Date modifiedDate, String status, String bankName, String branchCode, Set<UserGroupEntity> groups) {
-		super();
-		this.userId = userId;
-		this.userName = userName;
-		this.password = password;
-		this.fullName = fullName;
-		this.address = address;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.alternateNumber = alternateNumber;
-		this.relationName = relationName;
-		this.adhar = adhar;
-		this.createdByuser = createdByuser;
-		this.panNumber = panNumber;
-		this.address1 = address1;
-		this.address2 = address2;
-		this.state = state;
-		this.city = city;
-		this.district = district;
-		this.pincode = pincode;
-		this.gender = gender;
-		this.category = category;
-		this.otp = otp;
-		this.dob = dob;
-		this.role = role;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
-		this.status = status;
-		this.bankName = bankName;
-		this.branchCode = branchCode;
-		this.groups = groups;
+				+ ", status=" + status + ", bankName=" + bankName + ", branchCode=" + branchCode + ", sector=" + sector
+				+ ", department=" + department + ", commisionary=" + commisionary + ", groups=" + groups + "]";
 	}
 
 	
-
-	
-
 	
 	
 	

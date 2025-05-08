@@ -35,6 +35,10 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 
 	List<FileRequeistion> findByUserId(UserEntity entity);
 
+	Optional<FileRequeistion> findByRequeistionIdAndCurrentDate(String caseId, String caseDate);
+
+	Optional<FileRequeistion> findByCurrentDate(String caseDate);
+
 	 
 
 
