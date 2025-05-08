@@ -14,6 +14,7 @@ public class CommisionaryMap {
 	    private Long id;
 	  private String commisonary;
 	  private String distrct;
+	  private String state;
 	  private String status;
 	public Long getId() {
 		return id;
@@ -39,10 +40,18 @@ public class CommisionaryMap {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	
 	@Override
 	public String toString() {
-		return "CommisionaryMap [id=" + id + ", commisonary=" + commisonary + ", distrct=" + distrct + ", status="
-				+ status + "]";
+		return "CommisionaryMap [id=" + id + ", commisonary=" + commisonary + ", distrct=" + distrct + ", state="
+				+ state + ", status=" + status + "]";
 	}
 	public CommisionaryMap() {
 		super();

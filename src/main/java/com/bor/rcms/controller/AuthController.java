@@ -447,15 +447,17 @@ public class AuthController {
 	  
 	  @GetMapping("getcommisonorydistrict")
 	    public ResponseEntity<?> getComissioneryDistrict() {
-	        StatusResponse<List<CommisionaryMap>> response = new StatusResponse<>();
+	        StatusResponse<List<String>> response = new StatusResponse<>();
 
 		  try {
 			  
-			  List<CommisionaryMap> commisionaryMap=commisionaryMapRepo.findAll();
+			  List<String> commisionaryMap=commisionaryMapRepo.findDistinctCommisonary();
 			  
-			  if(!commisionaryMap.isEmpty())
+			  if(commisionaryMap!=null)
 				  
 			  {
+				  
+				  
 				  response.setMessage("success");
 				  response.setStatus("200");
 				  response.setOption(commisionaryMap);
@@ -476,6 +478,39 @@ public class AuthController {
 		  
 	  }
 	  
+	  
+	  @GetMapping("getAlldistrict")
+	    public ResponseEntity<?> getAlldistrict() {
+	        StatusResponse<List<String>> response = new StatusResponse<>();
+
+		  try {
+			  
+			  List<String> commisionaryMap=commisionaryMapRepo.findDistinctdistrct();
+			  
+			  if(commisionaryMap!=null)
+				  
+			  {
+				  
+				  
+				  response.setMessage("success");
+				  response.setStatus("200");
+				  response.setOption(commisionaryMap);
+			        return ResponseEntity.ok(response);
+			  }
+			  response.setMessage("not found");
+			  response.setStatus("404");
+			  
+			     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+		  }
+		  catch (Exception e) {
+			// TODO: handle exception
+   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+		}
+		  
+		  
+	  }
 	  
 	  @GetMapping("getdistrictBycommsionary")
 	  public ResponseEntity<?> getdistrictBycommsionary(@RequestParam String commissName) {
