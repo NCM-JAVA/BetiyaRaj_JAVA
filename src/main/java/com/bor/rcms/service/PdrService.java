@@ -38,7 +38,7 @@ public interface PdrService {
 
 	StatusRes noticeGenerate(String selectForm, String reqId);
 
-	String caseTransfer(List<String> reqId, List<String> nouserId);
+	String caseTransfer(List<String> reqId, String nouserId);
 
 	List<FileRequeistion> findpendingNom(String userId);
 

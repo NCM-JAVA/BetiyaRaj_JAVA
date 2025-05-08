@@ -1,5 +1,6 @@
 package com.bor.rcms.controller;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +9,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.config.CourtFeeSlab;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CauseVo;
 import com.bor.rcms.dto.CommisionaryReq;
@@ -59,6 +62,7 @@ import com.bor.rcms.resonse.ReqiestionResponnse;
 import com.bor.rcms.resonse.ReqrusitionStatus;
 import com.bor.rcms.response.StatusRes;
 import com.bor.rcms.response.StatusResponse;
+import com.bor.rcms.service.CourtFeeService;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,6 +74,10 @@ public class PDRController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+    private  CourtFeeService courtFeeService;
+
 
 	@Autowired
 	private CertificatDebatorRepo certificatDebatorRepo;
@@ -650,7 +658,7 @@ public class PDRController {
 	/// Case Transfer
 
 	@PostMapping("caseTransfer")
-	public ResponseEntity<?> caseTransfer(@RequestParam List<String> reqId, @RequestParam List<String> nouserId) {
+	public ResponseEntity<?> caseTransfer(@RequestParam List<String> reqId, @RequestParam String nouserId) {
 		StatusRes response = new StatusRes();
 
 		try {
@@ -674,7 +682,6 @@ public class PDRController {
 	}
 
 	@PostMapping("caseTranferFileshow")
-
 	public ResponseEntity<?> getTranferFileshow(@RequestParam String userId) {
 
 		try {
@@ -1227,4 +1234,11 @@ public class PDRController {
 		}
 		// return null;
 	}
+	
+	@PostMapping("courtFee")
+	    public CourtFeeSlab getFee(@RequestParam double amount) {
+	        return courtFeeService.getFeeForAmount(amount)
+	                .orElseThrow(() -> new RuntimeException("No fee slab found for amount: " + amount));
+	    }
+
 }

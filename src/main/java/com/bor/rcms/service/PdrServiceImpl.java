@@ -930,11 +930,9 @@ public class PdrServiceImpl implements PdrService {
 	}
 
 	@Override
-	public String caseTransfer(List<String> reqId, List<String> nouserId) {
+	public String caseTransfer(List<String> reqId, String nouserId) {
 		try {
-			if (reqId.size() != nouserId.size()) {
-				return "Request and user ID list sizes do not match";
-			}
+			
 
 			for (int i = 0; i < reqId.size(); i++) {
 				Optional<FileRequeistion> optionalRequest = fileRequeistionRepo.findByRequeistionId(reqId.get(i));
@@ -943,7 +941,7 @@ public class PdrServiceImpl implements PdrService {
 					newObjection.setIsTransOfficer(false);
 					newObjection.setNominalOffstatus(newObjection.getStatus());
 					newObjection.setIsTransNomOfficer(true);
-					newObjection.setTransNomId(nouserId.get(i));
+					newObjection.setTransNomId(nouserId);
 					fileRequeistionRepo.save(newObjection);
 				} else {
 					return "Request ID not found: " + reqId.get(i);
@@ -1263,18 +1261,15 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			try {
 				UserEntity entity2 = new UserEntity();
-				entity2=userRepository.findByUserId(Long.valueOf(courtReq.getAssignUSer()));
+				entity2=userRepository.findByUserId(Long.valueOf(courtReq.getUserId()));
 				
 				RoleEntity roleEntity=entity2.getRole();
 				if(!roleEntity.getRoleName().equals("BOR"))
 				{
 					return "You are Not BOR";
-
 					
 	    		}
 		
-
-				
 			}
 			catch (Exception e) {
 				// TODO: handle exception
@@ -1285,7 +1280,8 @@ public class PdrServiceImpl implements PdrService {
 
 			courtAdd.setAddress(courtReq.getOfficeDetails());
 			courtAdd.setCommisionary(courtReq.getCommisoner());
-			courtAdd.setDistrict(courtReq.getDisrict());
+			//System.out.println("district===>"+courtReq.getDisrict());
+			courtAdd.setDistrict(courtReq.getDistrict());
 			
 			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
 			courtAdd.setFullName(courtReq.getOfficeName());
@@ -1321,7 +1317,7 @@ public class PdrServiceImpl implements PdrService {
 			courtAdd.setCreatedByuser(entity.getUserId());
 			if (entity != null) {
 				courtAdd.setCreatedByuser(entity.getUserId());
-				courtAdd.setDistrict(entity.getDistrict());
+				courtAdd.setDistrict(courtReq.getDistrict());
 				// courtAdd.setUserId(entity);
 				RoleEntity role = new RoleEntity();
 
@@ -1403,7 +1399,7 @@ public class PdrServiceImpl implements PdrService {
 					courtReq.setOfficeName(userEntity.getFullName());
 					courtReq.setOfficerEmail(userEntity.getEmail());
 					courtReq.setCommisoner(userEntity.getCommisionary());
-					courtReq.setDisrict(userEntity.getDistrict());
+					courtReq.setDistrict(userEntity.getDistrict());
 
 					courtReq.setAssignUSer(entity.getFullName());
 					courtReq.setStatus(userEntity.getStatus());

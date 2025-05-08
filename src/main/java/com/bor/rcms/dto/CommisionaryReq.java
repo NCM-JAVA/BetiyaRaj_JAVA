@@ -21,7 +21,7 @@ public class CommisionaryReq {
 	private String updaStatus;
 	
 	private String commisoner;
-	private String disrict;
+	private String district;
 
 	private String role;
 
@@ -105,12 +105,22 @@ public class CommisionaryReq {
 		this.commisoner = commisoner;
 	}
 
-	public String getDisrict() {
-		return disrict;
+	
+
+	@Override
+	public String toString() {
+		return "CommisionaryReq [officeDetails=" + officeDetails + ", officeName=" + officeName + ", officerEmail="
+				+ officerEmail + ", officeMobile=" + officeMobile + ", status=" + status + ", password=" + password
+				+ ", userId=" + userId + ", assignUSer=" + assignUSer + ", updaStatus=" + updaStatus + ", commisoner="
+				+ commisoner + ", district=" + district + ", role=" + role + "]";
 	}
 
-	public void setDisrict(String disrict) {
-		this.disrict = disrict;
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 
 	public String getRole() {
@@ -119,14 +129,6 @@ public class CommisionaryReq {
 
 	public void setRole(String role) {
 		this.role = role;
-	}
-
-	@Override
-	public String toString() {
-		return "CommisionaryReq [officeDetails=" + officeDetails + ", officeName=" + officeName + ", officerEmail="
-				+ officerEmail + ", officeMobile=" + officeMobile + ", status=" + status + ", password=" + password
-				+ ", userId=" + userId + ", assignUSer=" + assignUSer + ", updaStatus=" + updaStatus + ", commisoner="
-				+ commisoner + ", disrict=" + disrict + ", role=" + role + "]";
 	}
 
 	public CommisionaryReq() {
