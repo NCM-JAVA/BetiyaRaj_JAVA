@@ -752,8 +752,8 @@ public class ObjectionServiceImpl implements ObjectionService {
 	}
 
 	@Override
-	public List<Admission> getfindDismis() {
-		List<Admission>  admissions=admissionRepo.findAlldismispending();
+	public List<Admission> getfindDismis(String district) {
+		List<Admission>  admissions=admissionRepo.findAlldismispending(district);
 		return admissions;
 	}
 

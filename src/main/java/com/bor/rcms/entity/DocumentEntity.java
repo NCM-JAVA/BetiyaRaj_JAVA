@@ -28,6 +28,7 @@ public class DocumentEntity {
     private Date uploadedDate;
     private String caseId;
 
+    
 	public Long getId() {
 		return id;
 	}

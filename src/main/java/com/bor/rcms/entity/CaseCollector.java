@@ -35,6 +35,9 @@ public class CaseCollector {
 
     @Column(name = "status")
     private String status;
+    
+    @Column(name = "officer_name")
+    private String officerName;
 
     @Column(name = "collector_case")
     private String collectorCase;
@@ -249,16 +252,27 @@ public class CaseCollector {
 		this.currentDate = currentDate;
 	}
 
+	public String getOfficerName() {
+		return officerName;
+	}
+
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
+
 	@Override
 	public String toString() {
 		return "CaseCollector [caseCollectorId=" + caseCollectorId + ", hearingDate=" + hearingDate + ", hearingTime="
 				+ hearingTime + ", district=" + district + ", admissionDate=" + admissionDate + ", admissionTime="
-				+ admissionTime + ", affidavitDate=" + affidavitDate + ", status=" + status + ", collectorCase="
-				+ collectorCase + ", objectioId=" + objectioId + ", action=" + action + ", caseClass=" + caseClass
-				+ ", currentDate=" + currentDate + ", caseNotes=" + caseNotes + ", newObjection=" + newObjection
-				+ ", userId=" + userId + ", admission=" + admission + ", sequence=" + sequence + ", modifiedDate="
-				+ modifiedDate + "]";
+				+ admissionTime + ", affidavitDate=" + affidavitDate + ", status=" + status + ", officerName="
+				+ officerName + ", collectorCase=" + collectorCase + ", objectioId=" + objectioId + ", action=" + action
+				+ ", caseClass=" + caseClass + ", currentDate=" + currentDate + ", caseNotes=" + caseNotes
+				+ ", newObjection=" + newObjection + ", userId=" + userId + ", admission=" + admission + ", sequence="
+				+ sequence + ", modifiedDate=" + modifiedDate + "]";
 	}
+
+
+	
 
 	
 

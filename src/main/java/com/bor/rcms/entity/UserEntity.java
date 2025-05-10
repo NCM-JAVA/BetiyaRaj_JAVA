@@ -29,6 +29,9 @@ public class UserEntity {
     private String alternateNumber;
     private String relationName;
     private String adhar;
+    
+    private Long createdByuser;
+    
     private String panNumber;
     private String address1;
     private String address2;
@@ -48,6 +51,9 @@ public class UserEntity {
     private Date createdDate;
     private Date modifiedDate;
     private String status;
+    //pdr ADD
+    private String bankName;
+    private String branchCode;
     
    
     @ManyToMany
@@ -268,24 +274,48 @@ public class UserEntity {
 		this.city = city;
 	}
 
-	
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBranchCode() {
+		return branchCode;
+	}
+
+	public void setBranchCode(String branchCode) {
+		this.branchCode = branchCode;
+	}
+
+	public Long getCreatedByuser() {
+		return createdByuser;
+	}
+
+	public void setCreatedByuser(Long createdByuser) {
+		this.createdByuser = createdByuser;
+	}
 
 	@Override
 	public String toString() {
 		return "UserEntity [userId=" + userId + ", userName=" + userName + ", password=" + password + ", fullName="
 				+ fullName + ", address=" + address + ", email=" + email + ", phoneNumber=" + phoneNumber
 				+ ", alternateNumber=" + alternateNumber + ", relationName=" + relationName + ", adhar=" + adhar
-				+ ", panNumber=" + panNumber + ", address1=" + address1 + ", address2=" + address2 + ", state=" + state
-				+ ", city=" + city + ", district=" + district + ", pincode=" + pincode + ", gender=" + gender
-				+ ", category=" + category + ", otp=" + otp + ", dob=" + dob + ", role=" + role + ", createdDate="
-				+ createdDate + ", modifiedDate=" + modifiedDate + ", status=" + status + ", groups=" + groups + "]";
+				+ ", createdByuser=" + createdByuser + ", panNumber=" + panNumber + ", address1=" + address1
+				+ ", address2=" + address2 + ", state=" + state + ", city=" + city + ", district=" + district
+				+ ", pincode=" + pincode + ", gender=" + gender + ", category=" + category + ", otp=" + otp + ", dob="
+				+ dob + ", role=" + role + ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate
+				+ ", status=" + status + ", bankName=" + bankName + ", branchCode=" + branchCode + ", groups=" + groups
+				+ "]";
 	}
 
 	public UserEntity(Long userId, String userName, String password, String fullName, String address, String email,
-			String phoneNumber, String alternateNumber, String relationName, String adhar, String panNumber,
-			String address1, String address2, String state, String city, String district, String pincode, String gender,
-			String category, String otp, Date dob, RoleEntity role, Date createdDate, Date modifiedDate, String status,
-			Set<UserGroupEntity> groups) {
+			String phoneNumber, String alternateNumber, String relationName, String adhar, Long createdByuser,
+			String panNumber, String address1, String address2, String state, String city, String district,
+			String pincode, String gender, String category, String otp, Date dob, RoleEntity role, Date createdDate,
+			Date modifiedDate, String status, String bankName, String branchCode, Set<UserGroupEntity> groups) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
@@ -297,6 +327,7 @@ public class UserEntity {
 		this.alternateNumber = alternateNumber;
 		this.relationName = relationName;
 		this.adhar = adhar;
+		this.createdByuser = createdByuser;
 		this.panNumber = panNumber;
 		this.address1 = address1;
 		this.address2 = address2;
@@ -312,9 +343,16 @@ public class UserEntity {
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 		this.status = status;
+		this.bankName = bankName;
+		this.branchCode = branchCode;
 		this.groups = groups;
 	}
 
+	
+
+	
+
+	
 	
 	
 	

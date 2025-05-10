@@ -1,19 +1,28 @@
 package com.bor.rcms.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 public class OfficerStatusVo {
 	
-	
+	@NotBlank
 	private String admissionDate;
+	@NotBlank
 	private String admisionTime;
 	
 	private String affedefitDate;
-	
+	@NotBlank
 	private String officerName;
+	@NotBlank
 	private String usertype;
+	
 	private Long   objId;
+	
+	private String caseId;
+	
 	private String remark;
+	
 	private String status;
 	@JsonBackReference
     private OfficerStatusVo officerStatusVo;
@@ -82,24 +91,18 @@ public class OfficerStatusVo {
 	public void setOfficerName(String officerName) {
 		this.officerName = officerName;
 	}
+	public String getCaseId() {
+		return caseId;
+	}
+	public void setCaseId(String caseId) {
+		this.caseId = caseId;
+	}
 	@Override
 	public String toString() {
 		return "OfficerStatusVo [admissionDate=" + admissionDate + ", admisionTime=" + admisionTime + ", affedefitDate="
 				+ affedefitDate + ", officerName=" + officerName + ", usertype=" + usertype + ", objId=" + objId
-				+ ", remark=" + remark + ", status=" + status + ", officerStatusVo=" + officerStatusVo + "]";
-	}
-	public OfficerStatusVo(String admissionDate, String admisionTime, String affedefitDate, String officerName,
-			String usertype, Long objId, String remark, String status, OfficerStatusVo officerStatusVo) {
-		super();
-		this.admissionDate = admissionDate;
-		this.admisionTime = admisionTime;
-		this.affedefitDate = affedefitDate;
-		this.officerName = officerName;
-		this.usertype = usertype;
-		this.objId = objId;
-		this.remark = remark;
-		this.status = status;
-		this.officerStatusVo = officerStatusVo;
+				+ ", caseId=" + caseId + ", remark=" + remark + ", status=" + status + ", officerStatusVo="
+				+ officerStatusVo + "]";
 	}
 	
 	

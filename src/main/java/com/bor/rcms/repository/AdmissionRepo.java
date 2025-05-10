@@ -20,11 +20,11 @@ public interface AdmissionRepo extends JpaRepository<Admission, Long> {
     Admission findByAdmissionId(Long caseId);
 
     // Use JPQL and ensure status is a field in the Admission entity
-    @Query("SELECT a FROM Admission a WHERE a.status = 'Dismiss'")
-    List<Admission> findAlldismis();
+    @Query("SELECT a FROM Admission a WHERE a.status = 'Dismiss' AND a.district = :district")
+    List<Admission> findAlldismis(@Param("district") String district);
 
-    @Query("SELECT a FROM Admission a WHERE a.status = 'Appeal'")
-    List<Admission> findAlldismispending();
+    @Query("SELECT a FROM Admission a WHERE a.status = 'Appeal' AND a.district = :district")
+    List<Admission> findAlldismispending(@Param("district") String district);
     
     
     @Query("SELECT a FROM Admission a WHERE a.hearingDate = :hearingDate AND (a.status != 'Reject' AND a.status != 'Transfer')")

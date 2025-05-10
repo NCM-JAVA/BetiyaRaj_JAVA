@@ -3,13 +3,18 @@ package com.bor.rcms.resonse;
 import java.util.List;
 
 import com.bor.rcms.entity.NewObjection;
+import com.bor.rcms.response.ObjectionDetails;
 
 public class Casesinform {
 	private String totalCase;
 	private String prendingCase;
 	private String  totalAppeal;
 	private  String   totalClose;
+	private List<ObjectionDetails> listobjctdetails;
+	
 	private List<NewObjection> listobjct;
+
+	
 	public String getTotalCase() {
 		return totalCase;
 	}
@@ -34,6 +39,12 @@ public class Casesinform {
 	public void setTotalClose(String totalClose) {
 		this.totalClose = totalClose;
 	}
+	public List<ObjectionDetails> getListobjctdetails() {
+		return listobjctdetails;
+	}
+	public void setListobjctdetails(List<ObjectionDetails> listobjctdetails) {
+		this.listobjctdetails = listobjctdetails;
+	}
 	public List<NewObjection> getListobjct() {
 		return listobjct;
 	}
@@ -43,21 +54,15 @@ public class Casesinform {
 	@Override
 	public String toString() {
 		return "Casesinform [totalCase=" + totalCase + ", prendingCase=" + prendingCase + ", totalAppeal=" + totalAppeal
-				+ ", totalClose=" + totalClose + ", listobjct=" + listobjct + "]";
+				+ ", totalClose=" + totalClose + ", listobjctdetails=" + listobjctdetails + ", listobjct=" + listobjct
+				+ "]";
 	}
 	public Casesinform() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Casesinform(String totalCase, String prendingCase, String totalAppeal, String totalClose,
-			List<NewObjection> listobjct) {
-		super();
-		this.totalCase = totalCase;
-		this.prendingCase = prendingCase;
-		this.totalAppeal = totalAppeal;
-		this.totalClose = totalClose;
-		this.listobjct = listobjct;
-	}
+	
+	
 	
 	
 

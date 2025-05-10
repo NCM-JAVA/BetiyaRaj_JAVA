@@ -43,9 +43,12 @@ public class CollectorServiceImpl implements CollectorService {
           //   admission1.setFreehold(statusvo.getStatus());
              objection.setAdmission(admission1);
             CaseCollector admission = new CaseCollector();
+            admission.setOfficerName(statusvo.getOfficerName());
             admission.setAdmissionDate(admission.getAdmissionDate());
             admission.setAdmissionTime(statusvo.getAdmisionTime());
             admission.setAffidavitDate(statusvo.getAffedefitDate());
+            admission.setStatus("Admit");
+            admission.setDistrict(objection.getDistrictName());
 
          //  admission.setAction(statusvo.geta);
             String caseID = generateCollectorCase(objection);
@@ -100,6 +103,8 @@ public class CollectorServiceImpl implements CollectorService {
              admission1.setStatusCollector("Admit");
              objection.setAdmission(admission1);
             CaseCollector admission = new CaseCollector();
+            admission.setOfficerName(statusvo.getOfficerName());
+
             admission.setAdmissionDate(admission.getAdmissionDate());
             admission.setAdmissionTime(statusvo.getAdmisionTime());
             admission.setAffidavitDate(statusvo.getAffedefitDate());
@@ -193,8 +198,8 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
 	@Override
-	public List<CaseCollector> getAmitdatacollector() {
-		List<CaseCollector>  admissions=caseCollectorRepo.findAlladmit();
+	public List<CaseCollector> getAmitdatacollector(String district) {
+		List<CaseCollector>  admissions=caseCollectorRepo.findAlladmit(district);
 		return admissions;
 	}
 

@@ -1,11 +1,13 @@
 package com.bor.rcms.service;
 
+import java.beans.Beans;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import com.bor.rcms.repository.AppealCollectorRepo;
 import com.bor.rcms.repository.DocumentRepository;
 import com.bor.rcms.repository.NewObjectionRepo;
 import com.bor.rcms.resonse.Casesinform;
+import com.bor.rcms.response.ObjectionDetails;
 
 @Service
 @Transactional
@@ -74,15 +77,15 @@ public class NoticeServiceImpl  implements NoticeService{
 
 	        newObjection.setStatus("AppealCollector");
 
-	        Mis mis = newObjection.getMis();
-	        if (mis == null) {
-	            throw new IllegalArgumentException("Mis object is null for this newObjection");
-	        }
-
-	        mis.setCollector("Appeal");
-	        mis.setCaseId(String.valueOf(AppealCaseCollectorSave.getCaseId())); 
-
-	        newObjection.setMis(mis);
+//	        Mis mis = newObjection.getMis();
+//	        if (mis == null) {
+//	            throw new IllegalArgumentException("Mis object is null for this newObjection");
+//	        }
+//
+//	        mis.setCollector("Appeal");
+//	        mis.setCaseId(String.valueOf(AppealCaseCollectorSave.getCaseId())); 
+//
+//	        newObjection.setMis(mis);
 	        NewObjection newObjectionSave = newObjectionRepo.save(newObjection);
 
 	        return AppealCaseCollectorSave;
@@ -98,15 +101,15 @@ public class NoticeServiceImpl  implements NoticeService{
 	///Collector
 
 	@Override
-	public Casesinform casesinform() {
+	public Casesinform casesinform(String district) {
 		// TODO Auto-generated method stub
 		try {
 			Casesinform casesinform =new Casesinform();
-			List<Admission> admission=admissionRepo.findAlldismis();
+			List<Admission> admission=admissionRepo.findAlldismis(district);
 			
 			Long totalAdmission=(long) admission.size();
 			
-			List<AppealCaseCollector>  AppealCaseCollectors=AppealCaseCollectorRepo.findAll();
+			List<AppealCaseCollector>  AppealCaseCollectors=AppealCaseCollectorRepo.findAllByDistrict(district);
 			Long apealcase=(long) AppealCaseCollectors.size();
 
 			
@@ -117,18 +120,22 @@ public class NoticeServiceImpl  implements NoticeService{
                
                List<NewObjection> list=new ArrayList<NewObjection>();
                
-               List<NewObjection> finalobj=new ArrayList<NewObjection>();
+               List<ObjectionDetails> finalobj=new ArrayList<ObjectionDetails>();
 
                list=newObjectionRepo.findcollerstatus();
                
                for(NewObjection newob:list)
                {
+            	   ObjectionDetails objectonDetails=new ObjectionDetails();
+                   BeanUtils.copyProperties(newob, objectonDetails);
             	   Admission  admissionresult=newob.getAdmission();
-            	   newob.setTokenNo(admissionresult.getAdmisionCase());
-            	   finalobj.add(newob);
+            	   objectonDetails.setTokenNo(admissionresult.getAdmisionCase());
+            	   objectonDetails.setUserId(newob.getUserId());
+            	   
+            	   finalobj.add(objectonDetails);
                }
                
-               casesinform.setListobjct(finalobj);
+               casesinform.setListobjctdetails(finalobj);
                
                return casesinform;
 		}

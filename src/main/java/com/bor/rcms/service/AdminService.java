@@ -26,4 +26,6 @@ public interface AdminService {
 
 	Admission getobjectionId(NewObjection objid);
 
+	List<UserEntity> findByDistrict(String district);
+
 }

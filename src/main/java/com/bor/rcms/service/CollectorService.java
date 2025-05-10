@@ -11,7 +11,7 @@ public interface CollectorService {
 
 	String updateStatuscollector(OfficerStatusVo statusvo);
 
-	List<CaseCollector> getAmitdatacollector();
+	List<CaseCollector> getAmitdatacollector(String district);
 
 	List<CaseCollector> getAdmitcaseorHearingCaseCollector(String hearingDate);
 
