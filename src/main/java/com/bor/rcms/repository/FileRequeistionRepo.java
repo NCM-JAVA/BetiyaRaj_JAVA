@@ -28,7 +28,7 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 	Optional<FileRequeistion> findTopByDistrictNameAndRequeistionIdStartingWithOrderByRequeistionIdDesc(
 			String districtName, String prefix);
 
-	 @Query("SELECT n FROM FileRequeistion n WHERE n.districtName = :districtName And n.status = 'Admit'")
+	 @Query("SELECT n FROM FileRequeistion n WHERE n.districtName = :districtName And n.status = 'Admit' AND n.isTransOfficer = true")
 	    List<FileRequeistion> findAllAdmit(@Param("districtName") String districtName);
 
 	List<FileRequeistion> findByTransNomId(String userId);

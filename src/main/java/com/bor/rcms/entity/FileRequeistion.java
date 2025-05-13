@@ -72,7 +72,6 @@ public class FileRequeistion {
 	  
 	  @OneToMany(mappedBy = "requeistion", cascade = CascadeType.ALL)
 	    @JsonManagedReference
-
 	    private List<CertificateDebator> certificateDebator;
 
 	  @OneToOne(cascade = CascadeType.ALL)

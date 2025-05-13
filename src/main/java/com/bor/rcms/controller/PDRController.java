@@ -1,6 +1,9 @@
 package com.bor.rcms.controller;
 
 import java.io.IOException;
+
+import com.bor.rcms.repository.FileRequeistionRepo;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,6 +90,9 @@ public class PDRController {
 
 	@Autowired
 	private CertificatOfficerRepo certificatOfficerRepo;
+	
+	@Autowired
+	private FileRequeistionRepo fileRequeistionRepo;
 
 	@Autowired
 	private PdrService pdrService;
@@ -156,7 +162,7 @@ public class PDRController {
 				debator.setFatherNames(debatorVo.getDebtorfatherNames());
 				debator.setSubDivision(debatorVo.getDebtorubDivision());
 
-				debator.setPincode(debatorVo.getDebtorDistrict());
+				debator.setPincode(debatorVo.getDebtorPincode());
 				debatorlist.add(debator);
 
 			}
@@ -252,6 +258,7 @@ public class PDRController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
 		}
 	}
+	
 
 	@GetMapping("/getrequiestion")
 	public ResponseEntity<?> getObjections(@RequestParam String district) {
@@ -392,6 +399,8 @@ public class PDRController {
 					dvo.setDebtorubDivision(debator.getSubDivision());
 					dvo.setDebtorcircle(debator.getCircle());
 					dvo.setDebtorpolicestation(debator.getPolicestation());
+					dvo.setCircle(debator.getCircle());
+					
 					debatorVoList.add(dvo);
 				}
 			}
@@ -738,6 +747,19 @@ public class PDRController {
 				List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
 					dto.setRequeistionId(req.getRequeistionId());
+					
+					try {
+						dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
+						FileRequeistion fileRequeistion=fileRequeistionRepo.findByRequeistionId(dto.getRequeistionId()).get();
+						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion);
+						CertificateDebator certificateDebator=certificateDebatorlist.get(0);
+						dto.setDebatorName(certificateDebator.getDebatorName());
+
+						
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					
 					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
 					dto.setTotalInterestRate(req.getTotalInterestRate());
 					dto.setInterestDueForm(req.getInterestDueForm());
@@ -922,6 +944,11 @@ public class PDRController {
 				res.setHearingDate(officer.getHearingDate());
 				res.setHearingtime(officer.getHearingTime());
 				res.setHolderName(officer.getUserId().getFullName());
+				FileRequeistion fileRequeistion=fileRequeistionRepo.findByRequeistionId(officer.getFileRequeistion().getRequeistionId()).get();
+				List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion);
+				CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+				res.setDebtorName(certificateDebator.getDebatorName());
+				
 				return res;
 			}).collect(Collectors.toList());
 
@@ -1054,6 +1081,27 @@ public class PDRController {
 		return null;
 	}
 
+	
+	@PostMapping("/draftFinalSave")
+	public ResponseEntity<?> draftFinalSave(@RequestParam String draft, @RequestParam String caseId) {
+		try {
+			StatusRes res = pdrService.saveDraft(draft, caseId);
+
+			if (res.getMessage().equals("save")) {
+				res.setStatus(String.valueOf(HttpStatus.OK.value()));
+				return ResponseEntity.ok(res);
+
+			}
+			res.setStatus(String.valueOf(HttpStatus.OK.value()));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	
 	@PostMapping("/draftfind")
 	public ResponseEntity<?> draftSave(@RequestParam String caseId) {
 		try {
@@ -1240,5 +1288,8 @@ public class PDRController {
 	        return courtFeeService.getFeeForAmount(amount)
 	                .orElseThrow(() -> new RuntimeException("No fee slab found for amount: " + amount));
 	    }
+	
+	
+	
 
 }

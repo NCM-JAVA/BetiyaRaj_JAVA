@@ -68,4 +68,6 @@ public interface PdrService {
 
 	List<CommisionaryReq> showcommisionaryList(Long userId);
 
+	StatusRes saveDraft(String draft, String caseId);
+
 }

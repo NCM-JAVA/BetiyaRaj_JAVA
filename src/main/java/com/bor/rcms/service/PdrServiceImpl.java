@@ -1,5 +1,6 @@
 package com.bor.rcms.service;
 
+import java.beans.Beans;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,6 +36,8 @@ import com.bor.rcms.dto.CommisionaryReq;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
 import com.bor.rcms.entity.Admission;
+import com.bor.rcms.entity.CaseNotesPdr;
+import com.bor.rcms.entity.CaseTransferPriviouseRecord;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.CourtAdd;
@@ -47,6 +50,9 @@ import com.bor.rcms.entity.Mis;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CaseNotesPdrRepo;
+import com.bor.rcms.repository.CaseTransferPriviouseRecordRepo;
+import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
@@ -73,7 +79,8 @@ public class PdrServiceImpl implements PdrService {
 	@Autowired
 	private DocumentPDRRepository documentRepository;
 	private final String FILE_STORAGE_PATH = "C:/Users/Admin/file";
-
+	@Autowired
+	private CaseTransferPriviouseRecordRepo priviouseRecordRepo;
 	@Autowired
 	private UserRepository userRepository;
 
@@ -85,7 +92,10 @@ public class PdrServiceImpl implements PdrService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
 
+	private  CertificatDebatorRepo certificatDebatorRepo;
 	@Autowired
 	private CourtAddRepo courtAddRepo;
 
@@ -94,6 +104,8 @@ public class PdrServiceImpl implements PdrService {
 	
 	@Autowired
 	private DraftsSaveRepo draftsSaveRepo;
+	@Autowired
+	private CaseNotesPdrRepo caseNotesPdrRepo;
 
 	@Override
 	public String submitRequisition(FileRequeistion requisition, MultipartFile[] files, String username,
@@ -365,8 +377,8 @@ public class PdrServiceImpl implements PdrService {
 	public String upadateStatus(OfficerStatusVo statusvo) {
 		try {
 			// Find the NewObjection entity
-			Optional<FileRequeistion> objection1 = fileRequeistionRepo.findByRequeistionId(statusvo.getCaseId());
-			FileRequeistion objection = objection1.get();
+			FileRequeistion objection = fileRequeistionRepo.findByRequeistionId(statusvo.getCaseId()).get();
+		//	FileRequeistion objection = objection1.get();
 
 			CertificatOfficer admission = new CertificatOfficer();
 
@@ -406,7 +418,24 @@ public class PdrServiceImpl implements PdrService {
 					// objection.setMis(mis);
 					CertificatOfficer savedObjection = new CertificatOfficer();
 					try {
+                    
+						
+						CaseNotesPdr caseNotesPdr=new CaseNotesPdr();
+						try {
+						caseNotesPdr.setFileRequeistion(objection);
+						caseNotesPdr.setUserId(objection.getUserId());
+						caseNotesPdr.setCreatedDate(date);
+						caseNotesPdr.setCaseId(caseID);
+						CaseNotesPdr savecase=caseNotesPdrRepo.save(caseNotesPdr);
+						admission.setCaseNotesPdr(savecase);
 
+						
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+						
 						// System.out.println("dd===>" + objection);
 
 						savedObjection = certificatOfficerRepo.save(admission);
@@ -452,12 +481,12 @@ public class PdrServiceImpl implements PdrService {
 				int finalValue = caseNumber + 1;
 				String formattedValue = String.format("%04d", finalValue);
 				admission.setAdmisionCase(
-						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 				// System.out.println("Last inserted user: " + lastInsertedUser.get());
 			} else {
 				String formattedValue = String.format("%04d", initial);
 				admission.setAdmisionCase(
-						"Case-CO-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
+						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
 			}
 			// System.out.println("last result--------->" + lastInsertedUser);
 
@@ -542,7 +571,13 @@ public class PdrServiceImpl implements PdrService {
 //					admission.setStatusCollector("pending");
 //				}
 
-					admission.setCaseNotes(casenotes.getCaseNotes());
+					//admission.setCaseNotes(casenotes.getCaseNotes());
+					
+					CaseNotesPdr casepdr=caseNotesPdrRepo.findByFileRequeistion(newObjection); 
+					casepdr.setModifiedDate(new Date());
+					casenotes.setCaseNotes(casenotes.getCaseNotes());
+					admission.setCaseNotesPdr(casepdr);
+					//addCaseNit
 					admission.setFileRequeistion(newObjection);
 					// Admission savedAdmission = admissionRepo.save(admission);
 					newObjection.setCertificatOfficer(admission);
@@ -836,7 +871,7 @@ public class PdrServiceImpl implements PdrService {
 
 					courtReq.setAssignUSer(entity.getFullName());
 					courtReq.setStatus(userEntity.getStatus());
-					courtReq.setCourtId(entity.getUserId());
+					courtReq.setCourtId(userEntity.getUserId());
 					courtAddslist.add(courtReq);
 
 				}
@@ -943,6 +978,25 @@ public class PdrServiceImpl implements PdrService {
 					newObjection.setIsTransNomOfficer(true);
 					newObjection.setTransNomId(nouserId);
 					fileRequeistionRepo.save(newObjection);
+					
+					
+					//case Transfer save Preivious saved
+					
+					try{
+						UserEntity entity = userRepository.findById(Long.valueOf(nouserId)).get();
+                        CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(newObjection);
+						
+						CaseTransferPriviouseRecord  priviouseRecord=new CaseTransferPriviouseRecord(); 
+						
+						BeanUtils.copyProperties(certificatOfficer, priviouseRecord);
+						priviouseRecord.setTransferUser(entity);
+						priviouseRecordRepo.save(priviouseRecord);
+					}
+					catch (Exception e) {
+						// TODO: handle exception
+					}
+					
+					
 				} else {
 					return "Request ID not found: " + reqId.get(i);
 				}
@@ -1193,7 +1247,18 @@ public class PdrServiceImpl implements PdrService {
 				reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
 				reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
 				reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
-				reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
+				
+				try {
+					List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
+					CertificateDebator certificateDebator=certificateDebatorlist.get(0);
+					reqrusitionStatus2.setDefaulterName(certificateDebator.getDebatorName());
+
+					
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+			//	reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
 				
 				
 				reqrusitionStatuslist.add(reqrusitionStatus2);
@@ -1416,5 +1481,45 @@ public class PdrServiceImpl implements PdrService {
 		}
 		return null;
 
+	}
+
+	@Override
+	public StatusRes saveDraft(String draft, String caseId) {
+		  try {
+       	   StatusRes res=new StatusRes();
+       	   DraftSaveCaseProceeding draftSaveCaseProceeding=new DraftSaveCaseProceeding();
+       	   draftSaveCaseProceeding.setCaseId(caseId);
+       	   draftSaveCaseProceeding.setDraft(null);
+       	   
+       	   DraftSaveCaseProceeding saveDraft=draftsSaveRepo.save(draftSaveCaseProceeding);
+       	CaseNotesPdr casesaveNotes=new CaseNotesPdr();
+       	   CaseNotesPdr caseNotesPdr=caseNotesPdrRepo.findByCaseId(caseId);
+       	
+       	//caseNotesPdr.setCaseNotes(caseNotesPdr.getCaseNotes()+draft);
+       	
+        if (caseNotesPdr != null) {	
+            String existingNotes = caseNotesPdr.getCaseNotes();
+            if (existingNotes == null) existingNotes = ""; 
+
+            caseNotesPdr.setCaseNotes(existingNotes + draft);
+            caseNotesPdr.setModifiedDate(new Date());
+            casesaveNotes=  caseNotesPdrRepo.save(caseNotesPdr);
+            
+        }
+       	   
+       	   
+       	   if(casesaveNotes!=null)
+       	   {
+       		   res.setMessage("save");
+       		   return res;
+       	   }
+       	   
+       	   
+          }catch (Exception e) {
+			
+       	   e.printStackTrace();
+       	   // TODO: handle exception
+		}
+		return null;
 	}
 }
