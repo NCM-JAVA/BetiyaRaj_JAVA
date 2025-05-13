@@ -25,5 +25,14 @@ public class AplicationExceptionHandler{
 		}
 	//@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	//@ExceptionHandler()
+	
+	
+	 @ExceptionHandler(Exception.class)
+	    public void handleTrackingException(Exception e) {
+	        // Log the error but don't let it affect main application flow
+	        System.err.println("Tracking failed: " + e.getMessage());
+	    }
+	 
+	
 }
 

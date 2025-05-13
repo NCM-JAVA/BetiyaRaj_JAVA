@@ -894,11 +894,13 @@ public class PDRController {
 				entity = certificatDebatorRepo.findByPhoneNumber(phoneNumber);
 
 				if (entity != null) {
-					return ResponseEntity.ok(Map.of("message", "Try another mobile"));
-
+				//	return ResponseEntity.ok(Map.of("message", "Try another mobile"));
+					 return ResponseSet.generateResponse("Try another mobile", HttpStatus.CONFLICT, null);
 				} else {
 					// Return a JSON response
-					return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+					//return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+			         return ResponseSet.generateResponse("Phone number is available", HttpStatus.OK, null);
+				
 				}
 
 			}
@@ -906,11 +908,14 @@ public class PDRController {
 			else if (email == request.get("email")) {
 				entity = certificatDebatorRepo.findByEmail(email);
 				if (entity != null) {
-					return ResponseEntity.ok(Map.of("message", "Try another email"));
-
+					//return ResponseEntity.ok(Map.of("message", "Try another email"));
+		              return ResponseSet.generateResponse("Try another email", HttpStatus.CONFLICT, entity);
 				} else {
 					// Return a JSON response
-					return ResponseEntity.ok(Map.of("message", "email  is available"));
+					//return ResponseEntity.ok(Map.of("message", "email  is available"));
+		            return ResponseSet.generateResponse("Email is available", HttpStatus.OK, entity);
+
+				
 				}
 			}
 
@@ -921,10 +926,15 @@ public class PDRController {
 //	            // Return a JSON response
 //	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
 //	        }
+			
+			
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
+		//	return ResponseEntity.badRequest().body(e.getMessage());
+		
+			return ResponseSet.generateResponse("Either phoneNumber or email must be provided", HttpStatus.BAD_REQUEST, null);
 		}
 		return null;
 	}
@@ -951,22 +961,28 @@ public class PDRController {
 						dto.setUserName(fileRequeistion.getUserId().getUserName());
 					}
 
-					res.setOption(dto);
-					res.setMessage("success");
-					res.setStatus("200");
-					return ResponseEntity.ok(res);
+//					res.setOption(dto);
+//					res.setMessage("success");
+//					res.setStatus("200");
+//					return ResponseEntity.ok(res);
+					
+			        return ResponseSet.generateResponse("Success", HttpStatus.OK, dto);
+	
 				}
 			}
 
-			res.setMessage("User not found");
-			res.setStatus("400");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-
+//			res.setMessage("User not found");
+//			res.setStatus("400");
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+			return ResponseSet.generateResponse("Invalid user ID format", HttpStatus.BAD_REQUEST, null);
 		} catch (Exception e) {
-			e.printStackTrace();
-			res.setMessage("Internal Server Error");
-			res.setStatus("500");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+//			e.printStackTrace();
+//			res.setMessage("Internal Server Error");
+//			res.setStatus("500");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+//		
+			return ResponseSet.generateResponse("Error:Internal Server Error " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+	
 		}
 
 	}
