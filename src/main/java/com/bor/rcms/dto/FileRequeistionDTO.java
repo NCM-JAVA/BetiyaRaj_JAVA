@@ -183,6 +183,16 @@ public class FileRequeistionDTO {
 
 	public void setCaseId(String caseId) {
 		this.caseId = caseId;
+	
+	}
+	
+	
+	public String getDebatorName() {
+		return debatorName;
+	}
+
+	public void setDebatorName(String debatorName) {
+		this.debatorName = debatorName;
 	}
 
 	@Override
@@ -192,7 +202,10 @@ public class FileRequeistionDTO {
 				+ ", interestDueForm=" + interestDueForm + ", totalCourtFee=" + totalCourtFee + ", missllenousFee="
 				+ missllenousFee + ", paidCourFee=" + paidCourFee + ", totalDemand=" + totalDemand + ", financialYear="
 				+ financialYear + ", districtName=" + districtName + ", currentDate=" + currentDate + ", updateDate="
-				+ updateDate + ", status=" + status + ", reason=" + reason + ", userName=" + userName + "]";
+				+ updateDate + ", status=" + status + ", reason=" + reason + ", debatorName=" + debatorName
+				+ ", userName=" + userName + "]";
 	}
+
+	
 
 }

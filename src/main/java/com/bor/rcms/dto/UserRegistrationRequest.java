@@ -54,10 +54,7 @@ public class UserRegistrationRequest {
 	private String district;
 	@JsonFormat(pattern = "dd-MM-yyyy")
 
-	private Date dob;
-	private String roleName; // Optional
-	private String status;
-
+	
     private Date dob;
     private String roleName; // Optional
     private String status;
@@ -242,6 +239,7 @@ public class UserRegistrationRequest {
 	public void setDepartment(String department) {
 		this.department = department;
 	}
+	
 	@Override
 	public String toString() {
 		return "UserRegistrationRequest [userName=" + userName + ", aadhar=" + aadhar + ", category=" + category

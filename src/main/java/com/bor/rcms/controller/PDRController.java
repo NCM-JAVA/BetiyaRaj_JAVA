@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.bor.rcms.ExceptionHand.ResponseSet;
+import com.bor.rcms.config.CourtFeeSlab;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CauseVo;
 import com.bor.rcms.dto.CommisionaryReq;
@@ -724,7 +726,7 @@ public class PDRController {
 			if (selectForm != null && reqId != null) {
 			//	StatusRes	res = pdrService.noticeGenerate(selectForm, reqId);
 
-			ResponseEntity<?>	res =  pdrService.noticeGenerate(selectForm, reqId);
+				ResponseEntity<?> 	res =  pdrService.noticeGenerate(selectForm, reqId);
 
 				if (res == null) {
 //					res.setMessage("form  will  not be sumbitted");
