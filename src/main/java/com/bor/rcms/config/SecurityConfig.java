@@ -41,7 +41,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) 
+    		throws Exception {
         return config.getAuthenticationManager();
     }
     
@@ -74,7 +75,7 @@ public class SecurityConfig {
                     "/v3/api-docs.yaml",
                     "/webjars/**",
                     "/configuration/**"
-                ).permitAll()            .anyRequest().authenticated()
+                ).permitAll ().anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

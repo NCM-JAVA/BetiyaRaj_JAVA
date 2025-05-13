@@ -1,22 +1,42 @@
 package com.bor.rcms.dto;
 
-public class LegalRepersentativeVo {
+import javax.validation.constraints.*;
 
+public class LegalRepersentativeVo {
+	@NotBlank(message = "Name required")
+	@Size(max = 50, message = "Max 50 chars")
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
     private String legalName;
+	@Email
     private String legalemail;
+	@NotBlank
     private String legalapartmentNumber;
+    @NotBlank
     private String legalfatherNames;
+    @NotBlank
     private  String legalsubDivision;
+    @NotBlank
     private  String legalcircle;
+    @NotBlank
     private  String legalpolicestation;
-    
+    @NotBlank(message = "Name required")
+	@Size(max = 50, message = "Max 50 chars")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Mobile No must be 10 digits")   
     private String legalphoneNumber;
+    @NotBlank
     private String legaladdress;
+    @NotBlank
     private String legaladdress1;
+    @NotBlank
     private String legaladdress2;
+    @NotBlank
     private String legalstate;
+    @NotBlank
     private String legalcity;
+    @NotBlank
     private String legaldistrict;
+    @NotBlank(message = "Pincode is required")
+    @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be 6 digits")   
     private String legalpincode;
 	public String getLegalName() {
 		return legalName;

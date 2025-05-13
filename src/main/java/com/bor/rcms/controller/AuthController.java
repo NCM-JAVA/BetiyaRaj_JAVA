@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,8 @@ import com.bor.rcms.service.ObjectionService;
 import com.bor.rcms.service.UserService;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
+//import Validation.UserRegistrationValidator;
+
 @RestController
 @RequestMapping("api/auth")
 @CrossOrigin(origins = "http://localhost:4200") 
@@ -78,6 +81,8 @@ public class AuthController {
     
     @PostMapping("/login-officer")
     public ResponseEntity<?> loginOfficer(@RequestBody LoginRequest request) {
+    	
+    	
     	
     	if(request.getEmail()!=null&& request.getAct().equals("PDR"))
     	{
@@ -163,7 +168,20 @@ public class AuthController {
     ///Registration Citizen
     
 	@PostMapping("/registerCitizen")
-	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
+	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
+      
+		StatusRes res = new StatusRes();
+//		
+//		UserRegistrationValidator.ValidationResult result = 
+//			    UserRegistrationValidator.checkUser(request);
+//
+//			if (!result.passed()) {
+//				res.setStatus("400");
+//				res.setMessage(result.getErrors());
+//			    return ResponseEntity.badRequest().body(res);
+//			}
+		
+			
 		try {
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
@@ -190,7 +208,6 @@ public class AuthController {
 			user.setStatus(request.getStatus());
 			user.setDistrict(request.getDistrict());
 		//	user.setUserName(request.getUserName());
-			StatusRes res = new StatusRes();
 			try {
 				UserEntity entity = repository.findByPhoneNumber(request.getPhoneNumber());
 
@@ -233,13 +250,29 @@ public class AuthController {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	
 	}
-
 	
 	
 	@PostMapping("/registerPDR")
-	public ResponseEntity<?> registerUserPDR(@RequestBody UserRegistrationRequest request) {
+	public ResponseEntity<?> registerUserPDR(@Valid @RequestBody UserRegistrationRequest request) {
+           
+		//Validation user
+		StatusRes res = new StatusRes();
+//
+//		UserRegistrationValidator.ValidationResult result = 
+//			    UserRegistrationValidator.checkUser(request);
+//
+//			if (!result.passed()) {
+//				res.setStatus("400");
+//				res.setMessage(result.getErrors());
+//			    return ResponseEntity.badRequest().body(res);
+//			}
+//		
+		
+		
 		try {
+			
 			UserEntity user = new UserEntity();
 			// user.setUserName(request.getUserName());
 			user.setFullName(request.getFullName());
@@ -269,7 +302,7 @@ public class AuthController {
 			user.setBankName(request.getBankName());
 			user.setBranchCode(request.getBranchCode());
 		//	user.setUserName(request.getUserName());
-			StatusRes res = new StatusRes();
+			//StatusRes res = new StatusRes();
 			try {
 				UserEntity entity = repository.findByEmail(request.getEmail());
 
@@ -288,8 +321,11 @@ public class AuthController {
 				UserEntity entity = repository.findByPhoneNumber(request.getPhoneNumber());
 
 				if (entity != null) {
-					res.setMessage("try diiferent mobile ");
-					res.setStatus("400");
+					 res.setMessage("Phone number already in use. Please use a different number.");
+					    res.setStatus("400");
+					
+				//	res.setMessage("try diiferent mobile ");
+				//	res.setStatus("400");
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(": try different" + res);
 				}
 			} catch (Exception e) {
@@ -339,10 +375,10 @@ public class AuthController {
 
 	        if (entity != null) {
 	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Try another mobile"));
+	            return ResponseEntity.ok(Map.of(400, "Try another mobile"));
 	        } else {
 	            // Return a JSON response
-	            return ResponseEntity.ok(Map.of("message", "Phone number is available"));
+	            return ResponseEntity.ok(Map.of(200, "Phone number is available"));
 	        }
 
 	    } catch (Exception e) {
@@ -362,14 +398,18 @@ public class AuthController {
 			
 			if(entity!=null)
 			{
+//<<<<<<< HEAD
+	        //    return ResponseEntity.ok(Map.of(400, "Try another aadhar"));
+//=======
 				
 				  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                           .body(Map.of("message", "Try another Aadhar"));
-	        //    return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
-
+	          //  return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
+//>>>>>>> main
+//
 			}
 			else {
-	            return ResponseEntity.ok(Map.of("message", "aadhar number is available"));
+	            return ResponseEntity.ok(Map.of(200, "aadhar number is available"));
 			}
 			
 		} catch (Exception e) {

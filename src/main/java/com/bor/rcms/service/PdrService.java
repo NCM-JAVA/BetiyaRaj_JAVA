@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bor.rcms.ExceptionHand.ResponseSet;
 import com.bor.rcms.dto.CaseNotes;
 import com.bor.rcms.dto.CauseVo;
 import com.bor.rcms.dto.CommisionaryReq;
@@ -36,7 +37,7 @@ public interface PdrService {
 
 	List<CourtReq> addCourtlistShow(Long userId);
 
-	StatusRes noticeGenerate(String selectForm, String reqId);
+	ResponseEntity<?> noticeGenerate(String selectForm, String reqId);
 
 	String caseTransfer(List<String> reqId, String nouserId);
 

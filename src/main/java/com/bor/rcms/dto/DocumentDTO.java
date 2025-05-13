@@ -2,6 +2,7 @@ package com.bor.rcms.dto;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.*;
 
 import com.bor.rcms.entity.FileRequeistion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,10 +11,13 @@ public class DocumentDTO {
 	
 	 private Long id;
 
-
+        @NotBlank
 	    private String documentName;
 	    private String filePath; // Store file path instead of file content
 	    private String fileType;
+	    
+	    
+	    @Max(value = 10485760, message = "File size must not exceed 10 MB")
 	    private Long fileSize;
 	    private String documentType;
 		public Long getId() {
@@ -72,6 +76,6 @@ public class DocumentDTO {
 			// TODO Auto-generated constructor stub
 		}
 
-	    
+	  
 
 }

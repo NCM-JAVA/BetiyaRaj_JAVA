@@ -1,20 +1,28 @@
 package com.bor.rcms.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 public class OfficerStatusVo {
 	
-	
+	@NotBlank
 	private String admissionDate;
+	@NotBlank
 	private String admisionTime;
 	
 	private String affedefitDate;
-	
+	@NotBlank
 	private String officerName;
+	@NotBlank
 	private String usertype;
+	
 	private Long   objId;
+	
 	private String caseId;
+	
 	private String remark;
+	
 	private String status;
 	@JsonBackReference
     private OfficerStatusVo officerStatusVo;
