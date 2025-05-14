@@ -690,115 +690,67 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public String addCourt(CourtReq courtReq) {
+	    try {
+	        // Try to find user by email
+	        UserEntity existingUser = userRepository.findByEmail(courtReq.getOfficerEmail());
 
-		try {
-			UserEntity courtAdd = new UserEntity();
+	        // Try to find user by phone number
+	        UserEntity userWithSamePhone = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
 
-			courtAdd.setAddress(courtReq.getOfficeDetails());
+	        // Get the creator user
+	        UserEntity creatorUser = userRepository.findById(courtReq.getUserId())
+	                .orElseThrow(() -> new RuntimeException("User not found"));
 
-			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
-			courtAdd.setFullName(courtReq.getOfficeName());
+	        UserEntity courtUser;
 
-			courtAdd.setEmail(courtReq.getOfficerEmail());
+	        // Case: updating existing user (by email)
+	        if (existingUser != null) {
+	            courtUser = existingUser;
 
-			UserEntity entity1 = new UserEntity();
-			try {
-				entity1 = userRepository.findByEmail(courtReq.getOfficerEmail());
+	            // If phone number is different and already used by someone else, reject
+	            if (!existingUser.getPhoneNumber().equals(courtReq.getOfficeMobile())
+	                    && userWithSamePhone != null && !userWithSamePhone.getUserId().equals(existingUser.getUserId())) {
+	                return "try another number";
+	            }
 
-				if (entity1.getUserId() != null) {
-					return "try another email";
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
-			}
+	        } else {
+	            // Case: new user creation
+	            if (userWithSamePhone != null) {
+	                return "try another number";
+	            }
+	            courtUser = new UserEntity();
+	            courtUser.setEmail(courtReq.getOfficerEmail());
+	            courtUser.setPhoneNumber(courtReq.getOfficeMobile());
+	        }
 
-			try {
-				courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+	        // Update allowed fields
+	        courtUser.setFullName(courtReq.getOfficeName());
+	        courtUser.setAddress(courtReq.getOfficeDetails());
+	        courtUser.setStatus(courtReq.getStatus());
+	        courtUser.setDistrict(creatorUser.getDistrict());
+	        courtUser.setCreatedByuser(creatorUser.getUserId());
 
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+	        // Password update if present
+	        if (courtReq.getPassword() != null && !courtReq.getPassword().isEmpty()) {
+	            courtUser.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+	        }
 
-//			courtReq.setOfficeDetails(courtAdd.getAddress());
-//			courtReq.setOfficeMobile(courtAdd.getPanNumber());
-//			courtReq.setOfficeName(courtAdd.getFullName());
-//			courtReq.setOfficerEmail(courtAdd.getFullName());
-//		
-//		
-			// courtReq.setAssignUSer(entity.getUserName());
+	        // Role handling
+	        RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
+	        if (role == null) {
+	            role = new RoleEntity(courtReq.getRole(), courtReq.getRole());
+	            role = roleRepository.save(role);
+	        }
+	        courtUser.setRole(role);
 
-			UserEntity entity = userRepository.findById(courtReq.getUserId())
-					.orElseThrow(() -> new RuntimeException("User not found"));
+	        UserEntity savedUser = userRepository.save(courtUser);
+	        System.out.println("Saved user ID: " + savedUser);
 
-			UserEntity courtfindMobile = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
-
-			courtAdd.setCreatedByuser(entity.getUserId());
-			if (entity != null) {
-				courtAdd.setCreatedByuser(entity.getUserId());
-				courtAdd.setDistrict(entity.getDistrict());
-				// courtAdd.setUserId(entity);
-				RoleEntity role = new RoleEntity();
-
-				String roleName = null;
-				try {
-					roleName = courtfindMobile.getRole().getRoleName();
-
-					role = roleRepository.findByRoleName(roleName);
-					if (role == null) {
-						role = new RoleEntity(roleName, roleName);
-						role = roleRepository.save(role);
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO: handle exception
-				}
-
-				UserEntity courtAddsave = new UserEntity();
-
-				if (courtReq.getUpdaStatus() == null && courtfindMobile != null) {
-					return "try another number";
-				}
-				try {
-
-					// courtReq.setRole(entity.getRole().getRoleName());
-					if (courtReq.getUpdaStatus().equals("update")) {
-						courtAdd.setRole(role);
-						courtAdd.setUserId(courtfindMobile.getUserId());
-						courtAdd.setStatus(courtReq.getStatus());
-
-						courtAddsave = userRepository.save(courtAdd);
-						if (courtAddsave != null) {
-							return "save";
-						}
-					}
-
-				} catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
-				}
-				// courtAdd.setr;
-				role = roleRepository.findByRoleName(courtReq.getRole());
-				if (role == null) {
-					role = new RoleEntity(roleName, roleName);
-					role = roleRepository.save(role);
-				}
-				courtAdd.setRole(role);
-				courtAdd.setStatus(courtReq.getStatus());
-				courtAddsave = userRepository.save(courtAdd);
-				if (courtAddsave != null) {
-					return "save";
-				}
-				return "something issue";
-
-			}
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return null;
+	        return "save";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "error occurred";
+	    }
 	}
 
 	@Override
