@@ -35,6 +35,8 @@ import com.bor.rcms.dto.CauseVo;
 import com.bor.rcms.dto.CommisionaryReq;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
+import com.bor.rcms.dto.RecoveryAmountVo;
+import com.bor.rcms.entity.AddRecoveryAmmount;
 import com.bor.rcms.entity.Admission;
 import com.bor.rcms.entity.CaseNotesPdr;
 import com.bor.rcms.entity.CaseTransferPriviouseRecord;
@@ -50,6 +52,7 @@ import com.bor.rcms.entity.Mis;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.RoleEntity;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.AddRecoveryAmmountRepo;
 import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CaseTransferPriviouseRecordRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
@@ -106,6 +109,10 @@ public class PdrServiceImpl implements PdrService {
 	private DraftsSaveRepo draftsSaveRepo;
 	@Autowired
 	private CaseNotesPdrRepo caseNotesPdrRepo;
+	
+	
+	@Autowired
+	private AddRecoveryAmmountRepo addRecoveryAmmountRepo;
 
 	@Override
 	public String submitRequisition(FileRequeistion requisition, MultipartFile[] files, String username,
@@ -1519,6 +1526,30 @@ public class PdrServiceImpl implements PdrService {
 			
        	   e.printStackTrace();
        	   // TODO: handle exception
+		}
+		return null;
+	}
+
+	@Override
+	public AddRecoveryAmmount addrecoveryAmount(RecoveryAmountVo recoveryAmountVo) {
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			String formattedDateTime = LocalDateTime.now().format(formatter);
+			
+			UserEntity user = userRepository.findById(Long.valueOf(recoveryAmountVo.getUserId()))
+					.orElseThrow(() -> new RuntimeException("User not found"));			
+
+			AddRecoveryAmmount recoveramount=new AddRecoveryAmmount();
+			BeanUtils.copyProperties(recoveramount, recoveryAmountVo);
+			recoveramount.setCreatedDate(formattedDateTime);
+			recoveramount.setUserId(user);
+			recoveramount.setCreatedByuser(String.valueOf(user.getUserId()));
+			
+			AddRecoveryAmmount savedata=addRecoveryAmmountRepo.save(recoveramount);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return null;
 	}

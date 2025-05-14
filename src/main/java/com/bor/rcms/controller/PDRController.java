@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -43,6 +44,9 @@ import com.bor.rcms.dto.FileRequeistionVo;
 import com.bor.rcms.dto.LegalRepersentativeVo;
 import com.bor.rcms.dto.ObjectionVo;
 import com.bor.rcms.dto.OfficerStatusVo;
+import com.bor.rcms.dto.RecoveryAmountVo;
+import com.bor.rcms.entity.AddRecoveryAmmount;
+import com.bor.rcms.entity.CaseNotesPdr;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.CertificateGuaranter;
@@ -54,6 +58,7 @@ import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.LegalRepresentative;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
@@ -93,6 +98,9 @@ public class PDRController {
 	
 	@Autowired
 	private FileRequeistionRepo fileRequeistionRepo;
+	
+	@Autowired
+	private CaseNotesPdrRepo caseNotesPdrRepo;
 
 	@Autowired
 	private PdrService pdrService;
@@ -1289,6 +1297,73 @@ public class PDRController {
 	                .orElseThrow(() -> new RuntimeException("No fee slab found for amount: " + amount));
 	    }
 	
+	
+	@Transactional
+	@PostMapping("getNotes")
+	public ResponseEntity<?> getNotes(@RequestParam String caseId) {
+		StatusResponse<CaseNotesPdr> response = new StatusResponse<>();
+
+		try {
+			CaseNotesPdr res = caseNotesPdrRepo.findByCaseId(caseId);
+
+			if (res.getUserId() != null) {
+				response.setMessage("Found");
+				response.setStatus("200");
+				response.setMessage(res.getCaseNotes())	;
+
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+			}
+			response.setMessage("not Found");
+			response.setStatus("400");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	@PostMapping("recoveryammount")
+	public ResponseEntity<?> recoveryammount(@RequestBody RecoveryAmountVo recoveryAmountVo) {
+		StatusResponse<AddRecoveryAmmount> response = new StatusResponse<>();
+		try {
+			AddRecoveryAmmount addRecoveryAmmount = pdrService.addrecoveryAmount(recoveryAmountVo);
+			if (addRecoveryAmmount.getRecoveryId() != null) {
+				response.setMessage("save Data");
+				response.setStatus("200");
+				response.setOption(addRecoveryAmmount);
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+			}
+		} catch (Exception e) {
+			response.setMessage("not Data");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+		response.setMessage("bad credential");
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@PostMapping("showRecoveryammount")
+	public ResponseEntity<?> showRecoveryammount(@RequestBody RecoveryAmountVo recoveryAmountVo) {
+		StatusResponse<AddRecoveryAmmount> response = new StatusResponse<>();
+		try {
+			AddRecoveryAmmount addRecoveryAmmount = pdrService.addrecoveryAmount(recoveryAmountVo);
+			if (addRecoveryAmmount.getRecoveryId() != null) {
+				response.setMessage("save Data");
+				response.setStatus("200");
+				response.setOption(addRecoveryAmmount);
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+			}
+		} catch (Exception e) {
+			response.setMessage("not Data");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+		response.setMessage("bad credential");
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
 	
 	
 
