@@ -11,7 +11,7 @@
 //import org.springframework.scheduling.annotation.Async;
 //import org.springframework.stereotype.Service;
 //
-//import com.bor.rcms.dto.UserTrackingDto;
+//import com.bor.rcms.dto.UserTrackingDTO;
 //import com.bor.rcms.entity.UserTracking;
 //import com.bor.rcms.repository.UserTrackingRepository;
 //
@@ -31,15 +31,15 @@
 //	}
 //	@Override
 //	@Async
-//	public void logActivity(UserTrackingDto trackingDto) {
+//	public void logActivity(UserTrackingDTO trackingDto) {
 //		UserTracking tracking = modelMapper.map(trackingDto, UserTracking.class);
-//	tracking.setCreatedate(LocalDateTime.now());
+//	//tracking.setCreatedate(LocalDateTime.now());
 //		repository.save(tracking);
 //	}
 //
-//	@Override
-//	public List<UserTrackingDto> getActivitiesByUser(Long userId) {
-//		return repository.findByUserId(userId).stream().map(entity -> modelMapper.map(entity, UserTrackingDto.class))
-//				.collect(Collectors.toList());
-//	}
-//}
+////	@Override
+////	public List<UserTrackingDTO> getActivitiesByUser(Long userId) {
+////		return repository.findByUserId(userId).stream().map(entity -> modelMapper.map(entity, UserTrackingDto.class))
+////				.collect(Collectors.toList());
+////	}
+////}

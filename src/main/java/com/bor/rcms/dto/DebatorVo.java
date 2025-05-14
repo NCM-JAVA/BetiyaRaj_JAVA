@@ -21,19 +21,15 @@ public class DebatorVo {
 	private String debtorAddress1;
 
 	@NotBlank(message = "Address line 2 required")
-	@Size(max = 100, message = "Max 100 chars")
 	private String debtorAddress2;
 
-	@NotBlank(message = "State required")
-	@Size(max = 50, message = "Max 50 chars")
+
 	private String debtorState;
 
 	@NotBlank(message = "City required")
-	@Size(max = 50, message = "Max 50 chars")
 	private String debtorCity;
 
 	@NotBlank(message = "District required")
-	@Size(max = 50, message = "Max 50 chars")
 	private String debtorDistrict;
 	
 	 @NotBlank(message = "Pincode is required")
@@ -46,19 +42,15 @@ public class DebatorVo {
 	    private String userId;
 	    
 	    @NotBlank(message = "Father's name is required")
-	    @Size(max = 100, message = "Father's name too long")  
 	    private String debtorfatherNames;
 	    
 	    @NotBlank(message = "Subdivision is required")
-	    @Size(max = 50, message = "Subdivision too long")
 	    private  String debtorubDivision;
 	    
 	    @NotBlank(message = "Circle is required")
-	    @Size(max = 50, message = "Circle name too long")
 	    private  String debtorcircle;
 	    
 	    @NotBlank(message = "Police station is required")
-	    @Size(max = 100, message = "Police station name too long")
 	    private  String debtorpolicestation;
 	    
 	    @Column(unique = true, nullable = false)

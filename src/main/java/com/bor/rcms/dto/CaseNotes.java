@@ -7,19 +7,13 @@ public class CaseNotes {
 	
     private String objId;
     
-    @NotBlank(message = "Notes are required")
-    @Size(max = 1000, message = "Notes cannot exceed 1000 characters")
     private String caseNotes;
     
-    @NotBlank(message = "Action is required")
     private String action;
-    @NotBlank(message = "field is required")
     private String nextHearingDate;
-    @NotBlank(message = "field is required")
     private String time;
     private String caseClass;
     
-    @NotBlank(message = "Select form is required")
 	private String selectForm;
 
 	public String getObjId() {

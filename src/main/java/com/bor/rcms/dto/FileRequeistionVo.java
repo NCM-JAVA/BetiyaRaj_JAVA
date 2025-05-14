@@ -16,15 +16,11 @@ public class FileRequeistionVo {
 	private List<DebatorVo> debatorVos;
 	
 	// Guarantor Details
-	@NotBlank(message = "Name required")
-	@Size(max = 50, message = "Max 50 chars")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
+	
 	private String guarantorName;
 
-	@NotBlank(message = "Address required")
 	private String guarantorAddress;
 
-	@NotBlank(message = "Address line 1 required")
 	private String guarantorAddress1;
 //=======
 //	    private String guarantorPhoneNumber;
@@ -40,26 +36,18 @@ public class FileRequeistionVo {
 //	    private  String guarantorpolicestation;
 //>>>>>>> main
 
-	@NotBlank(message = "Address line 2 required")
 	private String guarantorAddress2;
 
-	@NotBlank(message = "State required")
 	private String guarantorState;
 
-	@NotBlank(message = "City required")
 	private String guarantorCity;
 
-	@NotBlank(message = "District required")
-	// @Size(max = 50, message = "Max 50 chars")
 	private String guarantorDistrict;
 
-	@NotBlank(message = "Pincode required")
-	@Pattern(regexp = "^[0-9]{6}$", message = "Invalid pincode (6 digits)")
+	
 	private String guarantorPincode;
 
-	@Column(unique = true, nullable = false)
-	@NotBlank(message = "Phone number required")
-	@Pattern(regexp = "^[0-9]{10}$", message = "Invalid PhoneNumber ")
+	
 	private String guarantorPhoneNumber;
 
 	private String guarantorStatePhoneNumber;
@@ -67,54 +55,42 @@ public class FileRequeistionVo {
 	// @Email(message = "Invalid email format")
 	private String guarantorEmail;
 
-	@NotBlank(message = "User ID required")
 	private String userId;
 
-	@NotBlank(message = "Reason required")
 	private String reason;
 
-	@NotBlank(message = "Father's name required")
 	private String guarantorfatherNames;
 
-	@NotBlank(message = "Subdivision required")
 	private String guarantorsubDivision;
 
-	@NotBlank(message = "Circle required")
+	
 	private String guarantorcircle;
 
-	@NotBlank(message = "Police station required")
+	
 	private String guarantorpolicestation;
 
 	// Common Fields
 	private String createdDate;
-	@NotBlank
-	// @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date format:
-	// YYYY-MM-DD")
+	
+	
 	private String modifiedDate;
-	@NotBlank
+	
 	private String status;
-	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
+	
 	private String totalOutstandingAmmount;
 	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid rate format")
 	private String totalInterestRate;
 	@NotBlank
 	private String interestDueForm;
 	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String totalCourtFee;
 	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String missllenousFee;
 	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid fee format")
 	private String paidCourFee;
 	@NotBlank
-	// @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid amount format")
 	private String totalDemand;
 	@NotBlank
-	// @Pattern(regexp = "^\\d{4}-\\d{4}$", message = "Format: YYYY-YYYY")
 	private String financialYear;
 
 	// legal Repersentative

@@ -11,7 +11,6 @@ public class DocumentDTO {
 	
 	 private Long id;
 
-        @NotBlank
 	    private String documentName;
 	    private String filePath; // Store file path instead of file content
 	    private String fileType;

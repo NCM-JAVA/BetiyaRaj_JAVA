@@ -4,8 +4,6 @@ import javax.validation.constraints.*;
 
 public class LegalRepersentativeVo {
 	@NotBlank(message = "Name required")
-	@Size(max = 50, message = "Max 50 chars")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name must contain only letters and spaces")
     private String legalName;
 	@Email
     private String legalemail;
@@ -19,8 +17,7 @@ public class LegalRepersentativeVo {
     private  String legalcircle;
     @NotBlank
     private  String legalpolicestation;
-    @NotBlank(message = "Name required")
-	@Size(max = 50, message = "Max 50 chars")
+    @NotBlank(message = "Mobile No required")
     @Pattern(regexp = "^[0-9]{10}$", message = "Mobile No must be 10 digits")   
     private String legalphoneNumber;
     @NotBlank
@@ -29,7 +26,6 @@ public class LegalRepersentativeVo {
     private String legaladdress1;
     @NotBlank
     private String legaladdress2;
-    @NotBlank
     private String legalstate;
     @NotBlank
     private String legalcity;

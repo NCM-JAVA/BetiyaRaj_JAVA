@@ -6,11 +6,8 @@ import javax.validation.constraints.Size;
 
 public class FileRequeistionDTO {
 
-	@NotBlank(message = "Case ID is required")
-//	@Size(min = 3, max = 30, message = "Case ID must be 3-30 characters")
 	private String caseId;
 
-	@NotBlank(message = "Requisition ID is required")
 	private String requeistionId;
 
 	@NotBlank(message = "Outstanding amount is required")
@@ -19,7 +16,7 @@ public class FileRequeistionDTO {
 	@NotBlank(message = "Interest rate is required")
 	private String totalInterestRate;
 
-	@NotBlank(message = "Interest due form is required")
+	//@NotBlank(message = "Interest due form is required")
 	private String interestDueForm;
 
 	@NotBlank(message = "Court fee is required")
@@ -28,10 +25,10 @@ public class FileRequeistionDTO {
 	@NotBlank(message = "Miscellaneous fee is required")
 	private String missllenousFee;
 
-	@NotBlank(message = "Paid court fee is required")
+//	@NotBlank(message = "Paid court fee is required")
 	private String paidCourFee;
 
-	@NotBlank(message = "Total demand is required")
+	//@NotBlank(message = "Total demand is required")
 	private String totalDemand;
 
 	@NotBlank(message = "Financial year is required")
@@ -40,16 +37,16 @@ public class FileRequeistionDTO {
 	@NotBlank(message = "District name is required")
 	private String districtName;
 
-	@NotBlank(message = "Current date is required")
+	//@NotBlank(message = "Current date is required")
 	private String currentDate;
 
 	@NotBlank(message = "Update date is required")
 	private String updateDate;
 
-	@NotBlank(message = "Status is required")
+	//@NotBlank(message = "Status is required")
 	private String status;
 
-	@NotBlank(message = "Reason is required")
+	//@NotBlank(message = "Reason is required")
 	private String reason;
 
 
