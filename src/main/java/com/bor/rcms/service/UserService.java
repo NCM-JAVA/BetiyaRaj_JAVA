@@ -446,6 +446,7 @@ public class UserService {
 		loginResponse.setRole(user.getRole());
 		loginResponse.setFullName(user.getFullName());
 		loginResponse.setUserId(user.getUserId());
+		loginResponse.setDivsion(user.getCommisionary());
 		loginResponse.setDistrict(user.getDistrict());
 		loginResponse.setUserName(user.getUserName());
 		loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
@@ -454,7 +455,8 @@ public class UserService {
 
 	public LoginResponse loginOfficerEmail(String email, String password, String userType) {
 		UserEntity user = userRepository.findByEmail(email);;
-				//.orElseThrow(() -> new RuntimeException("Invalid username"));
+		
+		//.orElseThrow(() -> new RuntimeException("Invalid username"));
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new RuntimeException("Invalid password");
@@ -470,6 +472,7 @@ public class UserService {
 				LoginResponse loginResponse = new LoginResponse();
 				loginResponse.setDistrict(user.getDistrict());
 				loginResponse.setFullName(user.getFullName());
+				loginResponse.setDivsion(user.getCommisionary());
 				loginResponse.setUserId(user.getUserId());
 				loginResponse.setToken(token);
 				loginResponse.setRole(role);
@@ -531,6 +534,7 @@ public class UserService {
 			} else {
 				System.out.println("Error sending SMS: " + response.message());
 			}
+			
 		} catch (Exception e) {
 			System.out.println("Request failed: " + e.getMessage());
 			return "Failed to send OTP: ";

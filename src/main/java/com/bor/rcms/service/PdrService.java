@@ -13,6 +13,8 @@ import com.bor.rcms.dto.CauseVo;
 import com.bor.rcms.dto.CommisionaryReq;
 import com.bor.rcms.dto.CourtReq;
 import com.bor.rcms.dto.OfficerStatusVo;
+import com.bor.rcms.dto.RecoveryAmountVo;
+import com.bor.rcms.entity.AddRecoveryAmmount;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.DraftSaveCaseProceeding;
 import com.bor.rcms.entity.FileRequeistion;
@@ -71,5 +73,7 @@ public interface PdrService {
 	List<CommisionaryReq> showcommisionaryList(Long userId);
 
 	StatusRes saveDraft(String draft, String caseId);
+
+	AddRecoveryAmmount addrecoveryAmount(RecoveryAmountVo recoveryAmountVo);
 
 }

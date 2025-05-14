@@ -398,15 +398,12 @@ public class AuthController {
 			
 			if(entity!=null)
 			{
-//<<<<<<< HEAD
-	        //    return ResponseEntity.ok(Map.of(400, "Try another aadhar"));
-//=======
+
 				
 				  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                           .body(Map.of("message", "Try another Aadhar"));
 	          //  return ResponseEntity.notFound(Map.of("message", "Try another aadhar"));
-//>>>>>>> main
-//
+
 			}
 			else {
 	            return ResponseEntity.ok(Map.of(200, "aadhar number is available"));

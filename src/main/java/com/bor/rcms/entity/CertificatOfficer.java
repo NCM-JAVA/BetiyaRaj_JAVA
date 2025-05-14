@@ -58,7 +58,9 @@ public class CertificatOfficer {
 	  @OneToOne
 	    @JoinColumn(name = "pdrnotes_id", nullable = false)
 	    private CaseNotesPdr caseNotesPdr;
-	 
+	  @OneToOne
+	  @JoinColumn(name = "recovery_id", nullable = true)
+	  private AddRecoveryAmmount addRecoveryAmmount;
 
 	@OneToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -250,6 +252,14 @@ public class CertificatOfficer {
 		this.caseNotesPdr = caseNotesPdr;
 	}
 
+	public AddRecoveryAmmount getAddRecoveryAmmount() {
+		return addRecoveryAmmount;
+	}
+
+	public void setAddRecoveryAmmount(AddRecoveryAmmount addRecoveryAmmount) {
+		this.addRecoveryAmmount = addRecoveryAmmount;
+	}
+
 	@Override
 	public String toString() {
 		return "CertificatOfficer [certOfficerId=" + certOfficerId + ", hearingDate=" + hearingDate + ", hearingTime="
@@ -259,14 +269,14 @@ public class CertificatOfficer {
 				+ ", objectioId=" + objectioId + ", officerName=" + officerName + ", currentdate=" + currentdate
 				+ ", action=" + action + ", caseClass=" + caseClass + ", caseNotes=" + caseNotes + ", fileRequeistion="
 				+ fileRequeistion + ", reequeistionId=" + reequeistionId + ", caseNotesPdr=" + caseNotesPdr
-				+ ", userId=" + userId + ", reason=" + reason + "]";
+				+ ", addRecoveryAmmount=" + addRecoveryAmmount + ", userId=" + userId + ", reason=" + reason + "]";
 	}
 
 	public CertificatOfficer(String certOfficerId, String hearingDate, String hearingTime, String district,
 			String admissionDate, String admissionTime, String affidavitDate, Date createdDate, Date modifiedDate,
 			String status, String admisionCase, String objectioId, String officerName, LocalDateTime currentdate,
 			String action, String caseClass, String caseNotes, FileRequeistion fileRequeistion, String reequeistionId,
-			CaseNotesPdr caseNotesPdr, UserEntity userId, String reason) {
+			CaseNotesPdr caseNotesPdr, AddRecoveryAmmount addRecoveryAmmount, UserEntity userId, String reason) {
 		super();
 		this.certOfficerId = certOfficerId;
 		this.hearingDate = hearingDate;
@@ -288,6 +298,7 @@ public class CertificatOfficer {
 		this.fileRequeistion = fileRequeistion;
 		this.reequeistionId = reequeistionId;
 		this.caseNotesPdr = caseNotesPdr;
+		this.addRecoveryAmmount = addRecoveryAmmount;
 		this.userId = userId;
 		this.reason = reason;
 	}
