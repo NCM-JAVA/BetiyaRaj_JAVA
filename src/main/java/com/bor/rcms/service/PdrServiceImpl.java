@@ -743,15 +743,18 @@ public class PdrServiceImpl implements PdrService {
 	        }
 	        courtUser.setRole(role);
 
-	        UserEntity savedUser = userRepository.save(courtUser);
-	        System.out.println("Saved user ID: " + savedUser);
-
+	 UserEntity  savecourt = userRepository.save(courtUser);
+	 
+	 System.out.println("PdrServiceImpl.addCourt()" +savecourt);
+	 
 	        return "save";
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return "error occurred";
 	    }
 	}
+
 
 	@Override
 	public List<CourtReq> addCourtlistShow(Long userId) {
