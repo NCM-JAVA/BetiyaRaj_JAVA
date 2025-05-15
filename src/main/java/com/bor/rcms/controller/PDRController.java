@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1296,9 +1297,20 @@ public class PDRController {
 	}
 	
 	@PostMapping("courtFee")
-	    public CourtFeeSlab getFee(@RequestParam double amount) {
-	        return courtFeeService.getFeeForAmount(amount)
-	                .orElseThrow(() -> new RuntimeException("No fee slab found for amount: " + amount));
+	    public @ResponseBody CourtFeeSlab getFee(@RequestParam double amount) {
+		 CourtFeeSlab slabamount= courtFeeService.getFeeForAmount(amount).get();
+		 try {
+		 if(slabamount!=null)
+		 {
+			 return slabamount;
+		 }
+		 }catch (Exception e) {
+			// TODO: handle exception
+			 e.printStackTrace();
+			 return null;
+		}
+		 return null;
+		 
 	    }
 	
 	
