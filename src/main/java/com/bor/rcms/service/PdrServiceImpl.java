@@ -386,7 +386,13 @@ public class PdrServiceImpl implements PdrService {
 			// Find the NewObjection entity
 			FileRequeistion objection = fileRequeistionRepo.findByRequeistionId(statusvo.getCaseId()).get();
 		//	FileRequeistion objection = objection1.get();
-
+			UserEntity entity= new UserEntity();
+			try {
+				 entity=userRepository.findByUserId(Long.valueOf(statusvo.getUserId()));
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
 			CertificatOfficer admission = new CertificatOfficer();
 
 			if (statusvo.getStatus().equals("Admit")) {
@@ -408,7 +414,7 @@ public class PdrServiceImpl implements PdrService {
 				// objection.setObjectionId(objection.getObjectionId());
 				// objection.setAdmission(admission);
 				admission.setFileRequeistion(objection);
-				admission.setUserId(objection.getUserId());
+				admission.setUserId(entity);
 				admission.setHearingDate(statusvo.getAdmissionDate());
 				admission.setStatus("Admit");
 				// admission.setNewObjection(objection);
@@ -430,7 +436,7 @@ public class PdrServiceImpl implements PdrService {
 						CaseNotesPdr caseNotesPdr=new CaseNotesPdr();
 						try {
 						caseNotesPdr.setFileRequeistion(objection);
-						caseNotesPdr.setUserId(objection.getUserId());
+						caseNotesPdr.setUserId(entity);
 						caseNotesPdr.setCreatedDate(date);
 						caseNotesPdr.setCaseId(caseID);
 						CaseNotesPdr savecase=caseNotesPdrRepo.save(caseNotesPdr);
@@ -1230,13 +1236,22 @@ public class PdrServiceImpl implements PdrService {
 	public List<CaseRecodeRes> getcaseRecord(String userId) {
 		List<CaseRecodeRes> reqrusitionStatuslist=new  ArrayList<CaseRecodeRes>();
 		UserEntity entity=userRepository.findByUserId(Long.valueOf(userId));
+		try {
+		
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		if(entity!=null)
 		{
+			List<CertificatOfficer> certificatOfficers=certificatOfficerRepo.findAllByuserId(entity);
+
 			List<FileRequeistion> fileRequeistion=findAllByuserId(userId);
 			
-			for(FileRequeistion fileRequeistion2:fileRequeistion)
+			for(CertificatOfficer certificatOfficer2:certificatOfficers)
 			{
 				CaseRecodeRes reqrusitionStatus2=new CaseRecodeRes();
+				FileRequeistion fileRequeistion2=certificatOfficer2.getFileRequeistion();
 				
 				CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
 				if(certificatOfficer!=null)

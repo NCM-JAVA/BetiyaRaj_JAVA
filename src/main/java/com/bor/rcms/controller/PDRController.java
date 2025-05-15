@@ -58,6 +58,7 @@ import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.LegalRepresentative;
 import com.bor.rcms.entity.NewObjection;
 import com.bor.rcms.entity.UserEntity;
+import com.bor.rcms.repository.AddRecoveryAmmountRepo;
 import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
@@ -107,6 +108,9 @@ public class PDRController {
 
 	@Autowired
 	private UserRepository repository;
+	
+	@Autowired
+	private AddRecoveryAmmountRepo addRecoveryAmmountRepo;
 
 	@GetMapping("/Hello")
 	public String HelloApi() {
@@ -1347,10 +1351,10 @@ public class PDRController {
 	
 	
 	@PostMapping("showRecoveryammount")
-	public ResponseEntity<?> showRecoveryammount(@RequestBody RecoveryAmountVo recoveryAmountVo) {
+	public ResponseEntity<?> showRecoveryammount(@RequestParam String caseId) {
 		StatusResponse<AddRecoveryAmmount> response = new StatusResponse<>();
 		try {
-			AddRecoveryAmmount addRecoveryAmmount = pdrService.addrecoveryAmount(recoveryAmountVo);
+			AddRecoveryAmmount addRecoveryAmmount = addRecoveryAmmountRepo.findBycaseId(caseId);
 			if (addRecoveryAmmount.getRecoveryId() != null) {
 				response.setMessage("save Data");
 				response.setStatus("200");
@@ -1364,6 +1368,8 @@ public class PDRController {
 		response.setMessage("bad credential");
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
+	
+	
 	
 	
 

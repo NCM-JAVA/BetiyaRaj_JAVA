@@ -7,5 +7,7 @@ import com.bor.rcms.entity.AddRecoveryAmmount;
 @Repository
 public interface AddRecoveryAmmountRepo extends JpaRepository<AddRecoveryAmmount, Long> {
 
+	AddRecoveryAmmount findBycaseId(String caseId);
+
 	
 }

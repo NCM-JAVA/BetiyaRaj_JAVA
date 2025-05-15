@@ -16,6 +16,7 @@ public class OfficerStatusVo {
 	private String caseId;
 	private String remark;
 	private String status;
+	private String userId;
 	@JsonBackReference
     private OfficerStatusVo officerStatusVo;
 	
@@ -89,13 +90,20 @@ public class OfficerStatusVo {
 	public void setCaseId(String caseId) {
 		this.caseId = caseId;
 	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 	@Override
 	public String toString() {
 		return "OfficerStatusVo [admissionDate=" + admissionDate + ", admisionTime=" + admisionTime + ", affedefitDate="
 				+ affedefitDate + ", officerName=" + officerName + ", usertype=" + usertype + ", objId=" + objId
-				+ ", caseId=" + caseId + ", remark=" + remark + ", status=" + status + ", officerStatusVo="
-				+ officerStatusVo + "]";
+				+ ", caseId=" + caseId + ", remark=" + remark + ", status=" + status + ", userId=" + userId
+				+ ", officerStatusVo=" + officerStatusVo + "]";
 	}
+	
 	
 	
 	

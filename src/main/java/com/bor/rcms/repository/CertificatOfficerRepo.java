@@ -36,4 +36,7 @@ public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, 
 	List<CertificatOfficer> findByDistrict(String district);
 
 
+	List<CertificatOfficer> findAllByuserId(UserEntity entity);
+
+
 }
