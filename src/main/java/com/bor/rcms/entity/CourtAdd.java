@@ -19,7 +19,7 @@ public class CourtAdd {
 		private String officerEmail;
 
 		private String officeMobile;
-		
+		private String role;
 		private String status;
 		
 		private String  password;
@@ -101,6 +101,14 @@ public class CourtAdd {
 		
 
 	
+		public String getRole() {
+			return role;
+		}
+
+		public void setRole(String role) {
+			this.role = role;
+		}
+
 		public UserEntity getUserId() {
 			return userId;
 		}
@@ -109,18 +117,20 @@ public class CourtAdd {
 			this.userId = userId;
 		}
 
-		
 		@Override
 		public String toString() {
 			return "CourtAdd [id=" + id + ", officeDetails=" + officeDetails + ", officeName=" + officeName
-					+ ", officerEmail=" + officerEmail + ", officeMobile=" + officeMobile + ", status=" + status
-					+ ", password=" + password + ", assignUSer=" + assignUSer + ", userId=" + userId + "]";
+					+ ", officerEmail=" + officerEmail + ", officeMobile=" + officeMobile + ", role=" + role
+					+ ", status=" + status + ", password=" + password + ", assignUSer=" + assignUSer + ", userId="
+					+ userId + "]";
 		}
 
 		public CourtAdd() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
+
+		
 		
 		
 

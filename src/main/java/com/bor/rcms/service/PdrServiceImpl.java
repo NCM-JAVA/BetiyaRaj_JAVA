@@ -1,5 +1,6 @@
 package com.bor.rcms.service;
 
+import java.awt.SystemTray;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -691,62 +692,65 @@ public class PdrServiceImpl implements PdrService {
 	@Override
 	public String addCourt(CourtReq courtReq) {
 	    try {
-	        // Try to find user by email
-	        UserEntity existingUser = userRepository.findByEmail(courtReq.getOfficerEmail());
-
-	        // Try to find user by phone number
+	        // Find user by email and phone
+	        
+	    	UserEntity existingUser = userRepository.findByEmail(courtReq.getOfficerEmail());
 	        UserEntity userWithSamePhone = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
 
 	        // Get the creator user
+	       
 	        UserEntity creatorUser = userRepository.findById(courtReq.getUserId())
 	                .orElseThrow(() -> new RuntimeException("User not found"));
 
 	        UserEntity courtUser;
 
-	        // Case: updating existing user (by email)
 	        if (existingUser != null) {
-	            courtUser = existingUser;
+	            // Updating existing user
+	          
+	        	courtUser = existingUser;
 
-	            // If phone number is different and already used by someone else, reject
-	            if (!existingUser.getPhoneNumber().equals(courtReq.getOfficeMobile())
-	                    && userWithSamePhone != null && !userWithSamePhone.getUserId().equals(existingUser.getUserId())) {
+	            // Validate phone number uniqueness
+	            
+	        	if (!existingUser.getPhoneNumber().equals(courtReq.getOfficeMobile())
+	                    && userWithSamePhone != null
+	                    && !userWithSamePhone.getUserId().equals(existingUser.getUserId())) {
 	                return "try another number";
 	            }
 
 	        } else {
-	            // Case: new user creation
+	            // Creating new user
 	            if (userWithSamePhone != null) {
 	                return "try another number";
 	            }
+
 	            courtUser = new UserEntity();
 	            courtUser.setEmail(courtReq.getOfficerEmail());
 	            courtUser.setPhoneNumber(courtReq.getOfficeMobile());
+
+	            // ➤ Assign role only for new user
+	            RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
+	            if (role == null) {
+	            	  role = new RoleEntity(courtReq.getRole(), courtReq.getRole());
+	            	  role = roleRepository.save(role);
+	            }
+	            courtUser.setRole(role);
 	        }
 
-	        // Update allowed fields
+	        // Set/update common fields
 	        courtUser.setFullName(courtReq.getOfficeName());
 	        courtUser.setAddress(courtReq.getOfficeDetails());
 	        courtUser.setStatus(courtReq.getStatus());
 	        courtUser.setDistrict(creatorUser.getDistrict());
 	        courtUser.setCreatedByuser(creatorUser.getUserId());
 
-	        // Password update if present
+	        // Update password if provided
 	        if (courtReq.getPassword() != null && !courtReq.getPassword().isEmpty()) {
 	            courtUser.setPassword(passwordEncoder.encode(courtReq.getPassword()));
 	        }
 
-	        // Role handling
-	        RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
-	        if (role == null) {
-	            role = new RoleEntity(courtReq.getRole(), courtReq.getRole());
-	            role = roleRepository.save(role);
-	        }
-	        courtUser.setRole(role);
+	        // Save court user
+	        userRepository.save(courtUser);
 
-	 UserEntity  savecourt = userRepository.save(courtUser);
-	 
-	 System.out.println("PdrServiceImpl.addCourt()" +savecourt);
-	 
 	        return "save";
 
 	    } catch (Exception e) {
