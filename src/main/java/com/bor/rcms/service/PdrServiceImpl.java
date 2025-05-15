@@ -1253,17 +1253,21 @@ public class PdrServiceImpl implements PdrService {
 				CaseRecodeRes reqrusitionStatus2=new CaseRecodeRes();
 				FileRequeistion fileRequeistion2=certificatOfficer2.getFileRequeistion();
 				
+				List<CertificateDebator>certificateDebatorslist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
+				
+				CertificateDebator certificateDebatorsdata=certificateDebatorslist.get(0);
 				CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
 				if(certificatOfficer!=null)
 				{
 				reqrusitionStatus2.setAction(certificatOfficer.getAction());
 				reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
 				reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+				reqrusitionStatus2.setDefaulterName(certificateDebatorsdata.getDebatorName());
 
 				reqrusitionStatus2.setHearingTime(certificatOfficer.getHearingTime());
 
 				
-				
+				reqrusitionStatus2.setHolderName(fileRequeistion2.getUserId().getFullName());
 				reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
 				reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 				reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
