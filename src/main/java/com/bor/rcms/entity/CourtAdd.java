@@ -32,7 +32,15 @@ public class CourtAdd {
 		    private UserEntity userId;
 		  
 
-	
+	 private String Role;
+
+		public String getRole() {
+		return Role;
+	}
+
+	public void setRole(String role) {
+		Role = role;
+	}
 
 		public Long getId() {
 			return id;
@@ -114,7 +122,8 @@ public class CourtAdd {
 		public String toString() {
 			return "CourtAdd [id=" + id + ", officeDetails=" + officeDetails + ", officeName=" + officeName
 					+ ", officerEmail=" + officerEmail + ", officeMobile=" + officeMobile + ", status=" + status
-					+ ", password=" + password + ", assignUSer=" + assignUSer + ", userId=" + userId + "]";
+					+ ", password=" + password + ", assignUSer=" + assignUSer + ", userId=" + userId + ", Role=" + Role
+					+ "]";
 		}
 
 		public CourtAdd() {
