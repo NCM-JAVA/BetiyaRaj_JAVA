@@ -466,45 +466,34 @@ public class PdrServiceImpl implements PdrService {
 
 	}
 
-	private String generateNextTokenadmision(FileRequeistion objection) {
-		try {
-			int initial = 0001;
-			String caseId;
+	public String generateNextTokenadmision(FileRequeistion objection) {
+	    try {
+	        int initial = 1;
+	        String currentYear = String.format("%02d", LocalDate.now().getYear() % 100);
+	        String district = objection.getDistrictName().trim();
+	        String prefix = String.format("PDR-%s-%s-", district, currentYear);
 
-			Admission admission = new Admission();
-			// int currentYear = Year.now().getValue();
-			String currentYear = LocalDate.now().getYear() % 100 < 10 ? "0" + (LocalDate.now().getYear() % 100)
-					: Integer.toString(LocalDate.now().getYear() % 100); // Two-digit year
+	        Optional<CertificatOfficer> lastInserted = certificatOfficerRepo
+	                .findLatestByCertOfficerIdPrefixNative(prefix);
 
-			// String caseId = user.getCaseId();
-			// Fetch last inserted user
+	        String formattedValue;
+	        if (lastInserted.isPresent()) {
+	            String lastCertOfficerId = lastInserted.get().getCertOfficerId();
+	            String[] parts = lastCertOfficerId.split("-");
+	            int lastNumber = Integer.parseInt(parts[parts.length - 1]);
+	            formattedValue = String.format("%04d", lastNumber + 1);
+	        } else {
+	            formattedValue = String.format("%04d", initial);
+	        }
 
-			Optional<CertificatOfficer> lastInsertedUser = certificatOfficerRepo
-					.findTopByDistrictOrderByCurrentdateDesc(objection.getDistrictName());
-			if (lastInsertedUser.isPresent()) {
-				String caseId2 = lastInsertedUser.get().getAdmisionCase();
-				String[] parts = caseId2.split("-"); // Splitting by '-'
-				int caseNumber = Integer.parseInt(parts[parts.length - 1]);
-				int finalValue = caseNumber + 1;
-				String formattedValue = String.format("%04d", finalValue);
-				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
-				// System.out.println("Last inserted user: " + lastInsertedUser.get());
-			} else {
-				String formattedValue = String.format("%04d", initial);
-				admission.setAdmisionCase(
-						"PDR-" + objection.getDistrictName() + "-" + currentYear + "-" + formattedValue);
-			}
-			// System.out.println("last result--------->" + lastInsertedUser);
+	        return prefix + formattedValue;
 
-			// User savedUser = caseIdRepository.save(user);
-			caseId = admission.getAdmisionCase();
-			return caseId; // Fixed this line
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null; // Handle exception properly
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
+
 
 	@Override
 	public FileRequeistion savecaseDetails(CaseNotes casenotes) {
@@ -1444,55 +1433,55 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public StatusRes saveDraft(String draft, String caseId) {
-		try {
-			StatusRes res = new StatusRes();
-			DraftSaveCaseProceeding draftSaveCaseProceeding = draftsSaveRepo.findLatestDraftByCaseId(caseId);
-			// draftSaveCaseProceeding.setCaseId(caseId);
-			draftSaveCaseProceeding.setDraft(null);
+	    StatusRes res = new StatusRes();
+	    try {
+	        // Step 1: Nullify existing draft content
+	        DraftSaveCaseProceeding draftSaveCaseProceeding = draftsSaveRepo.findLatestDraftByCaseId(caseId);
+	        if (draftSaveCaseProceeding != null) {
+	            draftSaveCaseProceeding.setDraft(null);
+	            draftsSaveRepo.save(draftSaveCaseProceeding);
+	        }
 
-			DraftSaveCaseProceeding saveDraft = draftsSaveRepo.save(draftSaveCaseProceeding);
-			CaseNotesPdr casesaveNotes = new CaseNotesPdr();
-			CaseNotesPdr caseNotesPdr = caseNotesPdrRepo.findByCaseId(caseId);
-			
-			CertificatOfficer certificatOfficer=certificatOfficerRepo.findByCertOfficerId(caseId).get();
+	        // Step 2: Fetch existing notes
+	        CaseNotesPdr caseNotesPdr = caseNotesPdrRepo.findByCaseId(caseId);
+	        if (caseNotesPdr != null) {
+	            String existingNotes = caseNotesPdr.getCaseNotes();
+	            if (existingNotes == null) existingNotes = "";
 
-			// caseNotesPdr.setCaseNotes(caseNotesPdr.getCaseNotes()+draft);
+	            caseNotesPdr.setCaseNotes(existingNotes + draft);
+	            caseNotesPdr.setModifiedDate(new Date());
 
-			if (caseNotesPdr != null) {
-				String existingNotes = caseNotesPdr.getCaseNotes();
-				if (existingNotes == null)
-					existingNotes = "";
+	            caseNotesPdrRepo.save(caseNotesPdr);
+	            res.setMessage("save");
+	            return res;
 
-				caseNotesPdr.setCaseNotes(existingNotes + draft);
-				caseNotesPdr.setModifiedDate(new Date());
-				casesaveNotes = caseNotesPdrRepo.save(caseNotesPdr);
-				if (casesaveNotes != null) {
-					res.setMessage("save");
-					return res;
-				}
-				else if(caseNotesPdr==null)
-				{
-					casesaveNotes.setCaseId(caseId);
-					casesaveNotes.setCaseNotes(draft);
-					casesaveNotes.setFileRequeistion(certificatOfficer.getFileRequeistion());
-					CaseNotesPdr caseNotes=caseNotesPdrRepo.save(casesaveNotes);
-				
-				if (caseNotes != null) {
-					res.setMessage("save");
-					return res;
-				}
-				}
+	        } else {
+	            // No notes found, create a new record
+	            Optional<CertificatOfficer> certificatOfficerOpt = certificatOfficerRepo.findByCertOfficerId(caseId);
+	            if (certificatOfficerOpt.isPresent()) {
+	                CertificatOfficer certificatOfficer = certificatOfficerOpt.get();
 
-			}
-             return null;
-			
+	                CaseNotesPdr newNote = new CaseNotesPdr();
+	                newNote.setCaseId(caseId);
+	                newNote.setCaseNotes(draft);
+	                newNote.setFileRequeistion(certificatOfficer.getFileRequeistion());
+	                newNote.setCreatedDate(new Date());
+	                newNote.setModifiedDate(new Date());
 
-		} catch (Exception e) {
+	                caseNotesPdrRepo.save(newNote);
+	                res.setMessage("save");
+	                return res;
+	            } else {
+	                res.setMessage("Certificat Officer not found for given caseId");
+	                return res;
+	            }
+	        }
 
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		return null;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        res.setMessage("error");
+	        return res;
+	    }
 	}
 
 	@Override

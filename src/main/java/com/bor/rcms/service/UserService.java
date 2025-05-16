@@ -578,11 +578,25 @@ public class UserService {
 	loginResponse.setRole(entity);
 	loginResponse.setDistrict(user.getDistrict());
 	
-	loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+	certificatDebatorRepo.save(user);
+	
+//	loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+//	loginResponse.setMsg("success");
+//	loginResponse.setStatus("200");
+//	
+	
+	
+	String token = jwtUtil.generateToken(user.getPhoneNumber());
+	// List<NewObjection> newObjection = objectionService.findAll();
+	// System.out.println("df==" + newObjection);
+	
+	loginResponse.setToken(token);
+	
+	
 	loginResponse.setMsg("success");
 	loginResponse.setStatus("200");
-	user.setOtp("");
-	certificatDebatorRepo.save(user);
+	
+	
 		return loginResponse;
 	}
 

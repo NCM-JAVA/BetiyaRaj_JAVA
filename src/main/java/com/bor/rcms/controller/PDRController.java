@@ -79,7 +79,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("api/pdr")
-
+@Transactional
 public class PDRController {
 
 	@Autowired
@@ -1347,32 +1347,31 @@ public class PDRController {
 	    }
 	
 	
-	@Transactional
+
 	@PostMapping("getNotes")
 	public ResponseEntity<?> getNotes(@RequestParam String caseId) {
-		StatusResponse<CaseNotesPdr> response = new StatusResponse<>();
+	    StatusResponse<String> response = new StatusResponse<>();
 
-		try {
-			CaseNotesPdr res = caseNotesPdrRepo.findByCaseId(caseId);
+	    try {
+	        CaseNotesPdr res = caseNotesPdrRepo.findByCaseId(caseId);
 
-			if (res.getUserId() != null) {
-				response.setMessage("Found");
-				response.setStatus("200");
-				response.setMessage(res.getCaseNotes())	;
+	        if (res != null && res.getUserId() != null) {
+	            response.setMessage(res.getCaseNotes());
+	            response.setStatus("200");
+	            return ResponseEntity.ok(response); 
+	        }
 
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+	        response.setMessage("Case notes not found");
+	        response.setStatus("404");
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 
-			}
-			response.setMessage("not Found");
-			response.setStatus("400");
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	    } catch (Exception e) {
+	        e.printStackTrace();
 
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return null;
-
+	        response.setMessage("Internal server error");
+	        response.setStatus("500");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
 
 	@PostMapping("recoveryammount")

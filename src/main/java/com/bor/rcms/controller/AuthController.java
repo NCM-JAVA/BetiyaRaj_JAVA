@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 @RestController
 @RequestMapping("api/auth")
 @CrossOrigin(origins = "http://localhost:4200") 
-
+@Transactional
 public class AuthController {
 
 	@Autowired
