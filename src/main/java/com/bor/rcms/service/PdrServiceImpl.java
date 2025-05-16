@@ -81,7 +81,8 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 public class PdrServiceImpl implements PdrService {
 	@Autowired
 	private DocumentPDRRepository documentRepository;
-	private final String FILE_STORAGE_PATH = "C:/Users/Admin/file";
+	private final String FILE_STORAGE_PATH = "C:/Admin/PDR/User/%s/"; 
+	
 	@Autowired
 	private CaseTransferPriviouseRecordRepo priviouseRecordRepo;
 	@Autowired
@@ -118,13 +119,21 @@ public class PdrServiceImpl implements PdrService {
 			String documentTypes) {
 		UserEntity user = userRepository.findById(Long.valueOf(username))
 				.orElseThrow(() -> new RuntimeException("User not found"));
-//  		userRepository.findByUserName(username)
-//      .orElseThrow(() -> new RuntimeException("User not found"));
+	    String userStoragePath = String.format(FILE_STORAGE_PATH, user.getUserId());
+	    File userDirectory = new File(userStoragePath);
+	    if (!userDirectory.exists()) {
+	        userDirectory.mkdirs(); // This will create all necessary parent directories
+	    }
+	    	    
+     //  		userRepository.findByUserName(username)
+   //      .orElseThrow(() -> new RuntimeException("User not found"));
+		
+		
 		requisition.setDistrictName(user.getDistrict());
 		// Generate Unique Objection ID
 		String objectionId = generateNextToken(requisition);
 		// UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-//  objection.setTokenNo(objectionId);
+       //  objection.setTokenNo(objectionId);
 		requisition.setUserId(user);
 		requisition.setRequeistionId(objectionId);
 		requisition.setStatus("pending");
@@ -199,7 +208,11 @@ public class PdrServiceImpl implements PdrService {
 				String currentMinute = LocalDateTime.now().format(fileNameFormatter);
 
 				String fileName = currentMinute + "_" + file.getOriginalFilename();
-				String filePath = FILE_STORAGE_PATH + fileName;
+
+			    String filePath = userStoragePath + fileName;
+
+				
+				//				String filePath = FILE_STORAGE_PATH + fileName;
 
 				// Save the file to disk
 				File destinationFile = new File(filePath);
@@ -301,10 +314,13 @@ public class PdrServiceImpl implements PdrService {
 
 				+ "</div>" + "</body></html>";
 
+		
 		try {
-
-			String fileName = "D:\\Form2_" + fileRequeistion.getRequeistionId() + debtorName.replaceAll(" ", "_")
-					+ ".pdf";
+			 String userStoragePath = String.format(FILE_STORAGE_PATH, fileRequeistion.getUserId().getUserId());
+			 String fileName = userStoragePath + "Form2_" + fileRequeistion.getRequeistionId()  + ".pdf";
+			
+//			String fileName = "D:\\Form2_" + fileRequeistion.getRequeistionId() + debtorName.replaceAll(" ", "_")
+//					+ ".pdf";
 			HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(fileName));
 			System.out.println("✅ PDF successfully saved to: " + fileName);
 
@@ -313,7 +329,6 @@ public class PdrServiceImpl implements PdrService {
 			enNoticeRelease.setDocumentName("Form2");
 			enNoticeRelease.setFilePath(fileName);
 			enNoticeRelease.setFileRequeistion(fileRequeistion);
-
 			DocumentEntityPdr DocumentEntity = documentRepository.save(enNoticeRelease);
 
 		} catch (IOException e) {
@@ -500,6 +515,7 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			// Fetch the NewObjection using the objection ID
 			FileRequeistion newObjection = fileRequeistionRepo.findByRequeistionId(casenotes.getObjId()).get();
+		    String userStoragePath = String.format(FILE_STORAGE_PATH, casenotes.getObjId());
 
 			CertificateDebator certificateDebatorslist = newObjection.getCertificateDebator().get(0);
 
@@ -801,7 +817,122 @@ public class PdrServiceImpl implements PdrService {
 			return "error occurred";
 		}
 	}
+//	public String addCourt(CourtReq courtReq) {
+//
+//		try {
+//			UserEntity courtAdd = new UserEntity();
+//
+//			courtAdd.setAddress(courtReq.getOfficeDetails());
+//
+//			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
+//			courtAdd.setFullName(courtReq.getOfficeName());
+//
+//			courtAdd.setEmail(courtReq.getOfficerEmail());
+//
+//			UserEntity entity1 = new UserEntity();
+//			try {
+//				entity1 = userRepository.findByEmail(courtReq.getOfficerEmail());
+//
+//				if (entity1.getUserId() != null) {
+//					return "try another email";
+//				}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				// TODO: handle exception
+//			}
+//
+//			try {
+//				courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+//
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//
+////			courtReq.setOfficeDetails(courtAdd.getAddress());
+////			courtReq.setOfficeMobile(courtAdd.getPanNumber());
+////			courtReq.setOfficeName(courtAdd.getFullName());
+////			courtReq.setOfficerEmail(courtAdd.getFullName());
+////		
+////		
+//			// courtReq.setAssignUSer(entity.getUserName());
+//
+//			UserEntity entity = userRepository.findById(courtReq.getUserId())
+//					.orElseThrow(() -> new RuntimeException("User not found"));
+//
+//			UserEntity courtfindMobile = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
+//
+//			courtAdd.setCreatedByuser(entity.getUserId());
+//			if (entity != null) {
+//				courtAdd.setCreatedByuser(entity.getUserId());
+//				courtAdd.setDistrict(entity.getDistrict());
+//				// courtAdd.setUserId(entity);
+//				RoleEntity role = new RoleEntity();
+//
+//				String roleName = null;
+//				try {
+//					roleName = courtfindMobile.getRole().getRoleName();
+//
+//					role = roleRepository.findByRoleName(roleName);
+//					if (role == null) {
+//						role = new RoleEntity(roleName, roleName);
+//						role = roleRepository.save(role);
+//					}
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					// TODO: handle exception
+//				}
+//
+//				UserEntity courtAddsave = new UserEntity();
+//
+//				if (courtReq.getUpdaStatus() == null && courtfindMobile != null) {
+//					return "try another number";
+//				}
+//				try {
+//
+//					// courtReq.setRole(entity.getRole().getRoleName());
+//					if (courtReq.getUpdaStatus().equals("update")) {
+//						courtAdd.setRole(role);
+//						courtAdd.setUserId(courtfindMobile.getUserId());
+//						courtAdd.setStatus(courtReq.getStatus());
+//
+//						courtAddsave = userRepository.save(courtAdd);
+//						if (courtAddsave != null) {
+//							return "save";
+//						}
+//					}
+//
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//					e.printStackTrace();
+//				}
+//				// courtAdd.setr;
+//				role = roleRepository.findByRoleName(courtReq.getRole());
+//				if (role == null) {
+//					role = new RoleEntity(roleName, roleName);
+//					role = roleRepository.save(role);
+//				}
+//				courtAdd.setRole(role);
+//				courtAdd.setStatus(courtReq.getStatus());
+//				courtAddsave = userRepository.save(courtAdd);
+//				if (courtAddsave != null) {
+//					return "save";
+//				}
+//				return "something issue";
+//
+//			}
+//
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
+	
+	
+	
+	
 	@Override
 	public List<CourtReq> addCourtlistShow(Long userId) {
 		// TODO Auto-generated method stub
