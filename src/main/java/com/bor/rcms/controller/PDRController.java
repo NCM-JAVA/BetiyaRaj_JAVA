@@ -79,7 +79,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("api/pdr")
-
+@Transactional
 public class PDRController {
 
 	@Autowired
@@ -704,11 +704,19 @@ public class PDRController {
 	}
 
 	@PostMapping("caseTranferFileshow")
-	public ResponseEntity<?> getTranferFileshow(@RequestParam String userId) {
+	public ResponseEntity<?> getTranferFileshow(@RequestParam String userId,@RequestParam String role) {
 
 		try {
-			List<FileRequeistion> fileRequeistions = pdrService.findpendingNom(userId);
+			List<FileRequeistion> fileRequeistions  =new ArrayList<>();
+			if(role.equals("NO_CERTIFICATE_OFFICER"))
+			{
+				fileRequeistions= pdrService.findpendingNom(userId);
 
+			}
+			else if(role.equals("CERTIFICATE_OFFICER"))
+			{
+				fileRequeistions=pdrService.findAllByuserIdcaseTranfer(userId);
+			}
 			if (!fileRequeistions.isEmpty()) {
 				List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
@@ -726,6 +734,22 @@ public class PDRController {
 					dto.setUpdateDate(req.getUpdateDate());
 					dto.setStatus(req.getStatus());
 					dto.setReason(req.getReason());
+					
+					try {
+						CertificatOfficer  certificatOfficer=certificatOfficerRepo.findByFileRequeistion(req);
+						dto.setCaseId(certificatOfficer.getCertOfficerId());
+						
+						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(req);
+						CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+						dto.setDebatorName(certificateDebator.getDebatorName());
+						dto.setSector(certificatOfficer.getUserId().getSector());
+						
+					}
+					catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+					
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
 					}
@@ -951,6 +975,8 @@ public class PDRController {
 
 			List<CauseListResponse> causeList = officers.stream().map(officer -> {
 				CauseListResponse res = new CauseListResponse();
+				
+				
 				res.setAction(officer.getAction());
 				res.setCaseId(officer.getCertOfficerId());
 				res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
@@ -961,6 +987,8 @@ public class PDRController {
 				List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion);
 				CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
 				res.setDebtorName(certificateDebator.getDebatorName());
+				res.setFilingDate(fileRequeistion.getCurrentDate());
+				res.setSector(officer.getUserId().getSector());
 				
 				return res;
 			}).collect(Collectors.toList());
@@ -999,6 +1027,11 @@ public class PDRController {
 
 			List<CauseListResponse> causeList = officers.stream().map(officer -> {
 				CauseListResponse res = new CauseListResponse();
+				List<CertificateDebator> certificateDebator=certificatDebatorRepo.findByRequeistion(officer.getFileRequeistion());
+				res.setSector(officer.getUserId().getSector());
+				res.setFilingDate(officer.getFileRequeistion().getCurrentDate());
+				
+			    res.setDebtorName(certificateDebator.get(0).getDebatorName());
 				res.setAction(officer.getAction());
 				res.setCaseId(officer.getCertOfficerId());
 				res.setDemandAmount(officer.getFileRequeistion().getTotalDemand());
@@ -1314,32 +1347,31 @@ public class PDRController {
 	    }
 	
 	
-	@Transactional
+
 	@PostMapping("getNotes")
 	public ResponseEntity<?> getNotes(@RequestParam String caseId) {
-		StatusResponse<CaseNotesPdr> response = new StatusResponse<>();
+	    StatusResponse<String> response = new StatusResponse<>();
 
-		try {
-			CaseNotesPdr res = caseNotesPdrRepo.findByCaseId(caseId);
+	    try {
+	        CaseNotesPdr res = caseNotesPdrRepo.findByCaseId(caseId);
 
-			if (res.getUserId() != null) {
-				response.setMessage("Found");
-				response.setStatus("200");
-				response.setMessage(res.getCaseNotes())	;
+	        if (res != null && res.getUserId() != null) {
+	            response.setMessage(res.getCaseNotes());
+	            response.setStatus("200");
+	            return ResponseEntity.ok(response); 
+	        }
 
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+	        response.setMessage("Case notes not found");
+	        response.setStatus("404");
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 
-			}
-			response.setMessage("not Found");
-			response.setStatus("400");
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	    } catch (Exception e) {
+	        e.printStackTrace();
 
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return null;
-
+	        response.setMessage("Internal server error");
+	        response.setStatus("500");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
 
 	@PostMapping("recoveryammount")

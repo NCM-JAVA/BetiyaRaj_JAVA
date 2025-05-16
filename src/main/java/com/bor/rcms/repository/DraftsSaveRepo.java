@@ -12,4 +12,6 @@ public interface DraftsSaveRepo extends JpaRepository<DraftSaveCaseProceeding, L
 	@Query(value = "SELECT * FROM draft_save_case_proceeding WHERE case_id = :caseId ORDER BY created_date DESC LIMIT 1", nativeQuery = true)
 	DraftSaveCaseProceeding findLatestDraftByCaseId(@Param("caseId") String caseId);
 
+	DraftSaveCaseProceeding findBycaseId(String caseId);
+
 }

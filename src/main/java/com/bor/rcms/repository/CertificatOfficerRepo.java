@@ -17,6 +17,15 @@ import com.bor.rcms.entity.UserEntity;
 public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, String> {
 
 	Optional<CertificatOfficer> findTopByDistrictOrderByCurrentdateDesc(String districtName);
+	
+	 @Query(value = "SELECT * FROM certificat_officer " +
+             "WHERE cert_officer_id ILIKE CONCAT(:prefix, '%') " +
+             "ORDER BY cert_officer_id DESC " +
+             "LIMIT 1",
+     nativeQuery = true)
+Optional<CertificatOfficer> findLatestByCertOfficerIdPrefixNative(@Param("prefix") String prefix);
+
+	
 
 	CertificatOfficer findByFileRequeistion(FileRequeistion newObjection);
 
@@ -37,6 +46,10 @@ public interface CertificatOfficerRepo extends JpaRepository<CertificatOfficer, 
 
 
 	List<CertificatOfficer> findAllByuserId(UserEntity entity);
+
+	Optional<CertificatOfficer> findTopByDistrictAndAdmisionCaseStartingWithOrderByAdmisionCaseDesc(String district,
+			String prefix);
+
 
 
 }

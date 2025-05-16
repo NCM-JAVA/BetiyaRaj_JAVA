@@ -20,6 +20,8 @@ public class FileRequeistionDTO {
 	    private String reason;
 	    private String userName; // Optional: if you want user name
 	    private String debatorName;
+	    
+	    private String sector;
 		public String getRequeistionId() {
 			return requeistionId;
 		}
@@ -125,6 +127,12 @@ public class FileRequeistionDTO {
 		public void setDebatorName(String debatorName) {
 			this.debatorName = debatorName;
 		}
+		public String getSector() {
+			return sector;
+		}
+		public void setSector(String sector) {
+			this.sector = sector;
+		}
 		@Override
 		public String toString() {
 			return "FileRequeistionDTO [caseId=" + caseId + ", requeistionId=" + requeistionId
@@ -133,8 +141,8 @@ public class FileRequeistionDTO {
 					+ ", missllenousFee=" + missllenousFee + ", paidCourFee=" + paidCourFee + ", totalDemand="
 					+ totalDemand + ", financialYear=" + financialYear + ", districtName=" + districtName
 					+ ", currentDate=" + currentDate + ", updateDate=" + updateDate + ", status=" + status + ", reason="
-					+ reason + ", userName=" + userName + ", debatorName=" + debatorName + "]";
+					+ reason + ", userName=" + userName + ", debatorName=" + debatorName + ", sector=" + sector + "]";
 		}
-		
+	
 		
 }

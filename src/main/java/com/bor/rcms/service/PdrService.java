@@ -74,4 +74,6 @@ public interface PdrService {
 
 	AddRecoveryAmmount addrecoveryAmount(RecoveryAmountVo recoveryAmountVo);
 
+	List<FileRequeistion> findAllByuserIdcaseTranfer(String userId);
+
 }
