@@ -22,4 +22,5 @@ public interface CertificatDebatorRepo extends JpaRepository<CertificateDebator,
     CertificateDebator findByDebatorIdNative(@Param("debatorId") Long debatorId);
 
 	List<CertificateDebator> findByRequeistion(FileRequeistion fileRequeistion);
+
     }

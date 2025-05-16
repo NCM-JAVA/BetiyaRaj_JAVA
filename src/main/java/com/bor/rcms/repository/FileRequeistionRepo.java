@@ -39,8 +39,8 @@ public interface FileRequeistionRepo extends JpaRepository<FileRequeistion, Stri
 
 	Optional<FileRequeistion> findByCurrentDate(String caseDate);
 
-	 
-
+	@Query("SELECT n FROM FileRequeistion n WHERE n.userId.userId = :userId AND n.isTransNomOfficer = true")
+	List<FileRequeistion> findAllisTransNomOfficer(@Param("userId") String userId);
 
 
 

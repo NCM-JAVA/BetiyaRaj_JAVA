@@ -95,22 +95,21 @@ public class PdrServiceImpl implements PdrService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 
-	private  CertificatDebatorRepo certificatDebatorRepo;
+	private CertificatDebatorRepo certificatDebatorRepo;
 	@Autowired
 	private CourtAddRepo courtAddRepo;
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private DraftsSaveRepo draftsSaveRepo;
 	@Autowired
 	private CaseNotesPdrRepo caseNotesPdrRepo;
-	
-	
+
 	@Autowired
 	private AddRecoveryAmmountRepo addRecoveryAmmountRepo;
 
@@ -156,13 +155,12 @@ public class PdrServiceImpl implements PdrService {
 		List<LegalRepresentative> legalRepresentative = requisition.getLegalRepresentative();
 
 		List<LegalRepresentative> legalRepresentativesave = new ArrayList<LegalRepresentative>();
-		
-		for(LegalRepresentative legalset :legalRepresentative)
-		{
+
+		for (LegalRepresentative legalset : legalRepresentative) {
 			legalset.setFileRequeistion(requisition);
 
 			legalRepresentativesave.add(legalset);
-			
+
 		}
 
 		requisition.setLegalRepresentative(legalRepresentativesave);
@@ -385,12 +383,11 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			// Find the NewObjection entity
 			FileRequeistion objection = fileRequeistionRepo.findByRequeistionId(statusvo.getCaseId()).get();
-		//	FileRequeistion objection = objection1.get();
-			UserEntity entity= new UserEntity();
+			// FileRequeistion objection = objection1.get();
+			UserEntity entity = new UserEntity();
 			try {
-				 entity=userRepository.findByUserId(Long.valueOf(statusvo.getUserId()));
-			}
-			catch (Exception e) {
+				entity = userRepository.findByUserId(Long.valueOf(statusvo.getUserId()));
+			} catch (Exception e) {
 				// TODO: handle exception
 			}
 			CertificatOfficer admission = new CertificatOfficer();
@@ -399,9 +396,9 @@ public class PdrServiceImpl implements PdrService {
 				admission.setAdmissionDate(statusvo.getAdmissionDate());
 				admission.setAdmissionTime(statusvo.getAdmisionTime());
 				admission.setAffidavitDate(statusvo.getAffedefitDate());
-				
+
 				admission.setOfficerName(statusvo.getOfficerName());
-				
+
 				LocalDate localDate = LocalDate.now(); // Or use LocalDate.of(2025, 4, 29)
 				Date date = java.sql.Date.valueOf(localDate);
 				admission.setCreatedDate(date);
@@ -431,24 +428,21 @@ public class PdrServiceImpl implements PdrService {
 					// objection.setMis(mis);
 					CertificatOfficer savedObjection = new CertificatOfficer();
 					try {
-                    
-						
-						CaseNotesPdr caseNotesPdr=new CaseNotesPdr();
-						try {
-						caseNotesPdr.setFileRequeistion(objection);
-						caseNotesPdr.setUserId(entity);
-						caseNotesPdr.setCreatedDate(date);
-						caseNotesPdr.setCaseId(caseID);
-						CaseNotesPdr savecase=caseNotesPdrRepo.save(caseNotesPdr);
-						admission.setCaseNotesPdr(savecase);
 
-						
-						}
-						catch (Exception e) {
+						CaseNotesPdr caseNotesPdr = new CaseNotesPdr();
+						try {
+							caseNotesPdr.setFileRequeistion(objection);
+							caseNotesPdr.setUserId(entity);
+							caseNotesPdr.setCreatedDate(date);
+							caseNotesPdr.setCaseId(caseID);
+							CaseNotesPdr savecase = caseNotesPdrRepo.save(caseNotesPdr);
+							admission.setCaseNotesPdr(savecase);
+
+						} catch (Exception e) {
 							// TODO: handle exception
 							e.printStackTrace();
 						}
-						
+
 						// System.out.println("dd===>" + objection);
 
 						savedObjection = certificatOfficerRepo.save(admission);
@@ -584,13 +578,13 @@ public class PdrServiceImpl implements PdrService {
 //					admission.setStatusCollector("pending");
 //				}
 
-					//admission.setCaseNotes(casenotes.getCaseNotes());
-					
-					CaseNotesPdr casepdr=caseNotesPdrRepo.findByFileRequeistion(newObjection); 
+					// admission.setCaseNotes(casenotes.getCaseNotes());
+
+					CaseNotesPdr casepdr = caseNotesPdrRepo.findByFileRequeistion(newObjection);
 					casepdr.setModifiedDate(new Date());
 					casenotes.setCaseNotes(casenotes.getCaseNotes());
 					admission.setCaseNotesPdr(casepdr);
-					//addCaseNit
+					// addCaseNit
 					admission.setFileRequeistion(newObjection);
 					// Admission savedAdmission = admissionRepo.save(admission);
 					newObjection.setCertificatOfficer(admission);
@@ -751,117 +745,72 @@ public class PdrServiceImpl implements PdrService {
 
 	}
 
-	@Override
 	public String addCourt(CourtReq courtReq) {
-
 		try {
-			UserEntity courtAdd = new UserEntity();
+			// Find user by email and phone
 
-			courtAdd.setAddress(courtReq.getOfficeDetails());
+			UserEntity existingUser = userRepository.findByEmail(courtReq.getOfficerEmail());
+			UserEntity userWithSamePhone = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
 
-			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
-			courtAdd.setFullName(courtReq.getOfficeName());
+			// Get the creator user
 
-			courtAdd.setEmail(courtReq.getOfficerEmail());
-
-			UserEntity entity1 = new UserEntity();
-			try {
-				entity1 = userRepository.findByEmail(courtReq.getOfficerEmail());
-
-				if (entity1.getUserId() != null) {
-					return "try another email";
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
-			}
-
-			try {
-				courtAdd.setPassword(passwordEncoder.encode(courtReq.getPassword()));
-
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-
-//			courtReq.setOfficeDetails(courtAdd.getAddress());
-//			courtReq.setOfficeMobile(courtAdd.getPanNumber());
-//			courtReq.setOfficeName(courtAdd.getFullName());
-//			courtReq.setOfficerEmail(courtAdd.getFullName());
-//		
-//		
-			// courtReq.setAssignUSer(entity.getUserName());
-
-			UserEntity entity = userRepository.findById(courtReq.getUserId())
+			UserEntity creatorUser = userRepository.findById(courtReq.getUserId())
 					.orElseThrow(() -> new RuntimeException("User not found"));
 
-			UserEntity courtfindMobile = userRepository.findByPhoneNumber(courtReq.getOfficeMobile());
+			UserEntity courtUser;
 
-			courtAdd.setCreatedByuser(entity.getUserId());
-			if (entity != null) {
-				courtAdd.setCreatedByuser(entity.getUserId());
-				courtAdd.setDistrict(entity.getDistrict());
-				// courtAdd.setUserId(entity);
-				RoleEntity role = new RoleEntity();
+			if (existingUser != null) {
+				// Updating existing user
 
-				String roleName = null;
-				try {
-					roleName = courtfindMobile.getRole().getRoleName();
+				courtUser = existingUser;
 
-					role = roleRepository.findByRoleName(roleName);
-					if (role == null) {
-						role = new RoleEntity(roleName, roleName);
-						role = roleRepository.save(role);
-					}
+				// Validate phone number uniqueness
 
-				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO: handle exception
-				}
-
-				UserEntity courtAddsave = new UserEntity();
-
-				if (courtReq.getUpdaStatus() == null && courtfindMobile != null) {
+				if (!existingUser.getPhoneNumber().equals(courtReq.getOfficeMobile()) && userWithSamePhone != null
+						&& !userWithSamePhone.getUserId().equals(existingUser.getUserId())) {
 					return "try another number";
 				}
-				try {
 
-					// courtReq.setRole(entity.getRole().getRoleName());
-					if (courtReq.getUpdaStatus().equals("update")) {
-						courtAdd.setRole(role);
-						courtAdd.setUserId(courtfindMobile.getUserId());
-						courtAdd.setStatus(courtReq.getStatus());
-
-						courtAddsave = userRepository.save(courtAdd);
-						if (courtAddsave != null) {
-							return "save";
-						}
-					}
-
-				} catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
+			} else {
+				// Creating new user
+				if (userWithSamePhone != null) {
+					return "try another number";
 				}
-				// courtAdd.setr;
-				role = roleRepository.findByRoleName(courtReq.getRole());
+
+				courtUser = new UserEntity();
+				courtUser.setEmail(courtReq.getOfficerEmail());
+				courtUser.setPhoneNumber(courtReq.getOfficeMobile());
+
+				// Assign role only for new user
+				RoleEntity role = roleRepository.findByRoleName(courtReq.getRole());
 				if (role == null) {
-					role = new RoleEntity(roleName, roleName);
+					role = new RoleEntity(courtReq.getRole(), courtReq.getRole());
 					role = roleRepository.save(role);
 				}
-				courtAdd.setRole(role);
-				courtAdd.setStatus(courtReq.getStatus());
-				courtAddsave = userRepository.save(courtAdd);
-				if (courtAddsave != null) {
-					return "save";
-				}
-				return "something issue";
-
+				courtUser.setRole(role);
 			}
 
+			// Set/update common fields
+			courtUser.setFullName(courtReq.getOfficeName());
+			courtUser.setAddress(courtReq.getOfficeDetails());
+			courtUser.setStatus(courtReq.getStatus());
+			courtUser.setDistrict(creatorUser.getDistrict());
+			courtUser.setCreatedByuser(creatorUser.getUserId());
+
+			// Update password if provided
+			if (courtReq.getPassword() != null && !courtReq.getPassword().isEmpty()) {
+				courtUser.setPassword(passwordEncoder.encode(courtReq.getPassword()));
+			}
+
+			// Save court user
+			userRepository.save(courtUser);
+
+			return "save";
+
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+			return "error occurred";
 		}
-		return null;
 	}
 
 	@Override
@@ -980,7 +929,6 @@ public class PdrServiceImpl implements PdrService {
 	@Override
 	public String caseTransfer(List<String> reqId, String nouserId) {
 		try {
-			
 
 			for (int i = 0; i < reqId.size(); i++) {
 				Optional<FileRequeistion> optionalRequest = fileRequeistionRepo.findByRequeistionId(reqId.get(i));
@@ -991,25 +939,22 @@ public class PdrServiceImpl implements PdrService {
 					newObjection.setIsTransNomOfficer(true);
 					newObjection.setTransNomId(nouserId);
 					fileRequeistionRepo.save(newObjection);
-					
-					
-					//case Transfer save Preivious saved
-					
-					try{
+
+					// case Transfer save Preivious saved
+
+					try {
 						UserEntity entity = userRepository.findById(Long.valueOf(nouserId)).get();
-                        CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(newObjection);
-						
-						CaseTransferPriviouseRecord  priviouseRecord=new CaseTransferPriviouseRecord(); 
-						
+						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
+
+						CaseTransferPriviouseRecord priviouseRecord = new CaseTransferPriviouseRecord();
+
 						BeanUtils.copyProperties(certificatOfficer, priviouseRecord);
 						priviouseRecord.setTransferUser(entity);
 						priviouseRecordRepo.save(priviouseRecord);
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						// TODO: handle exception
 					}
-					
-					
+
 				} else {
 					return "Request ID not found: " + reqId.get(i);
 				}
@@ -1050,124 +995,113 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public List<String> findSlotTime(String date) {
-	    List<CertificatOfficer> listslot = certificatOfficerRepo.findByAdmissionTime(date);
+		List<CertificatOfficer> listslot = certificatOfficerRepo.findByAdmissionTime(date);
 
-	    Set<String> bookedTimes = new HashSet();
-	    for (CertificatOfficer officer : listslot) {
-	        bookedTimes.add(officer.getAdmissionTime());
-	    }
+		Set<String> bookedTimes = new HashSet();
+		for (CertificatOfficer officer : listslot) {
+			bookedTimes.add(officer.getAdmissionTime());
+		}
 
-	    TimeSlot timeSlot = new TimeSlot();
-	    List<String> allValidSlots = timeSlot.timeslote(); 
+		TimeSlot timeSlot = new TimeSlot();
+		List<String> allValidSlots = timeSlot.timeslote();
 
-	    List<String> availableSlots = new ArrayList<>();
-	    for (String slot : allValidSlots) {
-	        if (!bookedTimes.contains(slot)) {
-	            availableSlots.add(slot);
-	        }
-	    }
+		List<String> availableSlots = new ArrayList<>();
+		for (String slot : allValidSlots) {
+			if (!bookedTimes.contains(slot)) {
+				availableSlots.add(slot);
+			}
+		}
 
-	    return availableSlots;
+		return availableSlots;
 	}
+
 	@Override
 	public List<CertificatOfficer> findByReqId(String caseId, String caseDate) {
-	    
-	    List<CertificatOfficer> result=new ArrayList<CertificatOfficer>();
 
-	    try {
-	        boolean hasCaseId = caseId != null && !caseId.isEmpty();
-	        boolean hasCaseDate = caseDate != null && !caseDate.isEmpty();
+		List<CertificatOfficer> result = new ArrayList<CertificatOfficer>();
 
-	        if (hasCaseId && hasCaseDate) {
-	        	
-	          //  fileRequeistionRepo.findByRequeistionIdAndCurrentDate(caseId, caseDate);
-	            
-	            //    .ifPresent(result::add);
-	            
-	        	certificatOfficerRepo.findByCertOfficerIdAndHearingDate(caseId, caseDate)
-		                .ifPresent(result::add);
+		try {
+			boolean hasCaseId = caseId != null && !caseId.isEmpty();
+			boolean hasCaseDate = caseDate != null && !caseDate.isEmpty();
 
-	            
-	        } else if (hasCaseId) {
-	        	certificatOfficerRepo.findByCertOfficerId(caseId)
-	                .ifPresent(result::add);
-	        } else if (hasCaseDate) {
-	        	certificatOfficerRepo.findByadmissionDate(caseDate)
-	                .ifPresent(result::add);
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace(); // Consider proper logging in production
-	    }
+			if (hasCaseId && hasCaseDate) {
 
-	    return result;
+				// fileRequeistionRepo.findByRequeistionIdAndCurrentDate(caseId, caseDate);
+
+				// .ifPresent(result::add);
+
+				certificatOfficerRepo.findByCertOfficerIdAndHearingDate(caseId, caseDate).ifPresent(result::add);
+
+			} else if (hasCaseId) {
+				certificatOfficerRepo.findByCertOfficerId(caseId).ifPresent(result::add);
+			} else if (hasCaseDate) {
+				certificatOfficerRepo.findByadmissionDate(caseDate).ifPresent(result::add);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Consider proper logging in production
+		}
+
+		return result;
 	}
 
 	@Override
 	public String upadateCauseStatus(@Valid CauseVo causeVo) {
-		
-    	CertificatOfficer certificatOfficer= certificatOfficerRepo.findByCertOfficerId(causeVo.getCaseId()).get();
-    	
-    	if(certificatOfficer!=null)
-    	{
-    		certificatOfficer.setAction(causeVo.getAction());
-    		certificatOfficer.setHearingTime(causeVo.getHearingTime());
-    		certificatOfficer.setHearingDate(causeVo.getHearinDate());
-    		certificatOfficer.setCaseClass(causeVo.getClasse());
-    		certificatOfficer.setReason(causeVo.getReason());
-    		
-    		CertificatOfficer certificatOfficer2=certificatOfficerRepo.save(certificatOfficer);
-    		if(certificatOfficer2.getCertOfficerId()!=null)
-    		{
-    			return "update";
-    		}
+
+		CertificatOfficer certificatOfficer = certificatOfficerRepo.findByCertOfficerId(causeVo.getCaseId()).get();
+
+		if (certificatOfficer != null) {
+			certificatOfficer.setAction(causeVo.getAction());
+			certificatOfficer.setHearingTime(causeVo.getHearingTime());
+			certificatOfficer.setHearingDate(causeVo.getHearinDate());
+			certificatOfficer.setCaseClass(causeVo.getClasse());
+			certificatOfficer.setReason(causeVo.getReason());
+
+			CertificatOfficer certificatOfficer2 = certificatOfficerRepo.save(certificatOfficer);
+			if (certificatOfficer2.getCertOfficerId() != null) {
+				return "update";
+			}
 			return "data not update";
 
-    	}
+		}
 
-		
 		return "data not available";
 	}
 
-	
 	@Override
 	public List<CertificatOfficer> findAllCause(String district) {
-	    List<CertificatOfficer> result = new ArrayList<>();
+		List<CertificatOfficer> result = new ArrayList<>();
 
-	    try {
-	        Optional<CertificatOfficer> optionalOfficer =
-	            certificatOfficerRepo.findTopByDistrictOrderByCurrentdateDesc(district);
+		try {
+			Optional<CertificatOfficer> optionalOfficer = certificatOfficerRepo
+					.findTopByDistrictOrderByCurrentdateDesc(district);
 
-	        optionalOfficer.ifPresent(result::add);
+			optionalOfficer.ifPresent(result::add);
 
-	    } catch (Exception e) {
-	        e.printStackTrace(); // Prefer logging in production
-	    }
+		} catch (Exception e) {
+			e.printStackTrace(); // Prefer logging in production
+		}
 
-	    return result;
+		return result;
 	}
 
 	@Override
-	public List<ReqrusitionStatus>  getcaseStatus(String userId) {
+	public List<ReqrusitionStatus> getcaseStatus(String userId) {
 		// TODO Auto-generated method stub
-		List<ReqrusitionStatus> reqrusitionStatuslist=new  ArrayList<ReqrusitionStatus>();
-		UserEntity entity=userRepository.findByUserId(Long.valueOf(userId));
-		if(entity!=null)
-		{
-			List<FileRequeistion> fileRequeistion=findAllByuserId(userId);
-			
-			for(FileRequeistion fileRequeistion2:fileRequeistion)
-			{
-				ReqrusitionStatus reqrusitionStatus2=new ReqrusitionStatus();
-				try {
-				CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
-				
-				reqrusitionStatus2.setAction(certificatOfficer.getAction());
-				reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
-				reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+		List<ReqrusitionStatus> reqrusitionStatuslist = new ArrayList<ReqrusitionStatus>();
+		UserEntity entity = userRepository.findByUserId(Long.valueOf(userId));
+		if (entity != null) {
+			List<FileRequeistion> fileRequeistion = findAllByuserId(userId);
 
-				
-				}
-				catch (Exception e) {
+			for (FileRequeistion fileRequeistion2 : fileRequeistion) {
+				ReqrusitionStatus reqrusitionStatus2 = new ReqrusitionStatus();
+				try {
+					CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
+
+					reqrusitionStatus2.setAction(certificatOfficer.getAction());
+					reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
+					reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+
+				} catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace();
 				}
@@ -1176,36 +1110,51 @@ public class PdrServiceImpl implements PdrService {
 				reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
 				reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
 				reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
-				
+
 				reqrusitionStatuslist.add(reqrusitionStatus2);
 			}
 			return reqrusitionStatuslist;
-			
+
 		}
 		return null;
 	}
 
 	@Override
 	public StatusRes addDraft(String draft, String caseId) {
-           try {
-        	   StatusRes res=new StatusRes();
-        	   DraftSaveCaseProceeding draftSaveCaseProceeding=new DraftSaveCaseProceeding();
-        	   draftSaveCaseProceeding.setCaseId(caseId);
-        	   draftSaveCaseProceeding.setDraft(draft);
-        	   
-        	   DraftSaveCaseProceeding saveDraft=draftsSaveRepo.save(draftSaveCaseProceeding);
-        	   
-        	   if(saveDraft!=null)
-        	   {
-        		   res.setMessage("save");
-        		   return res;
-        	   }
-        	   
-        	   
-           }catch (Exception e) {
-			
-        	   e.printStackTrace();
-        	   // TODO: handle exception
+		try {
+			StatusRes res = new StatusRes();
+			DraftSaveCaseProceeding draftSaveCaseProceeding = new DraftSaveCaseProceeding();
+			try {
+				draftSaveCaseProceeding = draftsSaveRepo.findBycaseId(caseId);
+				if (draftSaveCaseProceeding != null) {
+					draftSaveCaseProceeding.setDraft(draft);
+					DraftSaveCaseProceeding saveDraftupdate = draftsSaveRepo.save(draftSaveCaseProceeding);
+					if (saveDraftupdate != null) {
+						res.setMessage("save");
+						return res;
+					}
+
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			DraftSaveCaseProceeding draftSaveCase= new DraftSaveCaseProceeding();
+
+			draftSaveCase.setCaseId(caseId);
+			draftSaveCase.setDraft(draft);
+
+			DraftSaveCaseProceeding saveDraft = draftsSaveRepo.save(draftSaveCase);
+
+			if (saveDraft != null) {
+				res.setMessage("save");
+				return res;
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			// TODO: handle exception
 		}
 		return null;
 	}
@@ -1213,85 +1162,79 @@ public class PdrServiceImpl implements PdrService {
 	@Override
 	public DraftSaveCaseProceeding FindDraft(String caseId) {
 		// TODO Auto-generated method stub
-		
+
 		try {
-			
-			DraftSaveCaseProceeding caseProceedingdraft=draftsSaveRepo.findLatestDraftByCaseId(caseId);
-			
-			if(caseProceedingdraft!=null)
-			{
+
+			DraftSaveCaseProceeding caseProceedingdraft = draftsSaveRepo.findBycaseId(caseId);
+
+			if (caseProceedingdraft != null) {
 				return caseProceedingdraft;
 			}
 			return null;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public List<CaseRecodeRes> getcaseRecord(String userId) {
-		List<CaseRecodeRes> reqrusitionStatuslist=new  ArrayList<CaseRecodeRes>();
-		UserEntity entity=userRepository.findByUserId(Long.valueOf(userId));
+		List<CaseRecodeRes> reqrusitionStatuslist = new ArrayList<CaseRecodeRes>();
+		UserEntity entity = userRepository.findByUserId(Long.valueOf(userId));
 		try {
-		
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		if(entity!=null)
-		{
-			List<CertificatOfficer> certificatOfficers=certificatOfficerRepo.findAllByuserId(entity);
+		if (entity != null) {
+			List<CertificatOfficer> certificatOfficers = certificatOfficerRepo.findAllByuserId(entity);
 
-			List<FileRequeistion> fileRequeistion=findAllByuserId(userId);
-			
-			for(CertificatOfficer certificatOfficer2:certificatOfficers)
-			{
-				CaseRecodeRes reqrusitionStatus2=new CaseRecodeRes();
-				FileRequeistion fileRequeistion2=certificatOfficer2.getFileRequeistion();
-				
-				List<CertificateDebator>certificateDebatorslist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
-				
-				CertificateDebator certificateDebatorsdata=certificateDebatorslist.get(0);
-				CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
-				if(certificatOfficer!=null)
-				{
-				reqrusitionStatus2.setAction(certificatOfficer.getAction());
-				reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
-				reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
-				reqrusitionStatus2.setDefaulterName(certificateDebatorsdata.getDebatorName());
+			List<FileRequeistion> fileRequeistion = findAllByuserId(userId);
 
-				reqrusitionStatus2.setHearingTime(certificatOfficer.getHearingTime());
+			for (CertificatOfficer certificatOfficer2 : certificatOfficers) {
+				CaseRecodeRes reqrusitionStatus2 = new CaseRecodeRes();
+				FileRequeistion fileRequeistion2 = certificatOfficer2.getFileRequeistion();
 
-				
-				reqrusitionStatus2.setHolderName(fileRequeistion2.getUserId().getFullName());
-				reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
-				reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
-				reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-				reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-				reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
-				
-				try {
-					List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
-					CertificateDebator certificateDebator=certificateDebatorlist.get(0);
-					reqrusitionStatus2.setDefaulterName(certificateDebator.getDebatorName());
+				List<CertificateDebator> certificateDebatorslist = certificatDebatorRepo
+						.findByRequeistion(fileRequeistion2);
 
-					
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				
-			//	reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
-				
-				
-				reqrusitionStatuslist.add(reqrusitionStatus2);
+				CertificateDebator certificateDebatorsdata = certificateDebatorslist.get(0);
+				CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
+				if (certificatOfficer != null) {
+					reqrusitionStatus2.setAction(certificatOfficer.getAction());
+					reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
+					reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+					reqrusitionStatus2.setDefaulterName(certificateDebatorsdata.getDebatorName());
+
+					reqrusitionStatus2.setHearingTime(certificatOfficer.getHearingTime());
+
+					reqrusitionStatus2.setHolderName(fileRequeistion2.getUserId().getFullName());
+					reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
+					reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
+					reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
+					reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
+					reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+
+					try {
+						List<CertificateDebator> certificateDebatorlist = certificatDebatorRepo
+								.findByRequeistion(fileRequeistion2);
+						CertificateDebator certificateDebator = certificateDebatorlist.get(0);
+						reqrusitionStatus2.setDefaulterName(certificateDebator.getDebatorName());
+
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+
+					// reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
+
+					reqrusitionStatuslist.add(reqrusitionStatus2);
 				}
 			}
 			return reqrusitionStatuslist;
-			
+
 		}
 		return null;
 	}
@@ -1300,47 +1243,39 @@ public class PdrServiceImpl implements PdrService {
 	public List<CaseRecodeRes> getcaseRecordFilter(String sector, String bank, String department, String branchCode) {
 		// TODO Auto-generated method stub
 		try {
-			List<CaseRecodeRes> reqrusitionStatuslist=new  ArrayList<CaseRecodeRes>();
+			List<CaseRecodeRes> reqrusitionStatuslist = new ArrayList<CaseRecodeRes>();
 
-			List<UserEntity> entitieslist=userRepository.findByOptionalFields(bank, branchCode, sector, department);
-			System.out.println("list===>"+entitieslist);
-			
-			for(UserEntity entity: entitieslist)
-			{
-				List<FileRequeistion> fileRequeistion=findAllByuserId(String.valueOf(entity.getUserId()));
-				for(FileRequeistion fileRequeistion2:fileRequeistion)
-				{
-					CaseRecodeRes reqrusitionStatus2=new CaseRecodeRes();
-					
-					CertificatOfficer certificatOfficer=certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
-					if(certificatOfficer!=null)
-					{
-					reqrusitionStatus2.setAction(certificatOfficer.getAction());
-					reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
-					reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+			List<UserEntity> entitieslist = userRepository.findByOptionalFields(bank, branchCode, sector, department);
+			System.out.println("list===>" + entitieslist);
 
-					reqrusitionStatus2.setHearingTime(certificatOfficer.getHearingTime());
+			for (UserEntity entity : entitieslist) {
+				List<FileRequeistion> fileRequeistion = findAllByuserId(String.valueOf(entity.getUserId()));
+				for (FileRequeistion fileRequeistion2 : fileRequeistion) {
+					CaseRecodeRes reqrusitionStatus2 = new CaseRecodeRes();
 
-					
-					
-					reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
-					reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
-					reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-					reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-					reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
-					reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
-					
-					
-					reqrusitionStatuslist.add(reqrusitionStatus2);
+					CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(fileRequeistion2);
+					if (certificatOfficer != null) {
+						reqrusitionStatus2.setAction(certificatOfficer.getAction());
+						reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
+						reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+
+						reqrusitionStatus2.setHearingTime(certificatOfficer.getHearingTime());
+
+						reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
+						reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
+						reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
+						reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
+						reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+						reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
+
+						reqrusitionStatuslist.add(reqrusitionStatus2);
 					}
 				}
 				return reqrusitionStatuslist;
-				
+
 			}
-			
-		
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
@@ -1352,28 +1287,26 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			try {
 				UserEntity entity2 = new UserEntity();
-				entity2=userRepository.findByUserId(Long.valueOf(courtReq.getUserId()));
-				
-				RoleEntity roleEntity=entity2.getRole();
-				if(!roleEntity.getRoleName().equals("BOR"))
-				{
+				entity2 = userRepository.findByUserId(Long.valueOf(courtReq.getUserId()));
+
+				RoleEntity roleEntity = entity2.getRole();
+				if (!roleEntity.getRoleName().equals("BOR")) {
 					return "You are Not BOR";
-					
-	    		}
-		
-			}
-			catch (Exception e) {
+
+				}
+
+			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-			
+
 			UserEntity courtAdd = new UserEntity();
 
 			courtAdd.setAddress(courtReq.getOfficeDetails());
 			courtAdd.setCommisionary(courtReq.getCommisoner());
-			//System.out.println("district===>"+courtReq.getDisrict());
+			// System.out.println("district===>"+courtReq.getDisrict());
 			courtAdd.setDistrict(courtReq.getDistrict());
-			
+
 			courtAdd.setPhoneNumber(courtReq.getOfficeMobile());
 			courtAdd.setFullName(courtReq.getOfficeName());
 			courtAdd.setEmail(courtReq.getOfficerEmail());
@@ -1494,7 +1427,7 @@ public class PdrServiceImpl implements PdrService {
 
 					courtReq.setAssignUSer(entity.getFullName());
 					courtReq.setStatus(userEntity.getStatus());
-					//courtReq.setCourtId(entity.getUserId());
+					// courtReq.setCourtId(entity.getUserId());
 					courtAddslist.add(courtReq);
 
 				}
@@ -1511,40 +1444,53 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public StatusRes saveDraft(String draft, String caseId) {
-		  try {
-       	   StatusRes res=new StatusRes();
-       	   DraftSaveCaseProceeding draftSaveCaseProceeding=new DraftSaveCaseProceeding();
-       	   draftSaveCaseProceeding.setCaseId(caseId);
-       	   draftSaveCaseProceeding.setDraft(null);
-       	   
-       	   DraftSaveCaseProceeding saveDraft=draftsSaveRepo.save(draftSaveCaseProceeding);
-       	CaseNotesPdr casesaveNotes=new CaseNotesPdr();
-       	   CaseNotesPdr caseNotesPdr=caseNotesPdrRepo.findByCaseId(caseId);
-       	
-       	//caseNotesPdr.setCaseNotes(caseNotesPdr.getCaseNotes()+draft);
-       	
-        if (caseNotesPdr != null) {	
-            String existingNotes = caseNotesPdr.getCaseNotes();
-            if (existingNotes == null) existingNotes = ""; 
+		try {
+			StatusRes res = new StatusRes();
+			DraftSaveCaseProceeding draftSaveCaseProceeding = draftsSaveRepo.findLatestDraftByCaseId(caseId);
+			// draftSaveCaseProceeding.setCaseId(caseId);
+			draftSaveCaseProceeding.setDraft(null);
 
-            caseNotesPdr.setCaseNotes(existingNotes + draft);
-            caseNotesPdr.setModifiedDate(new Date());
-            casesaveNotes=  caseNotesPdrRepo.save(caseNotesPdr);
-            
-        }
-       	   
-       	   
-       	   if(casesaveNotes!=null)
-       	   {
-       		   res.setMessage("save");
-       		   return res;
-       	   }
-       	   
-       	   
-          }catch (Exception e) {
+			DraftSaveCaseProceeding saveDraft = draftsSaveRepo.save(draftSaveCaseProceeding);
+			CaseNotesPdr casesaveNotes = new CaseNotesPdr();
+			CaseNotesPdr caseNotesPdr = caseNotesPdrRepo.findByCaseId(caseId);
 			
-       	   e.printStackTrace();
-       	   // TODO: handle exception
+			CertificatOfficer certificatOfficer=certificatOfficerRepo.findByCertOfficerId(caseId).get();
+
+			// caseNotesPdr.setCaseNotes(caseNotesPdr.getCaseNotes()+draft);
+
+			if (caseNotesPdr != null) {
+				String existingNotes = caseNotesPdr.getCaseNotes();
+				if (existingNotes == null)
+					existingNotes = "";
+
+				caseNotesPdr.setCaseNotes(existingNotes + draft);
+				caseNotesPdr.setModifiedDate(new Date());
+				casesaveNotes = caseNotesPdrRepo.save(caseNotesPdr);
+				if (casesaveNotes != null) {
+					res.setMessage("save");
+					return res;
+				}
+				else if(caseNotesPdr==null)
+				{
+					casesaveNotes.setCaseId(caseId);
+					casesaveNotes.setCaseNotes(draft);
+					casesaveNotes.setFileRequeistion(certificatOfficer.getFileRequeistion());
+					CaseNotesPdr caseNotes=caseNotesPdrRepo.save(casesaveNotes);
+				
+				if (caseNotes != null) {
+					res.setMessage("save");
+					return res;
+				}
+				}
+
+			}
+             return null;
+			
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			// TODO: handle exception
 		}
 		return null;
 	}
@@ -1554,22 +1500,28 @@ public class PdrServiceImpl implements PdrService {
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			String formattedDateTime = LocalDateTime.now().format(formatter);
-			
-			UserEntity user = userRepository.findById(Long.valueOf(recoveryAmountVo.getUserId()))
-					.orElseThrow(() -> new RuntimeException("User not found"));			
 
-			AddRecoveryAmmount recoveramount=new AddRecoveryAmmount();
+			UserEntity user = userRepository.findById(Long.valueOf(recoveryAmountVo.getUserId()))
+					.orElseThrow(() -> new RuntimeException("User not found"));
+
+			AddRecoveryAmmount recoveramount = new AddRecoveryAmmount();
 			BeanUtils.copyProperties(recoveramount, recoveryAmountVo);
 			recoveramount.setCreatedDate(formattedDateTime);
 			recoveramount.setUserId(user);
 			recoveramount.setCreatedByuser(String.valueOf(user.getUserId()));
-			
-			AddRecoveryAmmount savedata=addRecoveryAmmountRepo.save(recoveramount);
-			
+
+			AddRecoveryAmmount savedata = addRecoveryAmmountRepo.save(recoveramount);
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public List<FileRequeistion> findAllByuserIdcaseTranfer(String userId) {
+		// TODO Auto-generated method stub
+		return fileRequeistionRepo.findAllisTransNomOfficer(userId);
 	}
 }
