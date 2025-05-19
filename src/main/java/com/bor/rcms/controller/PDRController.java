@@ -1,8 +1,13 @@
 package com.bor.rcms.controller;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.bor.rcms.repository.FileRequeistionRepo;
+import com.bor.rcms.repository.LegalRepersentativeRepo;
+
+import org.springframework.util.StringUtils;
+
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,9 +15,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -106,6 +113,9 @@ public class PDRController {
 
 	@Autowired
 	private PdrService pdrService;
+	
+	@Autowired
+	private LegalRepersentativeRepo legalRepersentativeRepo;
 
 	@Autowired
 	private UserRepository repository;
@@ -385,7 +395,6 @@ public class PDRController {
 				// vo.setGuarantorStatePhoneNumber(g.get);
 				vo.setGuarantorEmail(grantor.getEmail());
 				vo.setGuarantorfatherNames(grantor.getFatherName());
-				vo.setGuarantorsubDivision(grantor.getSubDivision());
 				vo.setGuarantorcircle(grantor.getCircle());
 				vo.setGuarantorpolicestation(grantor.getPolicestation());
 				vo.setCreatedDate(grantor.getCreatedDate());
@@ -429,6 +438,41 @@ public class PDRController {
 			vo.setPaidCourFee(newObjection.getPaidCourFee());
 			vo.setTotalDemand(newObjection.getTotalDemand());
 			vo.setFinancialYear(newObjection.getFinancialYear());
+			
+			try {
+			List<LegalRepersentativeVo> legalRepersentativelistvo = new ArrayList<>();
+
+			
+			List<LegalRepresentative> legalRepersentativelist = legalRepersentativeRepo.findByFileRequeistion(newObjection);
+
+			for (LegalRepresentative legalRepersentativeVo : legalRepersentativelist) {
+
+				LegalRepersentativeVo legalRepersentative = new LegalRepersentativeVo();
+
+				legalRepersentative.setLegaladdress(legalRepersentativeVo.getAddress());
+				legalRepersentative.setLegaladdress1(legalRepersentativeVo.getAddress1());
+				legalRepersentative.setLegaladdress2(legalRepersentativeVo.getAddress2());
+				legalRepersentative.setLegalapartmentNumber(legalRepersentativeVo.getApartmentNumber());
+				legalRepersentative.setLegalcircle(legalRepersentativeVo.getCircle());
+				legalRepersentative.setLegalcity(legalRepersentativeVo.getCity());
+				legalRepersentative.setLegaldistrict(legalRepersentativeVo.getDistrict());
+				legalRepersentative.setLegalemail(legalRepersentativeVo.getEmail());
+				legalRepersentative.setLegalfatherNames(legalRepersentativeVo.getFatherNames());
+				legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
+				legalRepersentative.setLegalphoneNumber(legalRepersentativeVo.getPhoneNumber());
+				legalRepersentative.setLegalpincode(legalRepersentativeVo.getPincode());
+				legalRepersentative.setLegalpolicestation(legalRepersentativeVo.getPolicestation());
+				legalRepersentative.setLegalstate(legalRepersentativeVo.getState());
+				legalRepersentative.setLegalsubDivision(legalRepersentativeVo.getSubDivision());
+				legalRepersentativelistvo.add(legalRepersentative);
+
+			}
+			
+			vo.setLegalRepersentativeVo(legalRepersentativelistvo);
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 
 			// Response mapping
 			ReqiestionResponnse response = new ReqiestionResponnse();
@@ -525,6 +569,11 @@ public class PDRController {
 					try {
 						FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(dto.getRequeistionId());
 						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
+						
+						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(newObjection);
+						CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+						dto.setDistrictName(certificateDebator.getDebatorName());
+						
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -1415,6 +1464,50 @@ public class PDRController {
 	
 	
 	
+	private final String FILE_STORAGE_PATH = "D:/Admin/PDR/User/%s/"; 
+
+
+	@PostMapping("/filecaseproceding")
+	public ResponseEntity<?> submitObjectionFile(
+	        @RequestParam("file") MultipartFile file,
+	        @RequestParam("caseId") String caseId,
+	        @RequestParam("documentName") String documentName) {
+
+	    try {
+	        Optional<CertificatOfficer> optionalOfficer = certificatOfficerRepo.findByCertOfficerId(caseId);
+	        if (!optionalOfficer.isPresent()) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Case not found: " + caseId);
+	        }
+
+	        CertificatOfficer officer = optionalOfficer.get();
+	        String userStoragePath = String.format(FILE_STORAGE_PATH, officer.getUserId().getUserId());
+
+	        File userDirectory = new File(userStoragePath);
+	        if (!userDirectory.exists()) {
+	            userDirectory.mkdirs();
+	        }
+
+	        String safeFileName = UUID.randomUUID() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+	        Path fullPath = Paths.get(userStoragePath, safeFileName);
+	        file.transferTo(fullPath.toFile());
+
+	        DocumentEntityPdr document = new DocumentEntityPdr();
+	        document.setDocumentName(documentName); // from request
+	        document.setFilePath(fullPath.toString());
+	        document.setFileType(file.getContentType());
+	        document.setFileSize(file.getSize());
+	        document.setUploadedDate(new Date());
+	        document.setFileRequeistion(officer.getFileRequeistion());
+
+	        documentPDRRepository.save(document);
+
+	        return ResponseEntity.ok("File uploaded successfully!");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error uploading file: " + e.getMessage());
+	    }
+	}
+
 	
 
 }

@@ -5,23 +5,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class CommisionaryMap {
-	
 	  @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
-	    private Long id;
+	  @Column(name="com_id")
+	    private Long comId;
 	  private String commisonary;
 	  private String distrct;
 	  private String state;
+	
 	  private String status;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+	  private String circle;
+	
 	public String getCommisonary() {
 		return commisonary;
 	}
@@ -48,10 +46,25 @@ public class CommisionaryMap {
 		this.state = state;
 	}
 	
+	
+	public Long getComId() {
+		return comId;
+	}
+	public void setComId(Long comId) {
+		this.comId = comId;
+	}
+	
+	public String getCircle() {
+		return circle;
+	}
+	public void setCircle(String circle) {
+		this.circle = circle;
+	}
+	
 	@Override
 	public String toString() {
-		return "CommisionaryMap [id=" + id + ", commisonary=" + commisonary + ", distrct=" + distrct + ", state="
-				+ state + ", status=" + status + "]";
+		return "CommisionaryMap [comId=" + comId + ", commisonary=" + commisonary + ", distrct=" + distrct + ", state="
+				+ state + ", status=" + status + ", circle=" + circle + "]";
 	}
 	public CommisionaryMap() {
 		super();
