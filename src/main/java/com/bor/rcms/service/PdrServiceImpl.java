@@ -81,7 +81,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 public class PdrServiceImpl implements PdrService {
 	@Autowired
 	private DocumentPDRRepository documentRepository;
-	private final String FILE_STORAGE_PATH = "C:/Admin/PDR/User/%s/"; 
+	private final String FILE_STORAGE_PATH = "D:/Admin/PDR/User/%s/"; 
 	
 	@Autowired
 	private CaseTransferPriviouseRecordRepo priviouseRecordRepo;

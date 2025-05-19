@@ -10,6 +10,7 @@ public class LoginResponse {
     private String fullName;
     private String userName;
     private String district;
+    private String divsion;
     private RoleEntity role;
 	public String getToken() {
 		return token;
@@ -59,12 +60,36 @@ public class LoginResponse {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getDivsion() {
+		return divsion;
+	}
+	public void setDivsion(String divsion) {
+		this.divsion = divsion;
+	}
 	@Override
 	public String toString() {
 		return "LoginResponse [msg=" + msg + ", status=" + status + ", token=" + token + ", userId=" + userId
-				+ ", fullName=" + fullName + ", userName=" + userName + ", district=" + district + ", role=" + role
-				+ "]";
+				+ ", fullName=" + fullName + ", userName=" + userName + ", district=" + district + ", divsion="
+				+ divsion + ", role=" + role + "]";
 	}
+	public LoginResponse(String msg, String status, String token, Long userId, String fullName, String userName,
+			String district, String divsion, RoleEntity role) {
+		super();
+		this.msg = msg;
+		this.status = status;
+		this.token = token;
+		this.userId = userId;
+		this.fullName = fullName;
+		this.userName = userName;
+		this.district = district;
+		this.divsion = divsion;
+		this.role = role;
+	}
+	public LoginResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	
 	
 	

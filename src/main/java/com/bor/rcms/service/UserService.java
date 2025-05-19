@@ -333,6 +333,8 @@ public class UserService {
 				loginResponse.setFullName(user.getFullName());
 				loginResponse.setUserId(user.getUserId());
 				loginResponse.setToken(token);
+				loginResponse.setDivsion(user.getCommisionary());
+
 				loginResponse.setRole(role);
 				return loginResponse;
 
@@ -378,6 +380,8 @@ public class UserService {
 		loginResponse.setDistrict(user.getDistrict());
 		loginResponse.setUserName(user.getUserName());
 		loginResponse.setToken(jwtUtil.generateToken(user.getPhoneNumber()));
+		loginResponse.setDivsion(user.getCommisionary());
+
 		return loginResponse;
 	}
 	// PDR
@@ -471,6 +475,7 @@ public class UserService {
 				loginResponse.setDistrict(user.getDistrict());
 				loginResponse.setFullName(user.getFullName());
 				loginResponse.setUserId(user.getUserId());
+				loginResponse.setDivsion(user.getCommisionary());
 				loginResponse.setToken(token);
 				loginResponse.setRole(role);
 				return loginResponse;
