@@ -295,6 +295,12 @@ public class PDRController {
 						FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(dto.getRequeistionId());
 						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
+						
+						
+						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(newObjection);
+						CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+						dto.setDebatorName(certificateDebator.getDebatorName());
+						
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -572,7 +578,7 @@ public class PDRController {
 						
 						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(newObjection);
 						CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
-						dto.setDistrictName(certificateDebator.getDebatorName());
+						dto.setDebatorName(certificateDebator.getDebatorName());
 						
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
 					} catch (Exception e) {
@@ -1423,6 +1429,19 @@ public class PDRController {
 	    }
 	}
 
+	
+	@PostMapping("fetchUserOnRecovery")
+	public ResponseEntity<?> fetchUserOnRecovery(@RequestParam String district) {
+	    try {
+	        List<UserEntity> entitiesList = repository.findUsersByDistrictAndRole(district);
+	        return ResponseEntity.ok(entitiesList);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch users.");
+	    }
+	}
+
+	
 	@PostMapping("recoveryammount")
 	public ResponseEntity<?> recoveryammount(@RequestBody RecoveryAmountVo recoveryAmountVo) {
 		StatusResponse<AddRecoveryAmmount> response = new StatusResponse<>();
