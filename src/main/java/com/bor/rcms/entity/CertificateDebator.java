@@ -1,5 +1,6 @@
 package com.bor.rcms.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,6 +46,18 @@ public class CertificateDebator {
 	    @JoinColumn(name = "requeistion_id")  // foreign key column
 	    @JsonIgnore
 	    private FileRequeistion requeistion;
+	    
+
+		@CreationTimestamp
+		@Column(updatable = false)
+		private LocalDateTime currentdate;
+
+		public LocalDateTime getCurrentdate() {
+			return currentdate;
+		}
+		public void setCurrentdate(LocalDateTime currentdate) {
+			this.currentdate = currentdate;
+		}
 		public Long getDebatorId() {
 			return debatorId;
 		}
@@ -176,7 +191,7 @@ public class CertificateDebator {
 					+ ", otp=" + otp + ", address1=" + address1 + ", address2=" + address2 + ", state=" + state
 					+ ", city=" + city + ", district=" + district + ", pincode=" + pincode + ", createdDate="
 					+ createdDate + ", modifiedDate=" + modifiedDate + ", status=" + status + ", requeistion="
-					+ requeistion + "]";
+					+ requeistion + ", currentdate=" + currentdate + "]";
 		}
 		
 		

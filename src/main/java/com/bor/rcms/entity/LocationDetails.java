@@ -1,5 +1,7 @@
 package com.bor.rcms.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +22,8 @@ public class LocationDetails {
     private String plotno;
     private String acre;
     private String dismil;
+	private Date createdDate;
+	private Date modifiedDate;
 	public Long getLocId() {
 		return locId;
 	}
@@ -80,25 +84,26 @@ public class LocationDetails {
 	public void setDismil(String dismil) {
 		this.dismil = dismil;
 	}
+	
+	
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	
 	@Override
 	public String toString() {
 		return "LocationDetails [locId=" + locId + ", state=" + state + ", district=" + district + ", circle=" + circle
 				+ ", halka=" + halka + ", mauja=" + mauja + ", khatano=" + khatano + ", plotno=" + plotno + ", acre="
-				+ acre + ", dismil=" + dismil + "]";
-	}
-	public LocationDetails(Long locId, String state, String district, String circle, String halka, String mauja,
-			String khatano, String plotno, String acre, String dismil) {
-		super();
-		this.locId = locId;
-		this.state = state;
-		this.district = district;
-		this.circle = circle;
-		this.halka = halka;
-		this.mauja = mauja;
-		this.khatano = khatano;
-		this.plotno = plotno;
-		this.acre = acre;
-		this.dismil = dismil;
+				+ acre + ", dismil=" + dismil + ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate + "]";
 	}
 	public LocationDetails() {
 		super();
