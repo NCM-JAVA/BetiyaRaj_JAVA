@@ -9,7 +9,7 @@ public class CauseListResponse {
 
 	private String sector;
 
-	private double demandAmount;
+	private String demandAmount;
 
 	private String action;
 	private String filingDate;
@@ -31,16 +31,19 @@ public class CauseListResponse {
 	public String getDebtorName() {
 		return debtorName;
 	}
+	public void setDebtorName(String debtorName) {
+		this.debtorName = debtorName;
+	}
 	public String getSector() {
 		return sector;
 	}
 	public void setSector(String sector) {
 		this.sector = sector;
 	}
-	public double getDemandAmount() {
+	public String getDemandAmount() {
 		return demandAmount;
 	}
-	public void setDemandAmount(double demandAmount) {
+	public void setDemandAmount(String demandAmount) {
 		this.demandAmount = demandAmount;
 	}
 	public String getAction() {
@@ -67,19 +70,14 @@ public class CauseListResponse {
 	public void setHearingtime(String hearingtime) {
 		this.hearingtime = hearingtime;
 	}
-	public void setDebtorName(String debtorName) {
-		this.debtorName = debtorName;
-	}
 	@Override
 	public String toString() {
 		return "CauseListResponse [caseId=" + caseId + ", holderName=" + holderName + ", debtorName=" + debtorName
 				+ ", sector=" + sector + ", demandAmount=" + demandAmount + ", action=" + action + ", filingDate="
 				+ filingDate + ", hearingDate=" + hearingDate + ", hearingtime=" + hearingtime + "]";
 	}
-	public CauseListResponse() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+
+	
 	
 
 
