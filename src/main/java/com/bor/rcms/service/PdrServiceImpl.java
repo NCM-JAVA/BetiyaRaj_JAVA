@@ -1310,9 +1310,13 @@ public class PdrServiceImpl implements PdrService {
 			e.printStackTrace();
 		}
 		if (entity != null) {
+			
+			List<FileRequeistion> fileRequeistion = findAllByuserId(userId);
+			
+			
+
 			List<CertificatOfficer> certificatOfficers = certificatOfficerRepo.findAllByuserId(entity);
 
-			List<FileRequeistion> fileRequeistion = findAllByuserId(userId);
 
 			for (CertificatOfficer certificatOfficer2 : certificatOfficers) {
 				CaseRecodeRes reqrusitionStatus2 = new CaseRecodeRes();
@@ -1623,12 +1627,16 @@ public class PdrServiceImpl implements PdrService {
 
 			UserEntity user = userRepository.findById(Long.valueOf(recoveryAmountVo.getUserId()))
 					.orElseThrow(() -> new RuntimeException("User not found"));
+			
+			UserEntity user2 = userRepository.findById(Long.valueOf(recoveryAmountVo.getCreatedByuser()))
+					.orElseThrow(() -> new RuntimeException("User not found"));
+
 
 			AddRecoveryAmmount recoveramount = new AddRecoveryAmmount();
 			BeanUtils.copyProperties(recoveramount, recoveryAmountVo);
 			recoveramount.setCreatedDate(formattedDateTime);
 			recoveramount.setUserId(user);
-			recoveramount.setCreatedByuser(String.valueOf(user.getUserId()));
+			recoveramount.setCreatedByuser(String.valueOf(user2.getUserId()));
 
 			AddRecoveryAmmount savedata = addRecoveryAmmountRepo.save(recoveramount);
 

@@ -29,4 +29,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	    List<UserEntity> findByOptionalFields(@Param("bank") String bank,
 	                                          @Param("branchCode") String branchCode,
 	                                          @Param("sector") String sector,
-	                                          @Param("department") String department);}
+	                                          @Param("department") String department);
+
+	 
+	 @Query(
+			    value = "SELECT * FROM users u WHERE LOWER(u.district) LIKE LOWER(CONCAT('%', :district, '%')) AND u.role_id IN (1, 2)",
+			    nativeQuery = true
+			)
+			List<UserEntity> findUsersByDistrictAndRole(@Param("district") String district);
+
+}
