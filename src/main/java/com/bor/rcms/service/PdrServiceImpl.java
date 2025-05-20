@@ -383,7 +383,13 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public List<FileRequeistion> findpending(String district) {
-		return fileRequeistionRepo.findAllPending(district);
+		
+		List<FileRequeistion> fileRequeistions=new ArrayList<>();
+		
+		fileRequeistions=fileRequeistionRepo.findAllPending(district);
+	//	return fileRequeistionRepo.findBy
+				//findAllPending(district);
+		return  fileRequeistions;
 
 	}
 
@@ -1220,6 +1226,12 @@ public class PdrServiceImpl implements PdrService {
 					reqrusitionStatus2.setAction(certificatOfficer.getAction());
 					reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
 					reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+					reqrusitionStatus2.setClasse(certificatOfficer.getCaseClass());
+					
+					List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
+					CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+					reqrusitionStatus2.setDefaulterName(certificateDebator.getDebatorName());
+					
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -1227,9 +1239,8 @@ public class PdrServiceImpl implements PdrService {
 				}
 				reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 				reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-				reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-				reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
-				reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
+				reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+				reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 
 				reqrusitionStatuslist.add(reqrusitionStatus2);
 			}
@@ -1339,8 +1350,8 @@ public class PdrServiceImpl implements PdrService {
 					reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
 					reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 					reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-					reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-					reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+					reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+					reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 
 					try {
 						List<CertificateDebator> certificateDebatorlist = certificatDebatorRepo
@@ -1388,8 +1399,8 @@ public class PdrServiceImpl implements PdrService {
 						reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
 						reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 						reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-						reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-						reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+						reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+						reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 						reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
 
 						reqrusitionStatuslist.add(reqrusitionStatus2);

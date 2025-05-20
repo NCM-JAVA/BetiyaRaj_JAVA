@@ -82,6 +82,7 @@ import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.service.CourtFeeService;
 import com.bor.rcms.service.PdrService;
 import com.bor.rcms.service.UserService;
+import com.bor.rcms.utils.RecrusitionCopyData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -122,6 +123,10 @@ public class PDRController {
 	
 	@Autowired
 	private AddRecoveryAmmountRepo addRecoveryAmmountRepo;
+	
+	
+	@Autowired 
+	private  RecrusitionCopyData recrusitionCopyData;
 
 	@GetMapping("/Hello")
 	public String HelloApi() {
@@ -131,17 +136,14 @@ public class PDRController {
 	@PostMapping("/findemail")
 	public ResponseEntity<?> findMobileNumber(@RequestBody Map<String, String> request) {
 		try {
-			String email = request.get("email"); // Extract phone number from the request body
+			String email = request.get("email");
 			UserEntity entity = repository.findByEmail(email);
 
 			if (entity != null) {
-				// Return a JSON response
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Try another email");
 
-				// return ResponseEntity.ok(Map.of("message", "Try another email"));
 			} else {
-				// Return a JSON response
 				return ResponseEntity.ok(Map.of("message", "email number is available"));
 			}
 
@@ -157,131 +159,35 @@ public class PDRController {
 			@RequestPart(value = "documentTypes", required = false) String documentTypes,
 			@RequestPart("username") String username) {
 		try {
-			// Debugging the received inputs
 			System.out.println("Received objection JSON: " + requiestion);
 			System.out.println("Received username: " + username);
 			System.out.println("Number of files: " + (files != null ? files.length : 0));
 
-			// Convert the JSON string to ObjectionEntity
 			ObjectMapper objectMapper = new ObjectMapper();
 			FileRequeistionVo vo = objectMapper.readValue(requiestion, FileRequeistionVo.class);
+			// List<CertificateDebator> debatorlist = new ArrayList<CertificateDebator>();
 
-			List<CertificateDebator> debatorlist = new ArrayList<CertificateDebator>();
-
-			for (DebatorVo debatorVo : vo.getDebatorVos()) {
-				CertificateDebator debator = new CertificateDebator();
-				debator.setDebatorName(debatorVo.getDebtorName());
-				debator.setAddress(debatorVo.getDebtorAddress());
-				debator.setEmail(debatorVo.getDebtorEmail());
-				debator.setPhoneNumber(debatorVo.getDebtorPhoneNumber());
-				debator.setAddress1(debatorVo.getDebtorAddress1());
-
-				debator.setState(debatorVo.getDebtorState());
-				debator.setCity(debatorVo.getDebtorCity());
-				debator.setDistrict(debatorVo.getDebtorDistrict());
-
-				debator.setPolicestation(debatorVo.getDebtorpolicestation());
-				debator.setCircle(debatorVo.getCircle());
-				debator.setFatherNames(debatorVo.getDebtorfatherNames());
-				debator.setSubDivision(debatorVo.getDebtorubDivision());
-
-				debator.setPincode(debatorVo.getDebtorPincode());
-				debatorlist.add(debator);
-
-			}
-
-			/// end Legal
-
-			List<LegalRepresentative> legalRepersentativelist = new ArrayList<LegalRepresentative>();
-
-			for (LegalRepersentativeVo legalRepersentativeVo : vo.getLegalRepersentativeVo()) {
-
-				LegalRepresentative legalRepersentative = new LegalRepresentative();
-
-				legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress());
-				legalRepersentative.setAddress(legalRepersentativeVo.getLegaladdress1());
-				legalRepersentative.setAddress2(legalRepersentativeVo.getLegaladdress2());
-				legalRepersentative.setApartmentNumber(legalRepersentativeVo.getLegalapartmentNumber());
-				legalRepersentative.setCircle(legalRepersentativeVo.getLegalcircle());
-				legalRepersentative.setCity(legalRepersentativeVo.getLegalcity());
-				legalRepersentative.setDistrict(legalRepersentativeVo.getLegaldistrict());
-				legalRepersentative.setEmail(legalRepersentativeVo.getLegalemail());
-				legalRepersentative.setFatherNames(legalRepersentativeVo.getLegalfatherNames());
-				legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
-				legalRepersentative.setPhoneNumber(legalRepersentativeVo.getLegalphoneNumber());
-				legalRepersentative.setPincode(legalRepersentativeVo.getLegalpincode());
-				legalRepersentative.setPolicestation(legalRepersentativeVo.getLegalpolicestation());
-				legalRepersentative.setState(legalRepersentativeVo.getLegalstate());
-				legalRepersentative.setSubDivision(legalRepersentativeVo.getLegalsubDivision());
-				legalRepersentativelist.add(legalRepersentative);
-
-			}
-
-			/// end Legal
-
-			// Set up Granter
-			CertificateGuaranter granter = new CertificateGuaranter();
-			granter.setGranterName(vo.getGuarantorName());
-
-			granter.setPolicestation(vo.getGuarantorpolicestation());
-			granter.setCircle(vo.getGuarantorcircle());
-			granter.setFatherName(vo.getGuarantorfatherNames());
-			granter.setSubDivision(vo.getGuarantorsubDivision());
-			granter.setAddress(vo.getGuarantorAddress());
-			granter.setEmail(vo.getGuarantorEmail());
-			granter.setPhoneNumber(vo.getGuarantorPhoneNumber());
-			granter.setAddress1(vo.getGuarantorAddress1());
-			granter.setState(vo.getGuarantorState());
-			granter.setCity(vo.getGuarantorCity());
-			granter.setDistrict(vo.getGuarantorDistrict());
-			granter.setPincode(vo.getGuarantorPincode());
-
+			List<CertificateDebator> debatorlist = recrusitionCopyData.debtorCopyfilereq(vo.getDebatorVos());
+			List<LegalRepresentative> legalRepersentativelist = recrusitionCopyData
+					.legalCopyfilereq(vo.getLegalRepersentativeVo());
+			CertificateGuaranter granter = recrusitionCopyData.granterCopyfilereq(vo);
 			// Set up FileRequeistion
-			FileRequeistion requisition = new FileRequeistion();
+			FileRequeistion requisition = recrusitionCopyData.reqrisitionCopyfilereq(vo);
 			requisition.setCertificateDebator(debatorlist);
 			requisition.setLegalRepresentative(legalRepersentativelist);
 			requisition.setCertificateGuaranter(granter);
-			requisition.setFinancialYear(vo.getFinancialYear());
-			requisition.setReason(vo.getreason());
-
-			requisition.setInterestDueForm(vo.getInterestDueForm());
-			requisition.setMissllenousFee(vo.getMissllenousFee());
-			requisition.setPaidCourFee(vo.getPaidCourFee());
-			requisition.setTotalCourtFee(vo.getTotalCourtFee());
-			requisition.setTotalDemand(vo.getTotalDemand());
-			requisition.setTotalInterestRate(vo.getTotalInterestRate());
-			requisition.setTotalOutstandingAmmount(vo.getTotalOutstandingAmmount());
-
-			requisition.setFinancialYear("2024-25"); // Example - adjust as needed
-
+			requisition.setFinancialYear("2024-25"); 
 			UserEntity user = new UserEntity();
 			user = userService.getUserById(Long.valueOf(vo.getUserId()));
 			requisition.setUserId(user);
 			username = String.valueOf(user.getUserId());
-			// NewObjection objection = objectionService.savedata(entity);
-
-			// Call the service to handle the objection and files
 			String objectionId = pdrService.submitRequisition(requisition, files, username, documentTypes);
 			return ResponseEntity.ok(objectionId);
-
-			//
-
-			// Get user from service
-//		        UserEntity user = userService.getUserByUsername(username);
-//		        requisition.setUserId(user);
-//
-//			// Call the service to handle the objection and files
-//			String objectionId = objectionService.submitObjection(entity, files, username,documentTypes);
-
-			// Respond with the objectionId after submission
-			// return ResponseEntity.ok(Collections.singletonMap("objectionId",
-			// objectionId));
 		} catch (Exception e) {
-			e.printStackTrace(); // Log the full exception for debugging
+			e.printStackTrace(); 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
 		}
 	}
-	
 
 	@GetMapping("/getrequiestion")
 	public ResponseEntity<?> getObjections(@RequestParam String district) {
@@ -291,35 +197,18 @@ public class PDRController {
 			if (!fileRequeistions.isEmpty()) {
 				List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
+					dto.setRequeistionId(req.getRequeistionId());
 					try {
 						FileRequeistion newObjection = (FileRequeistion) pdrService.findbyId(dto.getRequeistionId());
-						CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
-						dto.setCaseId(certificatOfficer.getCertOfficerId());
-						
-						
 						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(newObjection);
 						CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
 						dto.setDebatorName(certificateDebator.getDebatorName());
-						
+						dto.setSector(newObjection.getUserId().getSector());
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
-					dto.setRequeistionId(req.getRequeistionId());
-
-					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
-					dto.setTotalInterestRate(req.getTotalInterestRate());
-					dto.setInterestDueForm(req.getInterestDueForm());
-					dto.setTotalCourtFee(req.getTotalCourtFee());
-					dto.setMissllenousFee(req.getMissllenousFee());
-					dto.setPaidCourFee(req.getPaidCourFee());
-					dto.setTotalDemand(req.getTotalDemand());
-					dto.setFinancialYear(req.getFinancialYear());
-					dto.setDistrictName(req.getDistrictName());
-					dto.setCurrentDate(req.getCurrentDate());
-					dto.setUpdateDate(req.getUpdateDate());
-					dto.setStatus(req.getStatus());
-
+				    BeanUtils.copyProperties(req, dto);
 					dto.setReason(req.getReason());
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
@@ -328,8 +217,7 @@ public class PDRController {
 				}).collect(Collectors.toList());
 
 				ReqiestionResponnse response = new ReqiestionResponnse();
-
-				response.setListfileRequeistion(dtoList);
+         		response.setListfileRequeistion(dtoList);
 				response.setStatus("200");
 				response.setMsg("Success");
 
@@ -352,146 +240,59 @@ public class PDRController {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND)
 						.body("No data found for requisition ID: " + recuisition);
 			}
-
-			// FileRequeistionDTO
 			FileRequeistionDTO dto = new FileRequeistionDTO();
 			dto.setRequeistionId(newObjection.getRequeistionId());
-
 			try {
 				CertificatOfficer certificatOfficer = certificatOfficerRepo.findByFileRequeistion(newObjection);
-
 				dto.setCaseId(certificatOfficer.getCertOfficerId());
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-			dto.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
-			dto.setTotalInterestRate(newObjection.getTotalInterestRate());
-			dto.setInterestDueForm(newObjection.getInterestDueForm());
-			dto.setTotalCourtFee(newObjection.getTotalCourtFee());
-			dto.setMissllenousFee(newObjection.getMissllenousFee());
-			dto.setPaidCourFee(newObjection.getPaidCourFee());
-			dto.setTotalDemand(newObjection.getTotalDemand());
-			dto.setFinancialYear(newObjection.getFinancialYear());
-			dto.setDistrictName(newObjection.getDistrictName());
-			dto.setCurrentDate(newObjection.getCurrentDate());
-			dto.setUpdateDate(newObjection.getUpdateDate());
-			dto.setStatus(newObjection.getStatus());
-			dto.setReason(newObjection.getReason());
-
+			BeanUtils.copyProperties(newObjection, dto);
 			if (newObjection.getUserId() != null) {
 				dto.setUserName(newObjection.getUserId().getFullName());
 			}
-
-			// FileRequeistionVo mapping (Guarantor + Debtors)
 			FileRequeistionVo vo = new FileRequeistionVo();
-
-			// Guarantor
 			CertificateGuaranter grantor = newObjection.getCertificateGuaranter();
 			if (grantor != null) {
-				vo.setGuarantorName(grantor.getGranterName());
-				vo.setGuarantorAddress(grantor.getAddress());
-				vo.setGuarantorAddress1(grantor.getAddress1());
-				vo.setGuarantorAddress2(grantor.getAddress2());
-				vo.setGuarantorState(grantor.getState());
-				vo.setGuarantorCity(grantor.getCity());
-				vo.setGuarantorDistrict(grantor.getDistrict());
-				vo.setGuarantorPincode(grantor.getPincode());
-				vo.setGuarantorPhoneNumber(grantor.getPhoneNumber());
-				// vo.setGuarantorStatePhoneNumber(g.get);
-				vo.setGuarantorEmail(grantor.getEmail());
-				vo.setGuarantorfatherNames(grantor.getFatherName());
-				vo.setGuarantorcircle(grantor.getCircle());
-				vo.setGuarantorpolicestation(grantor.getPolicestation());
-				vo.setCreatedDate(grantor.getCreatedDate());
-				vo.setModifiedDate(grantor.getModifiedDate());
+				vo = recrusitionCopyData.granterviewCopyfilereq(grantor);
 			}
 
-			// Debtors
 			List<DebatorVo> debatorVoList = new ArrayList<>();
 			if (newObjection.getCertificateDebator() != null) {
 				for (CertificateDebator debator : newObjection.getCertificateDebator()) {
-					DebatorVo dvo = new DebatorVo();
-					dvo.setDebtorName(debator.getDebatorName());
-					dvo.setDebtorAddress(debator.getAddress());
-					dvo.setDebtorAddress1(debator.getAddress1());
-					dvo.setDebtorAddress2(debator.getAddress2());
-					dvo.setDebtorState(debator.getState());
-					dvo.setDebtorCity(debator.getCity());
-					dvo.setDebtorDistrict(debator.getDistrict());
-					dvo.setDebtorPincode(debator.getPincode());
-					dvo.setDebtorPhoneNumber(debator.getPhoneNumber());
-					dvo.setDebtorStatePhoneNumber(debator.getState()); // Check if this is correct
-					dvo.setDebtorEmail(debator.getEmail());
-					dvo.setDebtorfatherNames(debator.getFatherNames());
-					dvo.setDebtorubDivision(debator.getSubDivision());
-					dvo.setDebtorcircle(debator.getCircle());
-					dvo.setDebtorpolicestation(debator.getPolicestation());
-					dvo.setCircle(debator.getCircle());
-					
+					DebatorVo dvo = recrusitionCopyData.viewDebtor(debator);
 					debatorVoList.add(dvo);
 				}
 			}
-
 			vo.setDebatorVos(debatorVoList);
+			BeanUtils.copyProperties(newObjection, vo);
 
-			// Set common financial fields in vo too
-			vo.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
-			vo.setTotalInterestRate(newObjection.getTotalInterestRate());
-			vo.setInterestDueForm(newObjection.getInterestDueForm());
-			vo.setTotalCourtFee(newObjection.getTotalCourtFee());
-			vo.setMissllenousFee(newObjection.getMissllenousFee());
-			vo.setPaidCourFee(newObjection.getPaidCourFee());
-			vo.setTotalDemand(newObjection.getTotalDemand());
-			vo.setFinancialYear(newObjection.getFinancialYear());
-			
 			try {
-			List<LegalRepersentativeVo> legalRepersentativelistvo = new ArrayList<>();
+				List<LegalRepersentativeVo> legalRepersentativelistvo = new ArrayList<>();
 
-			
-			List<LegalRepresentative> legalRepersentativelist = legalRepersentativeRepo.findByFileRequeistion(newObjection);
-
-			for (LegalRepresentative legalRepersentativeVo : legalRepersentativelist) {
-
-				LegalRepersentativeVo legalRepersentative = new LegalRepersentativeVo();
-
-				legalRepersentative.setLegaladdress(legalRepersentativeVo.getAddress());
-				legalRepersentative.setLegaladdress1(legalRepersentativeVo.getAddress1());
-				legalRepersentative.setLegaladdress2(legalRepersentativeVo.getAddress2());
-				legalRepersentative.setLegalapartmentNumber(legalRepersentativeVo.getApartmentNumber());
-				legalRepersentative.setLegalcircle(legalRepersentativeVo.getCircle());
-				legalRepersentative.setLegalcity(legalRepersentativeVo.getCity());
-				legalRepersentative.setLegaldistrict(legalRepersentativeVo.getDistrict());
-				legalRepersentative.setLegalemail(legalRepersentativeVo.getEmail());
-				legalRepersentative.setLegalfatherNames(legalRepersentativeVo.getFatherNames());
-				legalRepersentative.setLegalName(legalRepersentativeVo.getLegalName());
-				legalRepersentative.setLegalphoneNumber(legalRepersentativeVo.getPhoneNumber());
-				legalRepersentative.setLegalpincode(legalRepersentativeVo.getPincode());
-				legalRepersentative.setLegalpolicestation(legalRepersentativeVo.getPolicestation());
-				legalRepersentative.setLegalstate(legalRepersentativeVo.getState());
-				legalRepersentative.setLegalsubDivision(legalRepersentativeVo.getSubDivision());
-				legalRepersentativelistvo.add(legalRepersentative);
-
-			}
-			
-			vo.setLegalRepersentativeVo(legalRepersentativelistvo);
-			}catch (Exception e) {
+				List<LegalRepresentative> legalRepersentativelist = legalRepersentativeRepo
+						.findByFileRequeistion(newObjection);
+				for (LegalRepresentative legalRepersentativeVo : legalRepersentativelist) {
+					LegalRepersentativeVo legalRepersentative = recrusitionCopyData.viewlegal(legalRepersentativeVo);
+					legalRepersentativelistvo.add(legalRepersentative);
+				}
+				vo.setLegalRepersentativeVo(legalRepersentativelistvo);
+			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-
-			// Response mapping
 			ReqiestionResponnse response = new ReqiestionResponnse();
 
-			// Map DocumentEntityPdr to DocumentDTO
 			List<DocumentDTO> documentDTOs = newObjection.getDocuments().stream().map(doc -> {
 				DocumentDTO docDto = new DocumentDTO();
 				docDto.setId(doc.getId());
-				docDto.setDocumentName(doc.getDocumentName()); // Assuming fileName holds documentName
-				docDto.setFilePath(doc.getFilePath()); // Assuming this exists in DocumentEntityPdr
-				docDto.setFileType(doc.getFileType()); // Assuming this exists
-				docDto.setFileSize(doc.getFileSize()); // Assuming this exists
-				docDto.setDocumentType(recuisition); // If this is meant to be a label or ID
+				docDto.setDocumentName(doc.getDocumentName()); // 
+				docDto.setFilePath(doc.getFilePath()); 
+				docDto.setFileType(doc.getFileType()); 
+				docDto.setFileSize(doc.getFileSize()); 
+				docDto.setDocumentType(recuisition); 
 				return docDto;
 			}).collect(Collectors.toList());
 
@@ -585,21 +386,10 @@ public class PDRController {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
-					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
-					dto.setTotalInterestRate(req.getTotalInterestRate());
-					dto.setInterestDueForm(req.getInterestDueForm());
-					dto.setTotalCourtFee(req.getTotalCourtFee());
-					dto.setMissllenousFee(req.getMissllenousFee());
-					dto.setPaidCourFee(req.getPaidCourFee());
-					dto.setTotalDemand(req.getTotalDemand());
-					dto.setFinancialYear(req.getFinancialYear());
-					dto.setDistrictName(req.getDistrictName());
-					dto.setCurrentDate(req.getCurrentDate());
-					dto.setUpdateDate(req.getUpdateDate());
-					dto.setStatus(req.getStatus());
-					dto.setReason(req.getReason());
+					BeanUtils.copyProperties(req, dto); 
+
 					if (req.getUserId() != null) {
-						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
+						dto.setUserName(req.getUserId().getFullName()); 
 					}
 					return dto;
 				}).collect(Collectors.toList());
@@ -774,21 +564,9 @@ public class PDRController {
 			}
 			if (!fileRequeistions.isEmpty()) {
 				List<FileRequeistionDTO> dtoList = fileRequeistions.stream().map(req -> {
+					
 					FileRequeistionDTO dto = new FileRequeistionDTO();
-					dto.setRequeistionId(req.getRequeistionId());
-					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
-					dto.setTotalInterestRate(req.getTotalInterestRate());
-					dto.setInterestDueForm(req.getInterestDueForm());
-					dto.setTotalCourtFee(req.getTotalCourtFee());
-					dto.setMissllenousFee(req.getMissllenousFee());
-					dto.setPaidCourFee(req.getPaidCourFee());
-					dto.setTotalDemand(req.getTotalDemand());
-					dto.setFinancialYear(req.getFinancialYear());
-					dto.setDistrictName(req.getDistrictName());
-					dto.setCurrentDate(req.getCurrentDate());
-					dto.setUpdateDate(req.getUpdateDate());
-					dto.setStatus(req.getStatus());
-					dto.setReason(req.getReason());
+					BeanUtils.copyProperties(req, dto); 
 					
 					try {
 						CertificatOfficer  certificatOfficer=certificatOfficerRepo.findByFileRequeistion(req);
@@ -841,7 +619,14 @@ public class PDRController {
 					dto.setRequeistionId(req.getRequeistionId());
 					
 					try {
-						dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
+						dto.setTotalOutstandingAmmount(String.valueOf(req.getTotalOutstandingAmmount()));
+						
+						dto.setTotalInterestRate(String.valueOf(req.getTotalInterestRate()));
+						dto.setMissllenousFee(String.valueOf(req.getMissllenousFee()));
+						dto.setPaidCourFee(String.valueOf(req.getPaidCourFee()));
+						dto.setTotalCourtFee(String.valueOf( req.getTotalCourtFee()));
+						dto.setTotalDemand(String.valueOf( req.getTotalDemand()));
+						
 						FileRequeistion fileRequeistion=fileRequeistionRepo.findByRequeistionId(dto.getRequeistionId()).get();
 						List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion);
 						CertificateDebator certificateDebator=certificateDebatorlist.get(0);
@@ -852,19 +637,9 @@ public class PDRController {
 						// TODO: handle exception
 					}
 					
-					dto.setTotalOutstandingAmmount(req.getTotalOutstandingAmmount());
-					dto.setTotalInterestRate(req.getTotalInterestRate());
-					dto.setInterestDueForm(req.getInterestDueForm());
-					dto.setTotalCourtFee(req.getTotalCourtFee());
-					dto.setMissllenousFee(req.getMissllenousFee());
-					dto.setPaidCourFee(req.getPaidCourFee());
-					dto.setTotalDemand(req.getTotalDemand());
-					dto.setFinancialYear(req.getFinancialYear());
-					dto.setDistrictName(req.getDistrictName());
-					dto.setCurrentDate(req.getCurrentDate());
-					dto.setUpdateDate(req.getUpdateDate());
-					dto.setStatus(req.getStatus());
-					dto.setReason(req.getReason());
+					
+					BeanUtils.copyProperties(req, dto); // ✅ simple one-liner mapping
+					
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
 					}
@@ -956,6 +731,7 @@ public class PDRController {
 					FileRequeistionDTO dto = new FileRequeistionDTO();
 					BeanUtils.copyProperties(fileRequeistion, dto); // ✅ simple one-liner mapping
 
+					
 					// Set userName manually since it's a nested object
 					if (fileRequeistion.getUserId() != null) {
 						dto.setUserName(fileRequeistion.getUserId().getUserName());
@@ -1285,6 +1061,9 @@ public class PDRController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 	
+	//commisioner
+	
+	
 	//BOR
 	
 	@PostMapping("addcommisionary")
@@ -1493,6 +1272,9 @@ public class PDRController {
 	        @RequestParam("documentName") String documentName) {
 
 	    try {
+	    	
+	    	
+	    	
 	        Optional<CertificatOfficer> optionalOfficer = certificatOfficerRepo.findByCertOfficerId(caseId);
 	        if (!optionalOfficer.isPresent()) {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Case not found: " + caseId);
@@ -1527,6 +1309,7 @@ public class PDRController {
 	    }
 	}
 
+	
 	
 
 }
