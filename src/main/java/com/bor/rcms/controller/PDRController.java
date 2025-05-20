@@ -58,6 +58,7 @@ import com.bor.rcms.entity.CaseNotesPdr;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
 import com.bor.rcms.entity.CertificateGuaranter;
+import com.bor.rcms.entity.CommisionaryMap;
 import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
@@ -65,11 +66,13 @@ import com.bor.rcms.entity.DraftSaveCaseProceeding;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.entity.LegalRepresentative;
 import com.bor.rcms.entity.NewObjection;
+import com.bor.rcms.entity.PoliceStation;
 import com.bor.rcms.entity.UserEntity;
 import com.bor.rcms.repository.AddRecoveryAmmountRepo;
 import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
+import com.bor.rcms.repository.CommisionaryMapRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.UserRepository;
@@ -94,8 +97,7 @@ public class PDRController {
 	
 	@Autowired
     private  CourtFeeService courtFeeService;
-
-
+   
 	@Autowired
 	private CertificatDebatorRepo certificatDebatorRepo;
 
@@ -1526,7 +1528,48 @@ public class PDRController {
 	                .body("Error uploading file: " + e.getMessage());
 	    }
 	}
-
 	
+@GetMapping("/allDistric")
+  public  ResponseEntity<?> getalldistic(@RequestParam String distrct  ) {
+	System.out.println("district===>"+distrct);
+	try {
+		List<CommisionaryMap>	result=pdrService.getalldistic(distrct);
+		System.out.println("district===>"+result);
+		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+	} catch (Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
+//
+//	}
+//	
+//List<CommisionaryMap>	result=pdrService.getalldistic(distrct);
+//System.out.println("district===>"+result);
+//
+//	return null;
+// 
+}}
+
+@GetMapping("/policestation")
+public ResponseEntity<?> getpolice(@RequestParam Long comId){
+	try {
+		List<?> result1 = pdrService.getpolice(comId);
+		   System.out.println("district===>"+result1);
+
+		return new ResponseEntity<>(result1,HttpStatus.ACCEPTED);
+		   
+		   //return ResponseEntity.ok("Success");
+		
+	} catch (Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
+	}
+	
+}
+
+
+
+
+
+
+
+
 
 }
