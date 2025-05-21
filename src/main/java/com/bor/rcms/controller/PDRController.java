@@ -78,6 +78,7 @@ import com.bor.rcms.resonse.CaseRecodeRes;
 import com.bor.rcms.resonse.CauseListResponse;
 import com.bor.rcms.resonse.ReqiestionResponnse;
 import com.bor.rcms.resonse.ReqrusitionStatus;
+import com.bor.rcms.resonse.ResponseSet;
 import com.bor.rcms.response.StatusRes;
 import com.bor.rcms.response.StatusResponse;
 import com.bor.rcms.service.CourtFeeService;
@@ -1369,15 +1370,16 @@ public ResponseEntity<?> getpolice(@RequestParam Long com_Id){
 public ResponseEntity<?> getdistic(@RequestParam Long com_Id){
 	try {
 		List<?> result1 = pdrService.getpolice(com_Id);
-		   System.out.println("district===>"+result1);
+		if (result1 == null || result1.isEmpty()) {
+	       
+		return ResponseSet.generateResponse("No Data found: ", HttpStatus.NOT_FOUND, result1);
+		}	   
+		return ResponseSet.generateResponse("successfull ", HttpStatus.ACCEPTED, result1);
 
-		return new ResponseEntity<>(result1,HttpStatus.ACCEPTED);
-		   
-		   //return ResponseEntity.ok("Success");
-		
 	} catch (Exception e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
 	}
-}
+	
 
+}
 }
