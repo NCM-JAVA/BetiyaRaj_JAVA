@@ -24,19 +24,17 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name="file_requeistion")
 public class FileRequeistion {
-	
-
 	@Id
 	@Column(name="requeistion_id")
 	private String requeistionId;
 	 
-	  private String totalOutstandingAmmount;
-	  private String totalInterestRate;
+	  private double totalOutstandingAmmount;
+	  private double totalInterestRate;
 	  private String interestDueForm;
-	  private String totalCourtFee;
-	  private String missllenousFee;
-	  private String paidCourFee;
-	  private String totalDemand;
+	  private double totalCourtFee;
+	  private double missllenousFee;
+	  private double paidCourFee;
+	  private double totalDemand;
 	  private String financialYear;
       private String districtName;
 
@@ -98,7 +96,6 @@ public class FileRequeistion {
 	  @Column(columnDefinition = "boolean default false")
 	  private Boolean isTransBOR = false;
 	  
-	  
 	public Boolean getIsTransOfficer() {
 		return isTransOfficer;
 	}
@@ -119,16 +116,6 @@ public class FileRequeistion {
 	}
 
 
-	public Boolean getIsTransBOR() {
-		return isTransBOR;
-	}
-
-
-	public void setIsTransBOR(Boolean isTransBOR) {
-		this.isTransBOR = isTransBOR;
-	}
-
-
 	public String getRequeistionId() {
 		return requeistionId;
 	}
@@ -139,22 +126,22 @@ public class FileRequeistion {
 	}
 
 
-	public String getTotalOutstandingAmmount() {
+	public double getTotalOutstandingAmmount() {
 		return totalOutstandingAmmount;
 	}
 
 
-	public void setTotalOutstandingAmmount(String totalOutstandingAmmount) {
+	public void setTotalOutstandingAmmount(double totalOutstandingAmmount) {
 		this.totalOutstandingAmmount = totalOutstandingAmmount;
 	}
 
 
-	public String getTotalInterestRate() {
+	public double getTotalInterestRate() {
 		return totalInterestRate;
 	}
 
 
-	public void setTotalInterestRate(String totalInterestRate) {
+	public void setTotalInterestRate(double totalInterestRate) {
 		this.totalInterestRate = totalInterestRate;
 	}
 
@@ -169,42 +156,42 @@ public class FileRequeistion {
 	}
 
 
-	public String getTotalCourtFee() {
+	public double getTotalCourtFee() {
 		return totalCourtFee;
 	}
 
 
-	public void setTotalCourtFee(String totalCourtFee) {
+	public void setTotalCourtFee(double totalCourtFee) {
 		this.totalCourtFee = totalCourtFee;
 	}
 
 
-	public String getMissllenousFee() {
+	public double getMissllenousFee() {
 		return missllenousFee;
 	}
 
 
-	public void setMissllenousFee(String missllenousFee) {
+	public void setMissllenousFee(double missllenousFee) {
 		this.missllenousFee = missllenousFee;
 	}
 
 
-	public String getPaidCourFee() {
+	public double getPaidCourFee() {
 		return paidCourFee;
 	}
 
 
-	public void setPaidCourFee(String paidCourFee) {
+	public void setPaidCourFee(double paidCourFee) {
 		this.paidCourFee = paidCourFee;
 	}
 
 
-	public String getTotalDemand() {
+	public double getTotalDemand() {
 		return totalDemand;
 	}
 
 
-	public void setTotalDemand(String totalDemand) {
+	public void setTotalDemand(double totalDemand) {
 		this.totalDemand = totalDemand;
 	}
 
@@ -216,56 +203,6 @@ public class FileRequeistion {
 
 	public void setFinancialYear(String financialYear) {
 		this.financialYear = financialYear;
-	}
-
-
-	public String getReason() {
-		return reason;
-	}
-
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-
-
-	public List<DocumentEntityPdr> getDocuments() {
-		return documents;
-	}
-
-
-	public void setDocuments(List<DocumentEntityPdr> documents) {
-		this.documents = documents;
-	}
-
-
-	public RoleEntity getRole() {
-		return role;
-	}
-
-
-	public void setRole(RoleEntity role) {
-		this.role = role;
-	}
-
-
-	public UserEntity getUserId() {
-		return userId;
-	}
-
-
-	public void setUserId(UserEntity userId) {
-		this.userId = userId;
-	}
-
-
-	public CertificateGuaranter getCertificateGuaranter() {
-		return certificateGuaranter;
-	}
-
-
-	public void setCertificateGuaranter(CertificateGuaranter certificateGuaranter) {
-		this.certificateGuaranter = certificateGuaranter;
 	}
 
 
@@ -309,73 +246,6 @@ public class FileRequeistion {
 	}
 
 
-	public List<CertificateDebator> getCertificateDebator() {
-		return certificateDebator;
-	}
-
-
-	public void setCertificateDebator(List<CertificateDebator> certificateDebator) {
-		this.certificateDebator = certificateDebator;
-	}
-
-
-	public String getCaseTransferId() {
-		return caseTransferId;
-	}
-
-
-	public void setCaseTransferId(String caseTransferId) {
-		this.caseTransferId = caseTransferId;
-	}
-
-
-	public CertificatOfficer getCertificatOfficer() {
-		return certificatOfficer;
-	}
-
-
-	public void setCertificatOfficer(CertificatOfficer certificatOfficer) {
-		this.certificatOfficer = certificatOfficer;
-	}
-
-
-	
-	public Boolean getModifiable() {
-		return modifiable;
-	}
-
-
-	public void setModifiable(Boolean modifiable) {
-		this.modifiable = modifiable;
-	}
-
-
-	public FileRequeistion() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-
-	public String getTransNomId() {
-		return transNomId;
-	}
-
-
-	public void setTransNomId(String transNomId) {
-		this.transNomId = transNomId;
-	}
-
-
-	public String getTransferRemark() {
-		return transferRemark;
-	}
-
-
-	public void setTransferRemark(String transferRemark) {
-		this.transferRemark = transferRemark;
-	}
-
-
 	public String getCertificateOffstatus() {
 		return certificateOffstatus;
 	}
@@ -396,6 +266,96 @@ public class FileRequeistion {
 	}
 
 
+	public String getCaseTransferId() {
+		return caseTransferId;
+	}
+
+
+	public void setCaseTransferId(String caseTransferId) {
+		this.caseTransferId = caseTransferId;
+	}
+
+
+	public String getTransferRemark() {
+		return transferRemark;
+	}
+
+
+	public void setTransferRemark(String transferRemark) {
+		this.transferRemark = transferRemark;
+	}
+
+
+	public Boolean getModifiable() {
+		return modifiable;
+	}
+
+
+	public void setModifiable(Boolean modifiable) {
+		this.modifiable = modifiable;
+	}
+
+
+	public String getReason() {
+		return reason;
+	}
+
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+
+	public List<DocumentEntityPdr> getDocuments() {
+		return documents;
+	}
+
+
+	public void setDocuments(List<DocumentEntityPdr> documents) {
+		this.documents = documents;
+	}
+
+
+	public RoleEntity getRole() {
+		return role;
+	}
+
+
+	public void setRole(RoleEntity role) {
+		this.role = role;
+	}
+
+
+	public UserEntity getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(UserEntity userId) {
+		this.userId = userId;
+	}
+
+
+	public List<CertificateDebator> getCertificateDebator() {
+		return certificateDebator;
+	}
+
+
+	public void setCertificateDebator(List<CertificateDebator> certificateDebator) {
+		this.certificateDebator = certificateDebator;
+	}
+
+
+	public CertificateGuaranter getCertificateGuaranter() {
+		return certificateGuaranter;
+	}
+
+
+	public void setCertificateGuaranter(CertificateGuaranter certificateGuaranter) {
+		this.certificateGuaranter = certificateGuaranter;
+	}
+
+
 	public List<LegalRepresentative> getLegalRepresentative() {
 		return legalRepresentative;
 	}
@@ -403,6 +363,36 @@ public class FileRequeistion {
 
 	public void setLegalRepresentative(List<LegalRepresentative> legalRepresentative) {
 		this.legalRepresentative = legalRepresentative;
+	}
+
+
+	public CertificatOfficer getCertificatOfficer() {
+		return certificatOfficer;
+	}
+
+
+	public void setCertificatOfficer(CertificatOfficer certificatOfficer) {
+		this.certificatOfficer = certificatOfficer;
+	}
+
+
+	public String getTransNomId() {
+		return transNomId;
+	}
+
+
+	public void setTransNomId(String transNomId) {
+		this.transNomId = transNomId;
+	}
+
+
+	public Boolean getIsTransBOR() {
+		return isTransBOR;
+	}
+
+
+	public void setIsTransBOR(Boolean isTransBOR) {
+		this.isTransBOR = isTransBOR;
 	}
 
 
@@ -422,6 +412,11 @@ public class FileRequeistion {
 				+ ", isTransNomOfficer=" + isTransNomOfficer + ", isTransBOR=" + isTransBOR + "]";
 	}
 
+
+	public FileRequeistion() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 
 	
