@@ -1,11 +1,14 @@
 package com.bor.rcms.entity;
 
 import javax.persistence.Entity;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+
+//not used
 @Entity
 public class CourtAdd {
 
@@ -30,6 +33,7 @@ public class CourtAdd {
 			@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 
 		    private UserEntity userId;
+		  
 		  
 
 	 private String Role;

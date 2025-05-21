@@ -146,7 +146,6 @@ public class PDRController {
 			} else {
 				return ResponseEntity.ok(Map.of("message", "email number is available"));
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(e.getMessage());

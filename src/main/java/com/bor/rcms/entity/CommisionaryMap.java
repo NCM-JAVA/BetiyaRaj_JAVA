@@ -1,5 +1,8 @@
 package com.bor.rcms.entity;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 public class CommisionaryMap {
@@ -19,6 +24,9 @@ public class CommisionaryMap {
 	
 	  private String status;
 	  private String circle;
+	  
+		private Date createdDate;
+		private Date modifiedDate;
 	
 	public String getCommisonary() {
 		return commisonary;
@@ -61,10 +69,25 @@ public class CommisionaryMap {
 		this.circle = circle;
 	}
 	
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	
 	@Override
 	public String toString() {
 		return "CommisionaryMap [comId=" + comId + ", commisonary=" + commisonary + ", distrct=" + distrct + ", state="
-				+ state + ", status=" + status + ", circle=" + circle + "]";
+				+ state + ", status=" + status + ", circle=" + circle + ", createdDate=" + createdDate
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 	public CommisionaryMap() {
 		super();
