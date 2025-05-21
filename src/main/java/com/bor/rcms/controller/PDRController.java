@@ -308,14 +308,6 @@ public class PDRController {
 						e.printStackTrace();
 					}
 				    BeanUtils.copyProperties(req, dto);
-				    
-				    dto.setTotalOutstandingAmmount(String.valueOf(req.getTotalOutstandingAmmount()));
-					
-					dto.setTotalInterestRate(String.valueOf(req.getTotalInterestRate()));
-					dto.setMissllenousFee(String.valueOf(req.getMissllenousFee()));
-					dto.setPaidCourFee(String.valueOf(req.getPaidCourFee()));
-					dto.setTotalCourtFee(String.valueOf( req.getTotalCourtFee()));
-					dto.setTotalDemand(String.valueOf( req.getTotalDemand()));
 					dto.setReason(req.getReason());
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
@@ -362,14 +354,6 @@ public class PDRController {
 				e.printStackTrace();
 			}
 			BeanUtils.copyProperties(newObjection, dto);
-			
-			dto.setTotalOutstandingAmmount(String.valueOf(newObjection.getTotalOutstandingAmmount()));
-			
-			dto.setTotalInterestRate(String.valueOf(newObjection.getTotalInterestRate()));
-			dto.setMissllenousFee(String.valueOf(newObjection.getMissllenousFee()));
-			dto.setPaidCourFee(String.valueOf(newObjection.getPaidCourFee()));
-			dto.setTotalCourtFee(String.valueOf( newObjection.getTotalCourtFee()));
-			dto.setTotalDemand(String.valueOf( newObjection.getTotalDemand()));
 			if (newObjection.getUserId() != null) {
 				dto.setUserName(newObjection.getUserId().getFullName());
 			}
@@ -426,7 +410,6 @@ public class PDRController {
 
 			vo.setDebatorVos(debatorVoList);
 			BeanUtils.copyProperties(newObjection, vo);
-			
 
 			// Set common financial fields in vo too
 			vo.setTotalOutstandingAmmount(newObjection.getTotalOutstandingAmmount());
@@ -580,14 +563,6 @@ public class PDRController {
 					}
 					BeanUtils.copyProperties(req, dto); 
 
-
-					dto.setTotalOutstandingAmmount(String.valueOf(req.getTotalOutstandingAmmount()));
-					
-					dto.setTotalInterestRate(String.valueOf(req.getTotalInterestRate()));
-					dto.setMissllenousFee(String.valueOf(req.getMissllenousFee()));
-					dto.setPaidCourFee(String.valueOf(req.getPaidCourFee()));
-					dto.setTotalCourtFee(String.valueOf( req.getTotalCourtFee()));
-					dto.setTotalDemand(String.valueOf( req.getTotalDemand()));
 					if (req.getUserId() != null) {
 						dto.setUserName(req.getUserId().getFullName()); // or whatever field you want
 					}
@@ -780,13 +755,6 @@ public class PDRController {
 					dto.setStatus(req.getStatus());
 					dto.setReason(req.getReason());
 					
-	dto.setTotalOutstandingAmmount(String.valueOf(req.getTotalOutstandingAmmount()));
-					
-					dto.setTotalInterestRate(String.valueOf(req.getTotalInterestRate()));
-					dto.setMissllenousFee(String.valueOf(req.getMissllenousFee()));
-					dto.setPaidCourFee(String.valueOf(req.getPaidCourFee()));
-					dto.setTotalCourtFee(String.valueOf( req.getTotalCourtFee()));
-					dto.setTotalDemand(String.valueOf( req.getTotalDemand()));
 					try {
 						CertificatOfficer  certificatOfficer=certificatOfficerRepo.findByFileRequeistion(req);
 						dto.setCaseId(certificatOfficer.getCertOfficerId());
