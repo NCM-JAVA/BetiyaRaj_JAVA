@@ -30,13 +30,13 @@ public class FileRequeistion {
 	@Column(name="requeistion_id")
 	private String requeistionId;
 	 
-	  private double totalOutstandingAmmount;
-	  private double totalInterestRate;
+	  private String totalOutstandingAmmount;
+	  private String totalInterestRate;
 	  private String interestDueForm;
-	  private double totalCourtFee;
-	  private double missllenousFee;
-	  private double paidCourFee;
-	  private double totalDemand;
+	  private String totalCourtFee;
+	  private String missllenousFee;
+	  private String paidCourFee;
+	  private String totalDemand;
 	  private String financialYear;
       private String districtName;
 
@@ -98,6 +98,7 @@ public class FileRequeistion {
 	  @Column(columnDefinition = "boolean default false")
 	  private Boolean isTransBOR = false;
 	  
+	  
 	public Boolean getIsTransOfficer() {
 		return isTransOfficer;
 	}
@@ -118,6 +119,16 @@ public class FileRequeistion {
 	}
 
 
+	public Boolean getIsTransBOR() {
+		return isTransBOR;
+	}
+
+
+	public void setIsTransBOR(Boolean isTransBOR) {
+		this.isTransBOR = isTransBOR;
+	}
+
+
 	public String getRequeistionId() {
 		return requeistionId;
 	}
@@ -128,22 +139,22 @@ public class FileRequeistion {
 	}
 
 
-	public double getTotalOutstandingAmmount() {
+	public String getTotalOutstandingAmmount() {
 		return totalOutstandingAmmount;
 	}
 
 
-	public void setTotalOutstandingAmmount(double totalOutstandingAmmount) {
+	public void setTotalOutstandingAmmount(String totalOutstandingAmmount) {
 		this.totalOutstandingAmmount = totalOutstandingAmmount;
 	}
 
 
-	public double getTotalInterestRate() {
+	public String getTotalInterestRate() {
 		return totalInterestRate;
 	}
 
 
-	public void setTotalInterestRate(double totalInterestRate) {
+	public void setTotalInterestRate(String totalInterestRate) {
 		this.totalInterestRate = totalInterestRate;
 	}
 
@@ -158,42 +169,42 @@ public class FileRequeistion {
 	}
 
 
-	public double getTotalCourtFee() {
+	public String getTotalCourtFee() {
 		return totalCourtFee;
 	}
 
 
-	public void setTotalCourtFee(double totalCourtFee) {
+	public void setTotalCourtFee(String totalCourtFee) {
 		this.totalCourtFee = totalCourtFee;
 	}
 
 
-	public double getMissllenousFee() {
+	public String getMissllenousFee() {
 		return missllenousFee;
 	}
 
 
-	public void setMissllenousFee(double missllenousFee) {
+	public void setMissllenousFee(String missllenousFee) {
 		this.missllenousFee = missllenousFee;
 	}
 
 
-	public double getPaidCourFee() {
+	public String getPaidCourFee() {
 		return paidCourFee;
 	}
 
 
-	public void setPaidCourFee(double paidCourFee) {
+	public void setPaidCourFee(String paidCourFee) {
 		this.paidCourFee = paidCourFee;
 	}
 
 
-	public double getTotalDemand() {
+	public String getTotalDemand() {
 		return totalDemand;
 	}
 
 
-	public void setTotalDemand(double totalDemand) {
+	public void setTotalDemand(String totalDemand) {
 		this.totalDemand = totalDemand;
 	}
 
@@ -205,96 +216,6 @@ public class FileRequeistion {
 
 	public void setFinancialYear(String financialYear) {
 		this.financialYear = financialYear;
-	}
-
-
-	public String getDistrictName() {
-		return districtName;
-	}
-
-
-	public void setDistrictName(String districtName) {
-		this.districtName = districtName;
-	}
-
-
-	public String getCurrentDate() {
-		return currentDate;
-	}
-
-
-	public void setCurrentDate(String currentDate) {
-		this.currentDate = currentDate;
-	}
-
-
-	public String getUpdateDate() {
-		return updateDate;
-	}
-
-
-	public void setUpdateDate(String updateDate) {
-		this.updateDate = updateDate;
-	}
-
-
-	public String getStatus() {
-		return status;
-	}
-
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-
-	public String getCertificateOffstatus() {
-		return certificateOffstatus;
-	}
-
-
-	public void setCertificateOffstatus(String certificateOffstatus) {
-		this.certificateOffstatus = certificateOffstatus;
-	}
-
-
-	public String getNominalOffstatus() {
-		return nominalOffstatus;
-	}
-
-
-	public void setNominalOffstatus(String nominalOffstatus) {
-		this.nominalOffstatus = nominalOffstatus;
-	}
-
-
-	public String getCaseTransferId() {
-		return caseTransferId;
-	}
-
-
-	public void setCaseTransferId(String caseTransferId) {
-		this.caseTransferId = caseTransferId;
-	}
-
-
-	public String getTransferRemark() {
-		return transferRemark;
-	}
-
-
-	public void setTransferRemark(String transferRemark) {
-		this.transferRemark = transferRemark;
-	}
-
-
-	public Boolean getModifiable() {
-		return modifiable;
-	}
-
-
-	public void setModifiable(Boolean modifiable) {
-		this.modifiable = modifiable;
 	}
 
 
@@ -338,16 +259,6 @@ public class FileRequeistion {
 	}
 
 
-	public List<CertificateDebator> getCertificateDebator() {
-		return certificateDebator;
-	}
-
-
-	public void setCertificateDebator(List<CertificateDebator> certificateDebator) {
-		this.certificateDebator = certificateDebator;
-	}
-
-
 	public CertificateGuaranter getCertificateGuaranter() {
 		return certificateGuaranter;
 	}
@@ -358,13 +269,63 @@ public class FileRequeistion {
 	}
 
 
-	public List<LegalRepresentative> getLegalRepresentative() {
-		return legalRepresentative;
+	public String getDistrictName() {
+		return districtName;
 	}
 
 
-	public void setLegalRepresentative(List<LegalRepresentative> legalRepresentative) {
-		this.legalRepresentative = legalRepresentative;
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
+	}
+
+
+	public String getCurrentDate() {
+		return currentDate;
+	}
+
+
+	public void setCurrentDate(String currentDate) {
+		this.currentDate = currentDate;
+	}
+
+
+	public String getUpdateDate() {
+		return updateDate;
+	}
+
+
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
+
+
+	public String getStatus() {
+		return status;
+	}
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+
+	public List<CertificateDebator> getCertificateDebator() {
+		return certificateDebator;
+	}
+
+
+	public void setCertificateDebator(List<CertificateDebator> certificateDebator) {
+		this.certificateDebator = certificateDebator;
+	}
+
+
+	public String getCaseTransferId() {
+		return caseTransferId;
+	}
+
+
+	public void setCaseTransferId(String caseTransferId) {
+		this.caseTransferId = caseTransferId;
 	}
 
 
@@ -378,6 +339,23 @@ public class FileRequeistion {
 	}
 
 
+	
+	public Boolean getModifiable() {
+		return modifiable;
+	}
+
+
+	public void setModifiable(Boolean modifiable) {
+		this.modifiable = modifiable;
+	}
+
+
+	public FileRequeistion() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 	public String getTransNomId() {
 		return transNomId;
 	}
@@ -388,13 +366,43 @@ public class FileRequeistion {
 	}
 
 
-	public Boolean getIsTransBOR() {
-		return isTransBOR;
+	public String getTransferRemark() {
+		return transferRemark;
 	}
 
 
-	public void setIsTransBOR(Boolean isTransBOR) {
-		this.isTransBOR = isTransBOR;
+	public void setTransferRemark(String transferRemark) {
+		this.transferRemark = transferRemark;
+	}
+
+
+	public String getCertificateOffstatus() {
+		return certificateOffstatus;
+	}
+
+
+	public void setCertificateOffstatus(String certificateOffstatus) {
+		this.certificateOffstatus = certificateOffstatus;
+	}
+
+
+	public String getNominalOffstatus() {
+		return nominalOffstatus;
+	}
+
+
+	public void setNominalOffstatus(String nominalOffstatus) {
+		this.nominalOffstatus = nominalOffstatus;
+	}
+
+
+	public List<LegalRepresentative> getLegalRepresentative() {
+		return legalRepresentative;
+	}
+
+
+	public void setLegalRepresentative(List<LegalRepresentative> legalRepresentative) {
+		this.legalRepresentative = legalRepresentative;
 	}
 
 
@@ -414,11 +422,6 @@ public class FileRequeistion {
 				+ ", isTransNomOfficer=" + isTransNomOfficer + ", isTransBOR=" + isTransBOR + "]";
 	}
 
-
-	public FileRequeistion() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 
 	

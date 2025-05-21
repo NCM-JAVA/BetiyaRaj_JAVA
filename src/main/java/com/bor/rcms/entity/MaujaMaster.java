@@ -1,7 +1,5 @@
 package com.bor.rcms.entity;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,9 +22,6 @@ public class MaujaMaster {
 	    private String maujaCode;
 	    private String maujaName;
 	    private String maujaLgdCode;
-	    
-		private Date createdDate;
-		private Date modifiedDate;
 	
 		public String getDistLgdCode() {
 			return distLgdCode;
@@ -94,29 +89,16 @@ public class MaujaMaster {
 		public void setMaujaLgdCode(String maujaLgdCode) {
 			this.maujaLgdCode = maujaLgdCode;
 		}
-		public Date getCreatedDate() {
-			return createdDate;
-		}
-		public void setCreatedDate(Date createdDate) {
-			this.createdDate = createdDate;
-		}
-		public Date getModifiedDate() {
-			return modifiedDate;
-		}
-		public void setModifiedDate(Date modifiedDate) {
-			this.modifiedDate = modifiedDate;
-		}
 		@Override
 		public String toString() {
-			return "MaujaMaster [distLgdCode=" + distLgdCode + ", distCode=" + distCode + ", distName=" + distName
-					+ ", circleLgdCode=" + circleLgdCode + ", circleCode=" + circleCode + ", circleName=" + circleName
-					+ ", halkaCode=" + halkaCode + ", halkaName=" + halkaName + ", maujaCode=" + maujaCode
-					+ ", maujaName=" + maujaName + ", maujaLgdCode=" + maujaLgdCode + ", createdDate=" + createdDate
-					+ ", modifiedDate=" + modifiedDate + "]";
+			return "MaujaMaster [ distLgdCode=" + distLgdCode + ", distCode=" + distCode + ", distName="
+					+ distName + ", circleLgdCode=" + circleLgdCode + ", circleCode=" + circleCode + ", circleName="
+					+ circleName + ", halkaCode=" + halkaCode + ", halkaName=" + halkaName + ", maujaCode=" + maujaCode
+					+ ", maujaName=" + maujaName + ", maujaLgdCode=" + maujaLgdCode + "]";
 		}
-		public MaujaMaster(String distLgdCode, String distCode, String distName, String circleLgdCode,
+		public MaujaMaster(Long id, String distLgdCode, String distCode, String distName, String circleLgdCode,
 				String circleCode, String circleName, String halkaCode, String halkaName, String maujaCode,
-				String maujaName, String maujaLgdCode, Date createdDate, Date modifiedDate) {
+				String maujaName, String maujaLgdCode) {
 			super();
 			this.distLgdCode = distLgdCode;
 			this.distCode = distCode;
@@ -129,14 +111,8 @@ public class MaujaMaster {
 			this.maujaCode = maujaCode;
 			this.maujaName = maujaName;
 			this.maujaLgdCode = maujaLgdCode;
-			this.createdDate = createdDate;
-			this.modifiedDate = modifiedDate;
 		}
-		public MaujaMaster() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-		
+
 	    
 	    
 }
