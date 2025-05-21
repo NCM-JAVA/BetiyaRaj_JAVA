@@ -14,6 +14,7 @@ import com.bor.rcms.dto.OfficerStatusVo;
 import com.bor.rcms.dto.RecoveryAmountVo;
 import com.bor.rcms.entity.AddRecoveryAmmount;
 import com.bor.rcms.entity.CertificatOfficer;
+import com.bor.rcms.entity.CommisionaryMap;
 import com.bor.rcms.entity.DraftSaveCaseProceeding;
 import com.bor.rcms.entity.FileRequeistion;
 import com.bor.rcms.resonse.CaseRecodeRes;
@@ -75,5 +76,9 @@ public interface PdrService {
 	AddRecoveryAmmount addrecoveryAmount(RecoveryAmountVo recoveryAmountVo);
 
 	List<FileRequeistion> findAllByuserIdcaseTranfer(String userId);
+
+	List<CommisionaryMap> getalldistic(String distrct);
+
+	List<?> getpolice(Long comId);
 
 }

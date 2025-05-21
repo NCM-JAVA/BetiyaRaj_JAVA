@@ -58,12 +58,15 @@ import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CaseTransferPriviouseRecordRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
+import com.bor.rcms.repository.CommisionaryMapRepo;
+import com.bor.rcms.repository.CommissionerRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.DocumentRepository;
 import com.bor.rcms.repository.DraftsSaveRepo;
 import com.bor.rcms.repository.FileRequeistionRepo;
 import com.bor.rcms.repository.NewObjectionRepo;
+import com.bor.rcms.repository.PoliceStationRepo;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.CaseRecodeRes;
@@ -97,6 +100,12 @@ public class PdrServiceImpl implements PdrService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired 
+	private CommisionaryMapRepo commisionaryMapRepo;
+	
+	@Autowired
+	private PoliceStationRepo policestationRepo;
 
 	@Autowired
 
@@ -1665,6 +1674,15 @@ public class PdrServiceImpl implements PdrService {
 		return fileRequeistionRepo.findAllisTransNomOfficer(userId);
 	}
 
+	@Override
+	public List getalldistic(String distric) {
+		
+		return commisionaryMapRepo.findByDistrct(distric);
+	}
+	@Override
+	public List getpolice(Long comId) {
+		return policestationRepo.findBycomId(comId);
+		
 	
-	
+	}
 }
