@@ -997,4 +997,46 @@ public class PdrServiceImpl implements PdrService {
 
 
 
+<<<<<<< Updated upstream
 }
+=======
+			AddRecoveryAmmount recoveramount = new AddRecoveryAmmount();
+			BeanUtils.copyProperties(recoveramount, recoveryAmountVo);
+			recoveramount.setCreatedDate(formattedDateTime);
+			recoveramount.setUserId(user);
+			recoveramount.setCreatedByuser(String.valueOf(user2.getUserId()));
+
+			AddRecoveryAmmount savedata = addRecoveryAmmountRepo.save(recoveramount);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<FileRequeistion> findAllByuserIdcaseTranfer(String userId) {
+		// TODO Auto-generated method stub
+		return fileRequeistionRepo.findAllisTransNomOfficer(userId);
+	}
+
+	@Override
+	public List getalldistic(String distrct) {
+		
+		return commisionaryMapRepo.findByDistrct(distrct);
+	}
+	@Override
+	public List getpolice(Long com_Id) {
+		List station =policestationRepo.findBycomId(com_Id);		
+		return station;
+		
+	}
+	@Override
+	public List getdistric(Long com_Id) {
+		return policestationRepo.findBycomId(com_Id);
+		
+	
+	}
+}
+>>>>>>> Stashed changes

@@ -1075,3 +1075,24 @@ public class PDRController {
 
 
 }
+<<<<<<< Updated upstream
+=======
+@GetMapping("/getdistric")
+public ResponseEntity<?> getdistic(@RequestParam Long com_Id){
+	try {
+		List result1 = pdrService.getpolice(com_Id);
+		if (result1 == null || result1.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body("No Data found: " + com_Id);
+	    }
+		return new ResponseEntity<>(result1,HttpStatus.ACCEPTED);
+		   
+		   //return ResponseEntity.ok("Success");
+		
+	} catch (Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
+	}
+}
+
+}
+>>>>>>> Stashed changes
