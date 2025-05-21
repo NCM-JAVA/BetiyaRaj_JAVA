@@ -1675,13 +1675,19 @@ public class PdrServiceImpl implements PdrService {
 	}
 
 	@Override
-	public List getalldistic(String distric) {
+	public List getalldistic(String distrct) {
 		
-		return commisionaryMapRepo.findByDistrct(distric);
+		return commisionaryMapRepo.findByDistrct(distrct);
 	}
 	@Override
-	public List getpolice(Long comId) {
-		return policestationRepo.findBycomId(comId);
+	public List getpolice(Long com_Id) {
+		return policestationRepo.findBycomId(com_Id);
+		
+	
+	}
+	@Override
+	public List getdistric(Long com_Id) {
+		return policestationRepo.findBycomId(com_Id);
 		
 	
 	}

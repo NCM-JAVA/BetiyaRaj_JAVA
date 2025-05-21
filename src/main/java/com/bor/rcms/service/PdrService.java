@@ -80,5 +80,6 @@ public interface PdrService {
 	List<CommisionaryMap> getalldistic(String distrct);
 
 	List<?> getpolice(Long comId);
+	List<?> getdistric(Long comId);
 
 }

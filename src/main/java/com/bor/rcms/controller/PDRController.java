@@ -1352,9 +1352,9 @@ public class PDRController {
 }}
 
 @GetMapping("/policestation")
-public ResponseEntity<?> getpolice(@RequestParam Long comId){
+public ResponseEntity<?> getpolice(@RequestParam Long com_Id){
 	try {
-		List<?> result1 = pdrService.getpolice(comId);
+		List<?> result1 = pdrService.getpolice(com_Id);
 		   System.out.println("district===>"+result1);
 
 		return new ResponseEntity<>(result1,HttpStatus.ACCEPTED);
@@ -1365,6 +1365,19 @@ public ResponseEntity<?> getpolice(@RequestParam Long comId){
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
 	}
 }
-	
+@GetMapping("/getdistric")
+public ResponseEntity<?> getdistic(@RequestParam Long com_Id){
+	try {
+		List<?> result1 = pdrService.getpolice(com_Id);
+		   System.out.println("district===>"+result1);
+
+		return new ResponseEntity<>(result1,HttpStatus.ACCEPTED);
+		   
+		   //return ResponseEntity.ok("Success");
+		
+	} catch (Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
+	}
+}
 
 }

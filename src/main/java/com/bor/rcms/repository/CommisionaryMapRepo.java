@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.bor.rcms.entity.CommisionaryMap;
+import com.bor.rcms.entity.PoliceStation;
 
 @Repository
 public interface CommisionaryMapRepo extends JpaRepository<CommisionaryMap, Long> {
@@ -23,5 +24,9 @@ public interface CommisionaryMapRepo extends JpaRepository<CommisionaryMap, Long
 
 	@Query("from CommisionaryMap where distrct=:distrct")
 	List<CommisionaryMap> findByDistrct(@Param("distrct") String distrct);
+	
+	@Query("from CommisionaryMap where com_id=:com_id")
+	  List<CommisionaryMap>	findBycomId(@Param("com_id") Long com_id);
+
 
 }
