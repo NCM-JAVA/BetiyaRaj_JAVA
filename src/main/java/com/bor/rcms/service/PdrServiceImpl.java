@@ -42,6 +42,7 @@ import com.bor.rcms.entity.CaseNotesPdr;
 import com.bor.rcms.entity.CaseTransferPriviouseRecord;
 import com.bor.rcms.entity.CertificatOfficer;
 import com.bor.rcms.entity.CertificateDebator;
+import com.bor.rcms.entity.CommisionaryMap;
 import com.bor.rcms.entity.CourtAdd;
 import com.bor.rcms.entity.DocumentEntity;
 import com.bor.rcms.entity.DocumentEntityPdr;
@@ -57,14 +58,12 @@ import com.bor.rcms.repository.CaseNotesPdrRepo;
 import com.bor.rcms.repository.CaseTransferPriviouseRecordRepo;
 import com.bor.rcms.repository.CertificatDebatorRepo;
 import com.bor.rcms.repository.CertificatOfficerRepo;
-import com.bor.rcms.repository.CommisionaryMapRepo;
 import com.bor.rcms.repository.CourtAddRepo;
 import com.bor.rcms.repository.DocumentPDRRepository;
 import com.bor.rcms.repository.DocumentRepository;
 import com.bor.rcms.repository.DraftsSaveRepo;
 import com.bor.rcms.repository.FileRequeistionRepo;
 import com.bor.rcms.repository.NewObjectionRepo;
-import com.bor.rcms.repository.PoliceStationRepo;
 import com.bor.rcms.repository.RoleRepository;
 import com.bor.rcms.repository.UserRepository;
 import com.bor.rcms.resonse.CaseRecodeRes;
@@ -90,11 +89,6 @@ public class PdrServiceImpl implements PdrService {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private CommisionaryMapRepo commisionaryMapRepo;
-	@Autowired
-	private PoliceStationRepo policestationRepo;
-	
 	@Autowired
 	private FileRequeistionRepo fileRequeistionRepo;
 
@@ -390,7 +384,13 @@ public class PdrServiceImpl implements PdrService {
 
 	@Override
 	public List<FileRequeistion> findpending(String district) {
-		return fileRequeistionRepo.findAllPending(district);
+		
+		List<FileRequeistion> fileRequeistions=new ArrayList<>();
+		
+		fileRequeistions=fileRequeistionRepo.findAllPending(district);
+	//	return fileRequeistionRepo.findBy
+				//findAllPending(district);
+		return  fileRequeistions;
 
 	}
 
@@ -1227,6 +1227,12 @@ public class PdrServiceImpl implements PdrService {
 					reqrusitionStatus2.setAction(certificatOfficer.getAction());
 					reqrusitionStatus2.setCaseId(certificatOfficer.getCertOfficerId());
 					reqrusitionStatus2.setHiringDate(certificatOfficer.getHearingDate());
+					reqrusitionStatus2.setClasse(certificatOfficer.getCaseClass());
+					
+					List<CertificateDebator> certificateDebatorlist=certificatDebatorRepo.findByRequeistion(fileRequeistion2);
+					CertificateDebator certificateDebator=certificateDebatorlist.get(0);                 
+					reqrusitionStatus2.setDefaulterName(certificateDebator.getDebatorName());
+					
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -1234,9 +1240,8 @@ public class PdrServiceImpl implements PdrService {
 				}
 				reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 				reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-				reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-				reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
-				reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
+				reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+				reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 
 				reqrusitionStatuslist.add(reqrusitionStatus2);
 			}
@@ -1346,8 +1351,8 @@ public class PdrServiceImpl implements PdrService {
 					reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
 					reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 					reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-					reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-					reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+					reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+					reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 
 					try {
 						List<CertificateDebator> certificateDebatorlist = certificatDebatorRepo
@@ -1395,8 +1400,8 @@ public class PdrServiceImpl implements PdrService {
 						reqrusitionStatus2.setGranterName(fileRequeistion2.getCertificateGuaranter().getGranterName());
 						reqrusitionStatus2.setReqId(fileRequeistion2.getRequeistionId());
 						reqrusitionStatus2.setCaseStatus(fileRequeistion2.getStatus());
-						reqrusitionStatus2.setDemandAmmount(fileRequeistion2.getTotalDemand());
-						reqrusitionStatus2.setTotalAmmount(fileRequeistion2.getTotalOutstandingAmmount());
+						reqrusitionStatus2.setDemandAmmount(String.valueOf(fileRequeistion2.getTotalDemand()));
+						reqrusitionStatus2.setTotalAmmount(String.valueOf(fileRequeistion2.getTotalOutstandingAmmount()));
 						reqrusitionStatus2.setDefaulterName(fileRequeistion2.getUserId().getFullName());
 
 						reqrusitionStatuslist.add(reqrusitionStatus2);
@@ -1660,16 +1665,6 @@ public class PdrServiceImpl implements PdrService {
 		return fileRequeistionRepo.findAllisTransNomOfficer(userId);
 	}
 
-	@Override
-	public List getalldistic(String distric) {
-		
-		return commisionaryMapRepo.findByDistrct(distric);
-	}
-	@Override
-	public List getpolice(Long comId) {
-		return policestationRepo.findBycomId(comId);
-		
-	}
 	
 	
 }
