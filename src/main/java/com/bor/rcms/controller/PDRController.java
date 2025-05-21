@@ -1538,14 +1538,7 @@ public class PDRController {
 		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
 	} catch (Exception e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("notfound");
-//
-//	}
-//	
-//List<CommisionaryMap>	result=pdrService.getalldistic(distrct);
-//System.out.println("district===>"+result);
-//
-//	return null;
-// 
+
 }}
 
 @GetMapping("/policestation")
